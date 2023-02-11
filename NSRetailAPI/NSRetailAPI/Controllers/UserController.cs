@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json;
-using NSRetailAPI.Models;
 using NSRetailAPI.Utilities;
 using System.Data;
 using System.Data.SqlClient;
@@ -18,38 +17,36 @@ namespace NSRetailAPI.Controllers
         public UserController(IConfiguration _configuration)
         {
             configuration = _configuration;
-
         }
         [HttpGet]
         [Route("GetUserLogin")]
         public IActionResult GetUserLogin(string UserName, string Password, string AppVersion)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>
+            try
             {
-                { "USERNAME", UserName }
-                , { "PASSWORD", Utility.Encrypt(Password) }
-                , { "APPVERSION", AppVersion }
-            };
-            DataTable dtLogin = new DataRepository().GetDataTable(configuration,"USP_R_USERLOGIN", parameters);
-
-            Response httpResponse = new Response();
-            if (dtLogin != null && dtLogin.Rows.Count > 0)
-            {
-                int Ivalue = 0;
-                string str = Convert.ToString(dtLogin.Rows[0][0]);
-                if (!int.TryParse(str, out Ivalue))
-                    return 
-                else
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "USERNAME", UserName }
+                        , { "PASSWORD", Utility.Encrypt(Password) }
+                        , { "APPVERSION", AppVersion }
+                    };
+                DataTable dtLogin = new DataRepository().GetDataTable(configuration, "USP_R_USERLOGIN", parameters);
+                if (dtLogin != null && dtLogin.Rows.Count > 0)
                 {
-                    httpResponse.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dtLogin)));
+                    int Ivalue = 0;
+                    string str = Convert.ToString(dtLogin.Rows[0][0]);
+                    if (!int.TryParse(str, out Ivalue))
+                        return BadRequest(str);
+                    else
+                        return Ok(JsonConvert.SerializeObject(dtLogin));
                 }
+                else
+                    return NotFound("User does not exists");
             }
-            else
+            catch (Exception ex)
             {
-                httpResponse.StatusCode = 101;
-                httpResponse.Body = new MemoryStream(Encoding.UTF8.GetBytes("Error in login"));
+                return StatusCode(500, ex.ToString());
             }
-            return httpResponse;
         }
     }
 }
