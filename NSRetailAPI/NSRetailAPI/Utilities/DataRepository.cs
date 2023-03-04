@@ -6,14 +6,14 @@ namespace NSRetailAPI.Utilities
 {
     public class DataRepository
     {
-        public DataTable GetDataTable(IConfiguration configuration, string procedureName, Dictionary<string, object>? parameters = null)
+        public DataTable GetDataTable(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             DataTable dtReportData = new DataTable();
             try
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.Connection = SQLCon.SqlCloudconn(configuration);
+                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;
@@ -31,14 +31,14 @@ namespace NSRetailAPI.Utilities
             }
             return dtReportData;
         }
-        public DataSet GetDataset(IConfiguration configuration, string procedureName, Dictionary<string, object>? parameters = null)
+        public DataSet GetDataset(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             DataSet dsReportData = new DataSet();
             try
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.Connection = SQLCon.SqlCloudconn(configuration);
+                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;
@@ -56,14 +56,14 @@ namespace NSRetailAPI.Utilities
             }
             return dsReportData;
         }
-        public object ExecuteScalar(IConfiguration configuration, string procedureName, Dictionary<string, object>? parameters = null)
+        public object ExecuteScalar(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
-            object obj = null;
+            object? obj = null;
             try
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.Connection = SQLCon.SqlCloudconn(configuration);
+                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;
@@ -77,14 +77,14 @@ namespace NSRetailAPI.Utilities
             }
             return obj;
         }
-        public int ExecuteNonQuery(IConfiguration configuration, string procedureName, Dictionary<string, object>? parameters = null)
+        public int ExecuteNonQuery(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             int rowcount = 0;
             try
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.Connection = SQLCon.SqlCloudconn(configuration);
+                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;

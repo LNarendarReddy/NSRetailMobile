@@ -1,41 +1,37 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NSRetailAPI.Utilities;
 using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 
 namespace NSRetailAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class userController : ControllerBase
+    public class itemController : ControllerBase
     {
-        public readonly IConfiguration configuration;
-        public userController(IConfiguration _configuration)
-        {
-            configuration = _configuration;
-        }
-        [HttpPost]
-        [Route("getuserlogin")]
-        public IActionResult GetUserLogin(string UserName, string Password, string AppVersion)
+        private readonly IConfiguration configuration;
+        public itemController(IConfiguration _configuration) { configuration = _configuration; }
+        [HttpGet]
+        [Route("getitem")]
+        public IActionResult GetItem(string ItemCode, bool useWHConnection)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
-                        { "USERNAME", UserName }
-                        , { "PASSWORD", Utility.Encrypt(Password) }
-                        , { "APPVERSION", AppVersion }
+                        { "ITEMCODE", ItemCode }
                     };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_USERLOGIN",false,parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATA", useWHConnection, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "User";
+                    ds.Tables[0].TableName = "ITEM";
                     if (ds.Tables.Count > 1)
-                        ds.Tables[1].TableName = "FeatureAccess";
+                    {
+                        ds.Tables[1].TableName = "ITEMCODE";
+                        ds.Tables[2].TableName = "ITEMPRICE";
+                    }
                     int Ivalue = 0;
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
                     if (!int.TryParse(str, out Ivalue))
@@ -44,7 +40,7 @@ namespace NSRetailAPI.Controllers
                         return Ok(JsonConvert.SerializeObject(ds));
                 }
                 else
-                    return NotFound("User does not exists");
+                    return NotFound("Itemcode does not exists");
             }
             catch (Exception ex)
             {
