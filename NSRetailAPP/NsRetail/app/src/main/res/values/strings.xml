@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">NsRetail</string>
+    <string name="signin">SignIn</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="log_out">Logout</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
+    <string name="stock_counting">Stock Counting</string>
+    <string name="stock_dispatch">Stock Dispatch</string>
+    <string name="stock_entry">Stock Entry</string>
+    <string name="item_details">Item Details</string>
+    <string name="next">Next</string>
+    <string name="tax_inclusive">Tax Inclusive</string>
+</resources>
