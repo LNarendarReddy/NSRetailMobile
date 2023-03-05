@@ -1,36 +1,34 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NSRetailAPI.Utilities;
 using System.Data;
-using System.Security.Cryptography.Xml;
 
 namespace NSRetailAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MasterController : ControllerBase
+    public class masterController : ControllerBase
     {
         public readonly IConfiguration configuration;
-
-        public MasterController(IConfiguration _configuration)
+        public masterController(IConfiguration _configuration)
         {
             configuration = _configuration;
         }
         [HttpGet]
-        [Route("GetBranch")]
-        public IActionResult GetBranch(int UserID)
+        [Route("getbranch")]
+        public IActionResult GetBranch(int Userid)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
-                        { "USERID", UserID}
+                        { "USERID", Userid }
                     };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCH", parameters);
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCH", false, parameters);
                 if (dt != null && dt.Rows.Count > 0)
                 {
+                    dt.TableName = "Branch";
                     int Ivalue = 0;
                     string str = Convert.ToString(dt.Rows[0][0]);
                     if (!int.TryParse(str, out Ivalue))
@@ -39,7 +37,7 @@ namespace NSRetailAPI.Controllers
                         return Ok(JsonConvert.SerializeObject(dt));
                 }
                 else
-                    return NotFound("Branches does not exists");
+                    return NotFound("Data not found");
             }
             catch (Exception ex)
             {
@@ -48,14 +46,19 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetCategory")]
-        public IActionResult GetCategory()
+        [Route("getcategory")]
+        public IActionResult GetCategory(int Userid)
         {
             try
             {
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_CATEGORY");
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "USERID", Userid }
+                    };
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_CATEGORY", false, parameters);
                 if (dt != null && dt.Rows.Count > 0)
                 {
+                    dt.TableName = "Category";
                     int Ivalue = 0;
                     string str = Convert.ToString(dt.Rows[0][0]);
                     if (!int.TryParse(str, out Ivalue))
@@ -64,7 +67,33 @@ namespace NSRetailAPI.Controllers
                         return Ok(JsonConvert.SerializeObject(dt));
                 }
                 else
-                    return NotFound("Categories does not exists");
+                    return NotFound("Data not found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
+        }
+
+        [HttpGet]
+        [Route("getsupplier")]
+        public IActionResult GetSupplier(bool UseWHConnection)
+        {
+            try
+            {
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_DEALER", UseWHConnection, null);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    dt.TableName = "Supplier";
+                    int Ivalue = 0;
+                    string str = Convert.ToString(dt.Rows[0][0]);
+                    if (!int.TryParse(str, out Ivalue))
+                        return BadRequest(str);
+                    else
+                        return Ok(JsonConvert.SerializeObject(dt));
+                }
+                else
+                    return NotFound("Data not found");
             }
             catch (Exception ex)
             {
