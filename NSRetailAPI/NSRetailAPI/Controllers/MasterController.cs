@@ -100,5 +100,31 @@ namespace NSRetailAPI.Controllers
                 return StatusCode(500, ex.ToString());
             }
         }
+
+        [HttpGet]
+        [Route("getgst")]
+        public IActionResult GetGST(bool UseWHConnection)
+        {
+            try
+            {
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_GSTLIST", UseWHConnection, null);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    dt.TableName = "GST";
+                    int Ivalue = 0;
+                    string str = Convert.ToString(dt.Rows[0][0]);
+                    if (!int.TryParse(str, out Ivalue))
+                        return BadRequest(str);
+                    else
+                        return Ok(JsonConvert.SerializeObject(dt));
+                }
+                else
+                    return NotFound("Data not found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
+        }
     }
 }

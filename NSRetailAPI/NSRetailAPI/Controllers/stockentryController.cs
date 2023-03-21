@@ -32,9 +32,9 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT", UseWHConnection, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[1].TableName = "Invoice";
+                    ds.Tables[0].TableName = "StockEntry";
                     if (ds.Tables.Count > 1)
-                        ds.Tables[1].TableName = "InvoiceDetail";
+                        ds.Tables[1].TableName = "StockEntryDetail";
                     return Ok(JsonConvert.SerializeObject(ds));
                 }
                 else
