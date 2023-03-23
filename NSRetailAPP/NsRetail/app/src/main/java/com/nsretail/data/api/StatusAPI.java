@@ -1,8 +1,17 @@
 package com.nsretail.data.api;
 
+import com.google.gson.JsonObject;
+import com.nsretail.data.model.GSTModel.GST;
+import com.nsretail.data.model.ItemModel.ItemModel;
+import com.nsretail.data.model.StockEntry.Invoice;
+import com.nsretail.data.model.SupplierModel.Supplier;
 import com.nsretail.data.model.UserModel.Response;
 
+import java.util.List;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -14,19 +23,23 @@ public interface StatusAPI {
                          @Query("Password") String Password,
                          @Query("AppVersion") String AppVersion);
 
-   /* @GET("loanPlans")
-    Call<LoanPlansData> plansData();
 
-    @FormUrlEncoded
-    @POST("user/getuserlogin?")
-    Call<Result> googleLogin(@Field("first_name") String first_name,
-                             @Field("last_name") String last_name,
-                             @Field("email") String email,
-                             @Field("access_token") String access_token);
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"})
-    @POST("/api/emandateInititate")
-    Call<SuccessModel> eMandate(@Header("Authorization") String authHeader, @Body JsonObject Object);*/
+    @GET("master/getsupplier")
+    Call<List<Supplier>> supplierData(@Query("UseWHConnection") boolean useWHConnection);
+
+    @GET("master/getgst")
+    Call<List<GST>> gstData(@Query("UseWHConnection") boolean useWHConnection);
+
+    @GET("stockentry/getinvoice")
+    Call<Invoice> getInvoiceData(@Query("CategoryID") int categoryId,
+                                 @Query("UserID") int userId,
+                                 @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockentry/saveinvoice")
+    Call<ResponseBody> saveInvoiceData(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
+
+    @GET("item/getitem")
+    Call<ItemModel> getItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
+
 
 }

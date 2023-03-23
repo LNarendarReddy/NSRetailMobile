@@ -3,153 +3,123 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText">
 
     <include
-        android:id="@+id/toolbarStock"
+        android:id="@+id/includeStock"
         layout="@layout/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/llinear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarStock">
+        android:layout_marginTop="@dimen/_10sdp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/includeStock">
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/textDealerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_15sdp"
-            android:layout_marginBottom="@dimen/_15sdp"
-            android:orientation="vertical">
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            tools:text="@string/app_name" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/llinear"
+        tools:listitem="@layout/item_stock_entry" />
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:hint="Supplier"
-                android:textColorHint="@color/grey_shade"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/purple_500"
-                app:hintTextColor="@color/purple_500">
-
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/selectProof"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="true"
-                    android:inputType="none"
-                    android:paddingStart="0dp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="RtlSymmetry" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:hint="Invoice Number"
-                android:textColorHint="@color/grey_shade"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/purple_500"
-                app:hintTextColor="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editInvoice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:paddingStart="0dp"
-                    android:paddingBottom="5dp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="RtlSymmetry" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:hint="Invoice Date"
-                android:textColorHint="@color/grey_shade"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/purple_500"
-                app:hintTextColor="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:imeOptions="actionNext"
-                    android:inputType="none"
-                    android:paddingStart="0dp"
-                    android:paddingBottom="5dp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="RtlSymmetry" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/chk_terms_condition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center" />
-
-                <TextView
-                    android:id="@+id/textTermsCondition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tax_inclusive"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_16ssp" />
-
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonNext"
-                android:layout_width="@dimen/_150sdp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:background="@drawable/button_bg"
-                android:paddingStart="@dimen/_16sdp"
-                android:paddingEnd="@dimen/_16sdp"
-                android:text="@string/next"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_14sdp"
-                app:backgroundTint="@null"
-                tools:ignore="RtlSymmetry" />
-
-        </LinearLayout>
-    </ScrollView>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_add"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_item_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/app_name"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/add_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_fab"
+        app:srcCompat="@drawable/ic_add_item" />
 
+    <TextView
+        android:id="@+id/add_item_action_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Add Item"
+        app:layout_constraintBottom_toBottomOf="@+id/add_item_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_item_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_item_fab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_submit_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/app_name"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/add_item_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_item_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_item_fab"
+        app:srcCompat="@drawable/ic_done" />
+
+    <TextView
+        android:id="@+id/add_submit_action_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Submit"
+        app:layout_constraintBottom_toBottomOf="@+id/add_submit_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_submit_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_submit_fab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_cancel_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/app_name"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/add_submit_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_submit_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_submit_fab"
+        app:srcCompat="@drawable/ic_cancel" />
+
+    <TextView
+        android:id="@+id/add_cancel_action_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Discard"
+        app:layout_constraintBottom_toBottomOf="@+id/add_cancel_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_cancel_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_cancel_fab" />
 </androidx.constraintlayout.widget.ConstraintLayout>

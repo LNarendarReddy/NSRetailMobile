@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.nsretail.Globals;
 import com.nsretail.databinding.FragmentHomeBinding;
-import com.nsretail.ui.activities.StockEntryActivity;
+import com.nsretail.ui.activities.SupplierActivity;
 
 
 public class HomeFragment extends Fragment {
@@ -35,7 +35,7 @@ public class HomeFragment extends Fragment {
         }
 
         binding.buttonEntry.setOnClickListener(view -> {
-            startActivity(new Intent(getActivity(), StockEntryActivity.class));
+            startActivity(new Intent(getActivity(), SupplierActivity.class));
         });
 
         return binding.getRoot();

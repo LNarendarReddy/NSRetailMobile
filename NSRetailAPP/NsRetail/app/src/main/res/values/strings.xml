@@ -12,4 +12,6 @@
     <string name="item_details">Item Details</string>
     <string name="next">Next</string>
     <string name="tax_inclusive">Tax Inclusive</string>
+    <string name="save">Save</string>
+    <string name="submit">Submit</string>
 </resources>

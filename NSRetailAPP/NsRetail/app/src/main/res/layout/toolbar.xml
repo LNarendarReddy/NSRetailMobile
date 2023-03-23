@@ -51,6 +51,7 @@
                 android:contentDescription="@string/app_name"
                 android:padding="@dimen/_5sdp"
                 android:visibility="gone"
+                tools:visibility="visible"
                 android:src="@drawable/ic_camera" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
