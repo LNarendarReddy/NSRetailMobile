@@ -62,7 +62,6 @@ public class SupplierActivity extends AppCompatActivity {
 
         if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
             getSupplierData();
-            getStockData();
         } else
             Toast.makeText(SupplierActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
@@ -177,13 +176,23 @@ public class SupplierActivity extends AppCompatActivity {
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.item_spinner, supplierArray);
                     binding.selectSupplier.setAdapter(adapter);
+
                 }
+                if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
+                    getStockData();
+                } else
+                    Toast.makeText(SupplierActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onFailure(Call<List<Supplier>> call, Throwable t) {
                 Log.e("supplier", "" + t.getMessage());
+                if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
+                    getStockData();
+                } else
+                    Toast.makeText(SupplierActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+
 
             }
         });

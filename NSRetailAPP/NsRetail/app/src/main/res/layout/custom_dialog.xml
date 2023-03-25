@@ -16,25 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSubmit"
         tools:listitem="@layout/item_custom_dialog" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonSubmit"
-        android:layout_width="@dimen/_150sdp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/_20sdp"
-        android:background="@drawable/button_bg"
-        android:paddingStart="@dimen/_16sdp"
-        android:paddingEnd="@dimen/_16sdp"
-        android:text="@string/submit"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_14sdp"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="RtlSymmetry" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

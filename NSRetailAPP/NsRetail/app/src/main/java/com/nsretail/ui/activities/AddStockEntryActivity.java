@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
@@ -61,6 +60,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     ArrayList<StockEntry> stockEntry;
     int gstId;
     double gstValue, finalPriceWO = -1, finalPrice = -1;
+    double cGST, sGST, iGST, cess;
     ActivityResultLauncher<ScanOptions> barcodeLauncher;
     Dialog dialog;
 
@@ -100,13 +100,13 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (gstList.get(i).gstCode.equalsIgnoreCase(binding.selectGST.getText().toString())) {
                     gstId = gstList.get(i).gstId;
                     gstValue = gstList.get(i).gstValue;
-                    binding.editSGST.setText("" + gstList.get(i).sGST);
-                    binding.editCGST.setText("" + gstList.get(i).cGST);
-                    binding.editIGST.setText("" + gstList.get(i).iGST);
-                    binding.editCESS.setText("" + gstList.get(i).cess);
+                    sGST = gstList.get(i).sGST;
+                    cGST = gstList.get(i).cGST;
+                    iGST = gstList.get(i).iGST;
+                    cess = gstList.get(i).cess;
                 }
             }
-
+            Log.v("select GST >>", " >>>> ");
             if (!itemList.get(0).isOpenItem)
                 calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
             else
@@ -252,8 +252,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (binding.editScheme.getText().length() > 0)
                     if (binding.editQuantity.getText().length() > 0)
                         calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
-                    else
-                        calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
+                    else calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
             }
         });
 
@@ -273,8 +272,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (binding.editSchemeFlat.getText().length() > 0)
                     if (binding.editQuantity.getText().length() > 0)
                         calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
-                    else
-                        calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
+                    else calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
             }
         });
 
@@ -298,10 +296,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     if (gstList.get(i).gstId == itemPriceSelectedList.get(pos).gstId) {
                         binding.selectGST.setText("" + gstList.get(i).gstCode);
                         gstValue = gstList.get(i).gstValue;
-                        binding.editSGST.setText("" + gstList.get(i).sGST);
-                        binding.editCGST.setText("" + gstList.get(i).cGST);
-                        binding.editIGST.setText("" + gstList.get(i).iGST);
-                        binding.editCESS.setText("" + gstList.get(i).cess);
+                        sGST = gstList.get(i).sGST;
+                        cGST = gstList.get(i).cGST;
+                        iGST = gstList.get(i).iGST;
+                        cess = gstList.get(i).cess;
                     }
                 }
 
@@ -345,10 +343,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             binding.editAppliedDiscount.setText(binding.editDiscountFlat.getText());
         } else if (binding.editDiscount.getText().length() > 0) {
 
-            double discountValue = Math.round(Double.parseDouble(binding.editPriceWOTax.getText().toString()) *
+            double discountValue = Math.abs(Double.parseDouble(binding.editPriceWOTax.getText().toString()) *
                     (Double.parseDouble(binding.editDiscount.getText().toString()) / 100));
 
-            binding.editAppliedDiscount.setText(""+discountValue);
+            binding.editAppliedDiscount.setText("" + discountValue);
         } else {
             binding.editAppliedDiscount.setText("0");
         }
@@ -357,37 +355,59 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             binding.editAppliedScheme.setText(binding.editSchemeFlat.getText());
         } else if (Objects.requireNonNull(binding.editScheme.getText()).length() > 0) {
 
-            double schemeValue = Math.round(Double.parseDouble(Objects.requireNonNull(binding.editPriceWOTax.getText()).toString()) *
-                    (Double.parseDouble(binding.editScheme.getText().toString()) / 100));
+            double schemeValue = Math.abs(Double.parseDouble(Objects.requireNonNull(binding.editPriceWOTax.getText()).toString()) * (Double.parseDouble(binding.editScheme.getText().toString()) / 100));
 
-            binding.editAppliedScheme.setText(""+schemeValue);
+            binding.editAppliedScheme.setText("" + schemeValue);
         } else {
             binding.editAppliedScheme.setText("0");
         }
 
         if (binding.editPriceWOTax.getText().length() > 0)
-            finalPriceWO = Double.parseDouble(binding.editPriceWOTax.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedDiscount.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedScheme.getText().toString());
+            finalPriceWO = Double.parseDouble(binding.editPriceWOTax.getText().toString()) - Double.parseDouble(binding.editAppliedDiscount.getText().toString()) - Double.parseDouble(binding.editAppliedScheme.getText().toString());
 
         if (binding.editPriceTax.getText().length() > 0)
-            finalPrice = Double.parseDouble(binding.editPriceTax.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedDiscount.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedScheme.getText().toString());
+            finalPrice = Double.parseDouble(binding.editPriceTax.getText().toString()) - Double.parseDouble(binding.editAppliedDiscount.getText().toString()) - Double.parseDouble(binding.editAppliedScheme.getText().toString());
 
         if (stockEntry.get(0).taxInclusiveValue) {
             if (finalPrice != -1) {
-                double appliedGst = Math.round(finalPrice * gstValue / 100);
-                binding.editAppliedGST.setText(String.format("%.2f", appliedGst));
-                binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
+//                double appliedGst = Math.round(finalPrice * gstValue / 100);
+//                binding.editAppliedGST.setText(String.format("%.2f", appliedGst));
+                binding.editFinalPrice.setText(String.format("%.3f", finalPrice));
+
+                binding.editCGST.setText("" + String.format("%.2f", Math.abs(finalPrice * (cGST / 100))));
+                binding.editSGST.setText("" + String.format("%.2f", Math.abs(finalPrice * (sGST / 100))));
+                binding.editCESS.setText("" + String.format("%.2f", Math.abs(finalPrice * (cess / 100))));
+                binding.editIGST.setText("" + String.format("%.2f", Math.abs(finalPrice * (iGST / 100))));
+
+                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString())
+                        + Double.parseDouble(binding.editSGST.getText().toString())
+                        + Double.parseDouble(binding.editCESS.getText().toString())
+                        + Double.parseDouble(binding.editIGST.getText().toString());
+                binding.editAppliedGST.setText("" + appliedGst);
+
             }
         } else {
             if (finalPriceWO != -1) {
-                double appliedGst = Math.round(finalPriceWO * gstValue / 100);
-                binding.editAppliedGST.setText(String.format("%.2f", appliedGst));
-                binding.editFinalPrice.setText(String.format("%.2f", finalPriceWO));
+//                double appliedGst = Math.round(finalPriceWO * gstValue / 100);
+//                binding.editAppliedGST.setText(String.format("%.2f", appliedGst));
+                binding.editFinalPrice.setText(String.format("%.3f", finalPriceWO));
+
+                binding.editCGST.setText("" + String.format("%.2f", Math.abs(finalPriceWO * (cGST / 100))));
+                binding.editSGST.setText("" + String.format("%.2f", Math.abs(finalPriceWO * (sGST / 100))));
+                binding.editCESS.setText("" + String.format("%.2f", Math.abs(finalPriceWO * (cess / 100))));
+                binding.editIGST.setText("" + String.format("%.2f", Math.abs(finalPriceWO * (iGST / 100))));
+
+                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString())
+                        + Double.parseDouble(binding.editSGST.getText().toString())
+                        + Double.parseDouble(binding.editCESS.getText().toString())
+                        + Double.parseDouble(binding.editIGST.getText().toString());
+                binding.editAppliedGST.setText("" + appliedGst);
+
+
             }
         }
+
+
     }
 
     private void getItemData(String itemCode) {
@@ -411,8 +431,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     itemPriceList = response.body().itemPriceList;
 
                     if (itemCodeList.size() > 1) {
+                        Log.v("show dialog >>", " >>>> ");
                         showDialog();
                     } else {
+                        Log.v("server response >>", " >>>> ");
                         binding.editEANCode.setText(itemCodeList.get(0).itemCode);
                         binding.editHSNCode.setText(itemCodeList.get(0).hsnCode);
                         selectPriceData(0);
@@ -461,10 +483,6 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         ItemCodeAdapter adapter = new ItemCodeAdapter(dialog.getContext(), itemCodeList, AddStockEntryActivity.this);
         recyclerView.setAdapter(adapter);
 
-        MaterialButton dialogButton = dialog.findViewById(R.id.buttonSubmit);
-        dialogButton.setOnClickListener(v -> dialog.dismiss());
-
-
         dialog.show();
     }
 
@@ -505,6 +523,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         binding.editEANCode.setText(itemCodeList.get(position).itemCode);
         if (itemCodeList.get(position).hsnCode != null)
             binding.editHSNCode.setText(itemCodeList.get(position).hsnCode);
+        Log.v("onclick dialog >>", " >>>> ");
 
         selectPriceData(position);
 
@@ -536,12 +555,13 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (gstList.get(i).gstId == itemPriceSelectedList.get(0).gstId) {
                     binding.selectGST.setText(gstList.get(i).gstCode);
                     gstValue = gstList.get(i).gstValue;
-                    binding.editSGST.setText("" + gstList.get(i).sGST);
-                    binding.editCGST.setText("" + gstList.get(i).cGST);
-                    binding.editIGST.setText("" + gstList.get(i).iGST);
-                    binding.editCESS.setText("" + gstList.get(i).cess);
+                    sGST = gstList.get(i).sGST;
+                    cGST = gstList.get(i).cGST;
+                    iGST = gstList.get(i).iGST;
+                    cess = gstList.get(i).cess;
                 }
             }
+            Log.v("onclick dialog cGST>>", " >>>> " + cGST);
 
             itemData();
 
