@@ -1,6 +1,9 @@
 package com.nsretail.data.api;
 
 import com.google.gson.JsonObject;
+import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.CategoryModel.Category;
+import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.data.model.GSTModel.GST;
 import com.nsretail.data.model.ItemModel.ItemModel;
 import com.nsretail.data.model.StockEntry.Invoice;
@@ -24,6 +27,12 @@ public interface StatusAPI {
                          @Query("AppVersion") String AppVersion);
 
 
+    @GET("master/getbranch")
+    Call<List<Branch>> getBranch(@Query("Userid") int userId);
+
+    @GET("master/getcategory")
+    Call<List<Category>> getCategory(@Query("Userid") int userId);
+
     @GET("master/getsupplier")
     Call<List<Supplier>> supplierData(@Query("UseWHConnection") boolean useWHConnection);
 
@@ -41,5 +50,24 @@ public interface StatusAPI {
     @GET("item/getitem")
     Call<ItemModel> getItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
 
+    @GET("stockdispatch/getdispatch")
+    Call<Dispatch> getDispatch(@Query("CategoryID") int categoryId,
+                               @Query("UserID") int userId,
+                               @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockdispatch/savedispatch")
+    Call<ResponseBody> saveDispatch(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
+
+    @POST("stockdispatch/savedispatchdetail")
+    Call<ResponseBody> saveItemDispatch(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
+
+    @POST("stockdispatch/deletedispatchdetail")
+    Call<ResponseBody> deleteDispatch(@Query("StockDispatchDetailID") int dispatchId, @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockdispatch/updatedispatch")
+    Call<ResponseBody> updateDispatch(@Query("StockDispatchID") int dispatchId, @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockdispatch/discarddispatch")
+    Call<ResponseBody> discardDispatch(@Query("StockDispatchID") int dispatchId, @Query("UseWHConnection") boolean useWHConnection);
 
 }

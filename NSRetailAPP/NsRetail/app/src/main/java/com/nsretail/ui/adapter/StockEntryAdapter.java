@@ -13,7 +13,7 @@ import com.nsretail.databinding.ItemStockEntryBinding;
 
 import java.util.ArrayList;
 
-public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.DocumentsViewHolder> {
+public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.ViewHolder> {
 
     private final ArrayList<StockEntryDetail> stockEntryList;
     private final Context mContext;
@@ -25,14 +25,14 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Do
 
     @NonNull
     @Override
-    public DocumentsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemStockEntryBinding itemBinding = ItemStockEntryBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new DocumentsViewHolder(itemBinding);
+        return new ViewHolder(itemBinding);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull DocumentsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         holder.itemStockBinding.textStock.setText(stockEntryList.get(position).itemCode
                 + " " + stockEntryList.get(position).itemName);
@@ -49,10 +49,10 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Do
 
     }
 
-    public static class DocumentsViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemStockEntryBinding itemStockBinding;
 
-        public DocumentsViewHolder(ItemStockEntryBinding itemBinding) {
+        public ViewHolder(ItemStockEntryBinding itemBinding) {
             super(itemBinding.getRoot());
             this.itemStockBinding = itemBinding;
         }

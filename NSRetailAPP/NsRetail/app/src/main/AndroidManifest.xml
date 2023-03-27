@@ -33,6 +33,10 @@
         <activity android:name=".ui.activities.AddStockEntryActivity" />
         <activity android:name=".ui.activities.StockEntryActivity" />
         <activity android:name=".ui.activities.ItemPriceActivity" />
+        <activity android:name=".ui.activities.BranchActivity" />
+        <activity android:name=".ui.activities.CategoryActivity" />
+        <activity android:name=".ui.activities.StockDispatchActivity" />
+        <activity android:name=".ui.activities.AddStockItemActivity" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

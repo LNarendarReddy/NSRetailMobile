@@ -3,6 +3,7 @@ package com.nsretail.ui.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -20,10 +21,13 @@ public class ItemPriceAdapter extends RecyclerView.Adapter<ItemPriceAdapter.View
     private final Context mContext;
     OnItemClickListener listener;
 
-    public ItemPriceAdapter(Context context, ArrayList<ItemPrice> itemPrices, OnItemClickListener listener) {
+    boolean fromDialog;
+
+    public ItemPriceAdapter(Context context, ArrayList<ItemPrice> itemPrices, OnItemClickListener listener, boolean dialogFrom) {
         this.mContext = context;
         this.itemPriceArrayList = itemPrices;
         this.listener = listener;
+        this.fromDialog = dialogFrom;
     }
 
     @NonNull
@@ -41,8 +45,13 @@ public class ItemPriceAdapter extends RecyclerView.Adapter<ItemPriceAdapter.View
         holder.itemPriceBinding.textPrice.setText("MRP: " + itemPriceArrayList.get(position).mrp
                 + ", SalePrice: " + itemPriceArrayList.get(position).salePrice);
 
-        holder.itemPriceBinding.textTax.setText("CPWT: " + itemPriceArrayList.get(position).costPriceWT
-                + ", CPWOT: " + itemPriceArrayList.get(position).costPriceWOT);
+        if (!fromDialog) {
+            holder.itemPriceBinding.textTax.setVisibility(View.VISIBLE);
+            holder.itemPriceBinding.textTax.setText("CPWT: " + itemPriceArrayList.get(position).costPriceWT
+                    + ", CPWOT: " + itemPriceArrayList.get(position).costPriceWOT);
+        } else {
+            holder.itemPriceBinding.textTax.setVisibility(View.GONE);
+        }
 
         holder.itemView.setOnClickListener(view -> {
             listener.onItemClick(position, view);

@@ -33,7 +33,7 @@ public class ItemPriceActivity extends AppCompatActivity implements OnItemClickL
         if (getIntent() != null) {
             itemPricesList = (ArrayList<ItemPrice>) getIntent().getSerializableExtra("itemPrice");
 
-            adapter = new ItemPriceAdapter(getApplicationContext(), itemPricesList, ItemPriceActivity.this);
+            adapter = new ItemPriceAdapter(getApplicationContext(), itemPricesList, ItemPriceActivity.this, false);
             binding.recyclerViewPrice.setAdapter(adapter);
 
         }

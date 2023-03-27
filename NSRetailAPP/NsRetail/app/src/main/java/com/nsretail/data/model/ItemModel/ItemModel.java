@@ -18,6 +18,10 @@ public class ItemModel {
     @Expose
     public ArrayList<ItemPrice> itemPriceList;
 
+    @SerializedName("ITEMMRP")
+    @Expose
+    public ArrayList<ItemMrp> itemMrpList;
+
     public ArrayList<Item> getItemList() {
         return itemList;
     }
@@ -40,5 +44,13 @@ public class ItemModel {
 
     public void setItemPriceList(ArrayList<ItemPrice> itemPriceList) {
         this.itemPriceList = itemPriceList;
+    }
+
+    public ArrayList<ItemMrp> getItemMrpList() {
+        return itemMrpList;
+    }
+
+    public void setItemMrpList(ArrayList<ItemMrp> itemMrpList) {
+        this.itemMrpList = itemMrpList;
     }
 }

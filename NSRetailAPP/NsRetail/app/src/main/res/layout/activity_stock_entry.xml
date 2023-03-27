@@ -37,9 +37,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewStock"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="@dimen/_10sdp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llinear"
         tools:listitem="@layout/item_stock_entry" />
 
@@ -75,6 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Add Item"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/add_item_fab"
         app:layout_constraintEnd_toStartOf="@+id/add_item_fab"
         app:layout_constraintTop_toTopOf="@+id/add_item_fab" />
@@ -97,6 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Submit"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/add_submit_fab"
         app:layout_constraintEnd_toStartOf="@+id/add_submit_fab"
         app:layout_constraintTop_toTopOf="@+id/add_submit_fab" />
@@ -119,7 +124,22 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Discard"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/add_cancel_fab"
         app:layout_constraintEnd_toStartOf="@+id/add_cancel_fab"
         app:layout_constraintTop_toTopOf="@+id/add_cancel_fab" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

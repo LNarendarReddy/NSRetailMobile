@@ -3,17 +3,31 @@ package com.nsretail.ui.fragment;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.nsretail.Globals;
+import com.nsretail.data.api.BaseURL;
+import com.nsretail.data.api.StatusAPI;
+import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.databinding.FragmentHomeBinding;
+import com.nsretail.ui.activities.BranchActivity;
+import com.nsretail.ui.activities.StockDispatchActivity;
 import com.nsretail.ui.activities.SupplierActivity;
+import com.nsretail.utils.NetworkStatus;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class HomeFragment extends Fragment {
@@ -27,7 +41,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
 
-        if (Globals.userResponse.getFeatureAccess().size() > 0){
+        if (Globals.userResponse.getFeatureAccess().size() > 0) {
             binding.buttonEntry.setEnabled(Globals.userResponse.getFeatureAccess().get(0).isAccessAvailable());
             binding.buttonDispatch.setEnabled(Globals.userResponse.getFeatureAccess().get(1).isAccessAvailable());
             binding.buttonCounting.setEnabled(Globals.userResponse.getFeatureAccess().get(2).isAccessAvailable());
@@ -38,6 +52,51 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getActivity(), SupplierActivity.class));
         });
 
+        binding.buttonDispatch.setOnClickListener(view -> {
+            if (NetworkStatus.getInstance(getActivity()).isConnected())
+                getDispatch();
+            else
+                Toast.makeText(getActivity(), "No internet Connection", Toast.LENGTH_SHORT).show();
+        });
+
         return binding.getRoot();
+    }
+
+    private void getDispatch() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        StatusAPI planAPI = BaseURL.getStatusAPI();
+        Call<Dispatch> call = planAPI.getDispatch(Globals.userResponse.user.get(0).categoryId, Globals.userResponse.user.get(0).userId
+                , true);
+
+        call.enqueue(new Callback<Dispatch>() {
+            @Override
+            public void onResponse(Call<Dispatch> call, Response<Dispatch> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+                    if (response.message().equalsIgnoreCase("DISPATCH DOES NOT EXISTS")) {
+                        startActivity(new Intent(getActivity(), BranchActivity.class));
+                    } else {
+                        startActivity(new Intent(getActivity(), StockDispatchActivity.class));
+                    }
+                } if (response.code() == 404){
+                    Log.v("rsponse >>>", response.message());
+                    try {
+                        if (response.errorBody().string().equalsIgnoreCase("DISPATCH DOES NOT EXISTS")) {
+                            startActivity(new Intent(getActivity(), BranchActivity.class));
+                        } else {
+                            startActivity(new Intent(getActivity(), StockDispatchActivity.class));
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Dispatch> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+
+            }
+        });
     }
 }
