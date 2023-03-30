@@ -32,10 +32,11 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.ItemModel.Item;
 import com.nsretail.data.model.ItemModel.ItemCode;
 import com.nsretail.data.model.ItemModel.ItemModel;
-import com.nsretail.data.model.ItemModel.ItemMrp;
+import com.nsretail.data.model.ItemModel.ItemPrice;
 import com.nsretail.databinding.ActivityAddItemBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.ItemCodeAdapter;
+import com.nsretail.ui.adapter.ItemPriceAdapter;
 import com.nsretail.utils.NetworkStatus;
 
 import java.io.IOException;
@@ -51,10 +52,11 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
     ActivityAddItemBinding binding;
     ArrayList<Item> itemList;
     ArrayList<ItemCode> itemCodeList;
-    ArrayList<ItemMrp> itemPriceList;
+    ArrayList<ItemPrice> itemPriceList;
+    ArrayList<ItemPrice> itemPriceSelectedList;
     ActivityResultLauncher<ScanOptions> barcodeLauncher;
     Dialog dialog, dialogPrice;
-    int stockDispatchId, itemPriceId;
+    int stockDispatchId, categoryId, itemPriceId;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -69,6 +71,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
         if (getIntent() != null) {
             stockDispatchId = getIntent().getIntExtra("stockDispatchId", -1);
+            categoryId = getIntent().getIntExtra("categoryId", -1);
         }
 
         binding.editItemName.setEnabled(false);
@@ -168,11 +171,11 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             jsonObject.addProperty("STOCKDISPATCHID", stockDispatchId);
             jsonObject.addProperty("ITEMPRICEID", itemPriceId);
             jsonObject.addProperty("TRAYNUMBER", binding.editTrayNo.getText().toString());
-            if (binding.editQuantity.getText().toString().length() > 0)
+            if (binding.editQuantity.isEnabled())
                 jsonObject.addProperty("DISPATCHQUANTITY", binding.editQuantity.getText().toString());
             else
                 jsonObject.addProperty("DISPATCHQUANTITY", 1);
-            if (binding.editWeight.getText().toString().length() > 0)
+            if (binding.editWeight.isEnabled())
                 jsonObject.addProperty("WEIGHTINKGS", binding.editWeight.getText().toString());
             else
                 jsonObject.addProperty("WEIGHTINKGS", 0);
@@ -186,42 +189,33 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
-                if (response.code() == 200) {
+                try {
+                    if (response.code() == 200) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
-                    try {
-                        builder.setMessage(response.body().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
+                        if (response.body().string().equalsIgnoreCase("Successfully saved")) {
+                            Toast.makeText(AddStockItemActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+                            binding.editEANCode.setText("");
+                            binding.editItemName.setText("");
+                            binding.editQuantity.setText("");
+                            binding.editWeight.setText("");
+                            binding.editMRP.setText("");
+                            binding.editSalePrice.setText("");
 
-                                    binding.editEANCode.setText("");
-                                    binding.editItemName.setText("");
-                                    binding.editQuantity.setText("");
-                                    binding.editWeight.setText("");
-                                    binding.editMRP.setText("");
-                                    binding.editSalePrice.setText("");
+                            binding.editEANCode.requestFocus();
+                        }
 
-                                    binding.editEANCode.requestFocus();
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
-                    try {
+                    } else {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                                .setPositiveButton("OK", (dialog, id) -> dialog.cancel());
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
-                    AlertDialog alert = builder.create();
-                    alert.show();
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -240,9 +234,10 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         itemList = new ArrayList<>();
         itemCodeList = new ArrayList<>();
         itemPriceList = new ArrayList<>();
+        itemPriceSelectedList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
-        Call<ItemModel> call = itemAPI.getItemData(true, itemCode);
+        Call<ItemModel> call = itemAPI.getDispatchItemData(true, categoryId, itemCode);
 
         call.enqueue(new Callback<ItemModel>() {
             @Override
@@ -252,7 +247,9 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
                     itemList = response.body().itemList;
                     itemCodeList = response.body().itemCodeList;
-                    itemPriceList = response.body().itemMrpList;
+                    itemPriceList = response.body().itemPriceList;
+
+//                    showItemCodeDialog();
 
                     if (itemCodeList.size() > 1) {
                         showItemCodeDialog();
@@ -261,7 +258,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                         selectPriceData(0);
                     }
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this, R.style.AlertDialogCustom);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
@@ -291,11 +288,11 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         if (itemList.get(0).isOpenItem) {
             binding.editWeight.setEnabled(true);
             binding.editQuantity.setEnabled(false);
-            binding.editWeight.setText("1");
+//            binding.editWeight.setText("1");
         } else {
             binding.editWeight.setEnabled(false);
             binding.editQuantity.setEnabled(true);
-            binding.editQuantity.setText("1");
+//            binding.editQuantity.setText("1");
         }
     }
 
@@ -335,13 +332,20 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
         for (int i = 0; i < itemPriceList.size(); i++) {
             if (itemCodeList.get(pos).itemCodeId == itemPriceList.get(i).itemCodeId) {
-                itemPriceId = itemPriceList.get(i).itemPriceId;
-                binding.editMRP.setText("" + itemPriceList.get(i).mrp);
-                binding.editSalePrice.setText("" + itemPriceList.get(i).salePrice);
-                binding.editQuantity.setText("");
-                binding.editWeight.setText("");
-                itemData();
+                itemPriceSelectedList.add(itemPriceList.get(i));
             }
+        }
+
+//        showPriceDialog();
+        if (itemPriceSelectedList.size() > 1) {
+            showPriceDialog();
+        } else {
+            itemPriceId = itemPriceList.get(0).itemPriceId;
+            binding.editMRP.setText("" + itemPriceList.get(0).mrp);
+            binding.editSalePrice.setText("" + itemPriceList.get(0).salePrice);
+            binding.editQuantity.setText("");
+            binding.editWeight.setText("");
+            itemData();
         }
 
         if (itemList.get(0).isOpenItem) {
@@ -352,7 +356,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
     }
 
-/*    private void showPriceDialog() {
+    private void showPriceDialog() {
 
         dialogPrice = new Dialog(AddStockItemActivity.this);
         dialogPrice.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -362,31 +366,48 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         Window window = dialogPrice.getWindow();
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+
+        TextView textView = dialogPrice.findViewById(R.id.textView);
+        textView.setText("MRP List");
+
         RecyclerView recyclerView = dialogPrice.findViewById(R.id.recyclerViewItem);
 
         ItemPriceAdapter adapter = new ItemPriceAdapter(dialogPrice.getContext(), itemPriceSelectedList, AddStockItemActivity.this, true);
         recyclerView.setAdapter(adapter);
 
         dialogPrice.show();
-    }*/
+    }
 
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position, View view) {
 
-//        if (dialog.isShowing()) {
-        binding.editEANCode.setText(itemCodeList.get(position).itemCode);
-        selectPriceData(position);
-
-        dialog.dismiss();
+//        if (dialog != null) {
+//            Log.e("dialog check", " >>>> "+dialog.isShowing());
+        if (dialog.isShowing()) {
+            binding.editEANCode.setText(itemCodeList.get(position).itemCode);
+            selectPriceData(position);
+            dialog.dismiss();
+        } else {
+            if (dialogPrice.isShowing()) {
+                itemPriceId = itemPriceSelectedList.get(position).itemPriceId;
+                binding.editMRP.setText("" + itemPriceSelectedList.get(position).mrp);
+                binding.editSalePrice.setText("" + itemPriceSelectedList.get(position).salePrice);
+                itemData();
+                dialogPrice.dismiss();
+            }
+        }
 //        }
-        /*else if (dialogPrice.isShowing()) {
-            itemPriceId = itemPriceSelectedList.get(position).itemPriceId;
-            binding.editMRP.setText("" + itemPriceSelectedList.get(position).mrp);
-            binding.editSalePrice.setText("" + itemPriceSelectedList.get(position).salePrice);
-            itemData();
-            dialogPrice.dismiss();
+        /*else {
+            if (dialogPrice != null)
+                if (dialogPrice.isShowing()) {
+                    itemPriceId = itemPriceSelectedList.get(position).itemPriceId;
+                    binding.editMRP.setText("" + itemPriceSelectedList.get(position).mrp);
+                    binding.editSalePrice.setText("" + itemPriceSelectedList.get(position).salePrice);
+                    itemData();
+                    dialogPrice.dismiss();
+                }
         }*/
     }
 

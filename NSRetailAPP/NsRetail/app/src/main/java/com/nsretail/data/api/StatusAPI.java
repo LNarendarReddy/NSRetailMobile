@@ -27,7 +27,7 @@ public interface StatusAPI {
                          @Query("AppVersion") String AppVersion);
 
 
-    @GET("master/getbranch")
+    @GET("stockdispatch/getbranch")
     Call<List<Branch>> getBranch(@Query("Userid") int userId);
 
     @GET("master/getcategory")
@@ -50,6 +50,9 @@ public interface StatusAPI {
     @GET("item/getitem")
     Call<ItemModel> getItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
 
+    @GET("stockdispatch/getitem")
+    Call<ItemModel> getDispatchItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("CategoryID") int categoryId, @Query("ItemCode") String itemCode);
+
     @GET("stockdispatch/getdispatch")
     Call<Dispatch> getDispatch(@Query("CategoryID") int categoryId,
                                @Query("UserID") int userId,
@@ -68,6 +71,6 @@ public interface StatusAPI {
     Call<ResponseBody> updateDispatch(@Query("StockDispatchID") int dispatchId, @Query("UseWHConnection") boolean useWHConnection);
 
     @POST("stockdispatch/discarddispatch")
-    Call<ResponseBody> discardDispatch(@Query("StockDispatchID") int dispatchId, @Query("UseWHConnection") boolean useWHConnection);
+    Call<ResponseBody> discardDispatch(@Query("StockDispatchID") int dispatchId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
 
 }

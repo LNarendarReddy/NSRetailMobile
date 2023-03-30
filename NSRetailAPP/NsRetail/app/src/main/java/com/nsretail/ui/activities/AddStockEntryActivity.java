@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -144,18 +142,15 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         });
 
 
-        binding.editEANCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
-                        getItemData(binding.editEANCode.getText().toString());
-                    else
-                        Toast.makeText(AddStockEntryActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
+        binding.editEANCode.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                    getItemData(binding.editEANCode.getText().toString());
+                else
+                    Toast.makeText(AddStockEntryActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return true;
             }
+            return false;
         });
 
         binding.editQuantity.addTextChangedListener(new TextWatcher() {

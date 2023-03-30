@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -23,6 +24,7 @@ import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.BranchAdapter;
 import com.nsretail.utils.NetworkStatus;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +83,18 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
                     adapter = new BranchAdapter(getApplicationContext(), branchList, BranchActivity.this);
                     binding.recyclerViewBranch.setAdapter(adapter);
 
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(BranchActivity.this);
+                    try {
+                        builder.setMessage(response.errorBody().string())
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) ->
+                                        dialog.cancel());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
 
             }

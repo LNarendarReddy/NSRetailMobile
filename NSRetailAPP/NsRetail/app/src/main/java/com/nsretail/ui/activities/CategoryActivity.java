@@ -137,6 +137,7 @@ public class CategoryActivity extends AppCompatActivity implements OnItemClickLi
                 if (response.code() == 200) {
                     Intent h = new Intent(CategoryActivity.this, StockDispatchActivity.class);
                     h.putExtra("stockDispatchId", response.message());
+                    h.putExtra("categoryId", categoryList.get(pos).categoryId);
                     startActivity(h);
                     finish();
                 } else {

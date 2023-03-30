@@ -94,6 +94,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
         binding.addItemFab.setOnClickListener(view -> {
             Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
             h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
+            h.putExtra("categoryId", dispatchList.get(0).categoryId);
             activityResult.launch(h);
 
             binding.addItemFab.hide();
@@ -180,7 +181,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
     private void discardDispatch() {
         binding.progressBar.setVisibility(View.VISIBLE);
         StatusAPI api = BaseURL.getStatusAPI();
-        Call<ResponseBody> call = api.discardDispatch(dispatchList.get(0).stockDispatchId, true);
+        Call<ResponseBody> call = api.discardDispatch(dispatchList.get(0).stockDispatchId, Globals.userResponse.user.get(0).userId, true);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
