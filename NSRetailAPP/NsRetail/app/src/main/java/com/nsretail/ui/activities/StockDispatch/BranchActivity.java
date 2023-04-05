@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities;
+package com.nsretail.ui.activities.StockDispatch;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -71,7 +71,7 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         binding.progressBar.setVisibility(View.VISIBLE);
         branchList = new ArrayList<>();
         StatusAPI branchApi = BaseURL.getStatusAPI();
-        Call<List<Branch>> call = branchApi.getBranch(Globals.userResponse.user.get(0).userId);
+        Call<List<Branch>> call = branchApi.getBranch("stockdispatch/getbranch",Globals.userResponse.user.get(0).userId);
 
         call.enqueue(new Callback<List<Branch>>() {
             @Override

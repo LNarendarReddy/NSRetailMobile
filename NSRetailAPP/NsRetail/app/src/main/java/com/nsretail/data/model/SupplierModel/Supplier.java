@@ -41,5 +41,8 @@ public class Supplier {
     @SerializedName("UPDATEDDATE")
     @Expose
     public String updatedDate;
+    @SerializedName("ISIGST")
+    @Expose
+    public int isIGST;
 
 }

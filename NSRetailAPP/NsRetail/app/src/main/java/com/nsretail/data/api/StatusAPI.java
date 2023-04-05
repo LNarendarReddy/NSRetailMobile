@@ -16,6 +16,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface StatusAPI {
@@ -27,8 +28,8 @@ public interface StatusAPI {
                          @Query("AppVersion") String AppVersion);
 
 
-    @GET("stockdispatch/getbranch")
-    Call<List<Branch>> getBranch(@Query("Userid") int userId);
+    @GET("{endpoint}")
+    Call<List<Branch>> getBranch(@Path(value = "endpoint", encoded = true) String endpoint, @Query("Userid") int userId);
 
     @GET("master/getcategory")
     Call<List<Category>> getCategory(@Query("Userid") int userId);
@@ -47,8 +48,8 @@ public interface StatusAPI {
     @POST("stockentry/saveinvoice")
     Call<ResponseBody> saveInvoiceData(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
 
-    @GET("item/getitem")
-    Call<ItemModel> getItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
+    @GET("stockentry/getitem")
+    Call<ItemModel> getEntryItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
 
     @GET("stockdispatch/getitem")
     Call<ItemModel> getDispatchItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("CategoryID") int categoryId, @Query("ItemCode") String itemCode);
@@ -72,5 +73,12 @@ public interface StatusAPI {
 
     @POST("stockdispatch/discarddispatch")
     Call<ResponseBody> discardDispatch(@Query("StockDispatchID") int dispatchId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
+
+
+    // StockCounting
+
+//    @GET("{endpoint}")
+//    Call<List<Branch>> getBranch(@Query("Userid") int userId);
+
 
 }

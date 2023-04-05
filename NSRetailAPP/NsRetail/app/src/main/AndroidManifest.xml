@@ -29,14 +29,14 @@
 
         <activity android:name=".ui.activities.LoginActivity" />
         <activity android:name=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.SupplierActivity" />
-        <activity android:name=".ui.activities.AddStockEntryActivity" />
-        <activity android:name=".ui.activities.StockEntryActivity" />
-        <activity android:name=".ui.activities.ItemPriceActivity" />
-        <activity android:name=".ui.activities.BranchActivity" />
-        <activity android:name=".ui.activities.CategoryActivity" />
-        <activity android:name=".ui.activities.StockDispatchActivity" />
-        <activity android:name=".ui.activities.AddStockItemActivity" />
+        <activity android:name=".ui.activities.StockEntry.SupplierActivity" />
+        <activity android:name=".ui.activities.StockEntry.AddStockEntryActivity" />
+        <activity android:name=".ui.activities.StockEntry.StockEntryActivity" />
+        <activity android:name=".ui.activities.StockEntry.ItemPriceActivity" />
+        <activity android:name=".ui.activities.StockDispatch.BranchActivity" />
+        <activity android:name=".ui.activities.StockDispatch.CategoryActivity" />
+        <activity android:name=".ui.activities.StockDispatch.StockDispatchActivity" />
+        <activity android:name=".ui.activities.StockDispatch.AddStockItemActivity" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

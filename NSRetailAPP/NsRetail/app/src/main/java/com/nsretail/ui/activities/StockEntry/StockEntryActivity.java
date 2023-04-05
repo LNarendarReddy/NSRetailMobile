@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities;
+package com.nsretail.ui.activities.StockEntry;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.StockEntry.Invoice;
 import com.nsretail.data.model.StockEntry.StockEntry;
-import com.nsretail.databinding.ActivityStockEntryBinding;
+import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.adapter.StockEntryAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -26,20 +26,24 @@ import retrofit2.Response;
 
 public class StockEntryActivity extends AppCompatActivity {
 
-    ActivityStockEntryBinding binding;
+    ActivityStockBinding binding;
     StockEntryAdapter adapter;
     ArrayList<StockEntry> stockEntry;
     Boolean isAllFabsVisible;
+    int isIGST;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityStockEntryBinding.inflate(getLayoutInflater());
+        binding = ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         binding.includeStock.textTitle.setText("Stock Entry");
 
+        if (getIntent() != null){
+            isIGST = getIntent().getIntExtra("isIGST", -1);
+        }
 
         if (NetworkStatus.getInstance(StockEntryActivity.this).isConnected())
             getStockData();
@@ -85,6 +89,7 @@ public class StockEntryActivity extends AppCompatActivity {
         binding.addItemFab.setOnClickListener(view -> {
             Intent h= new Intent(StockEntryActivity.this, AddStockEntryActivity.class);
             h.putExtra("stockEntry", stockEntry);
+            h.putExtra("isIGST", isIGST);
             startActivity(h);
 
             binding.addItemFab.hide();

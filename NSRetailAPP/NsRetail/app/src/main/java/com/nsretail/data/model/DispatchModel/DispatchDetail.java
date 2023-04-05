@@ -3,7 +3,9 @@ package com.nsretail.data.model.DispatchModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class DispatchDetail {
+import java.io.Serializable;
+
+public class DispatchDetail implements Serializable {
 
     @SerializedName("STOCKDISPATCHDETAILID")
     @Expose

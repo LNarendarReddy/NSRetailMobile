@@ -17,6 +17,7 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.DispatchModel.DispatchDetail;
 import com.nsretail.databinding.ItemStockEntryBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockDispatch.StockDispatchActivity;
 import com.nsretail.utils.NetworkStatus;
 
 import java.io.IOException;
@@ -68,6 +69,13 @@ public class StockDispatchAdapter extends RecyclerView.Adapter<StockDispatchAdap
                 deleteItem(position, view);
             else
                 Toast.makeText(mContext, "No internet connection", Toast.LENGTH_SHORT).show();
+        });
+
+        holder.itemView.setOnLongClickListener(view -> {
+
+            ((StockDispatchActivity) mContext).updateItemData(position);
+
+            return false;
         });
 
     }

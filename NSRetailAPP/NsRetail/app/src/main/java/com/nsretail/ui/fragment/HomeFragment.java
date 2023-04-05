@@ -18,9 +18,9 @@ import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.databinding.FragmentHomeBinding;
-import com.nsretail.ui.activities.BranchActivity;
-import com.nsretail.ui.activities.StockDispatchActivity;
-import com.nsretail.ui.activities.SupplierActivity;
+import com.nsretail.ui.activities.StockDispatch.BranchActivity;
+import com.nsretail.ui.activities.StockDispatch.StockDispatchActivity;
+import com.nsretail.ui.activities.StockEntry.SupplierActivity;
 import com.nsretail.utils.NetworkStatus;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities;
+package com.nsretail.ui.activities.StockEntry;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -42,7 +42,7 @@ public class SupplierActivity extends AppCompatActivity {
     List<Supplier> supplierList;
     ArrayList<String> supplierArray;
     ArrayList<StockEntry> stockEntry;
-    int supplierId;
+    int supplierId, isIGST;
     SimpleDateFormat serverDate, userDate;
     DatePickerDialog datePickerDialog;
     String dateValue;
@@ -78,6 +78,7 @@ public class SupplierActivity extends AppCompatActivity {
             for (int i = 0; i < supplierList.size(); i++) {
                 if (supplierList.get(i).dealerName.equalsIgnoreCase(binding.selectSupplier.getText().toString())) {
                     supplierId = supplierList.get(i).dealerId;
+                    isIGST = supplierList.get(i).isIGST;
                 }
             }
         });
@@ -89,6 +90,7 @@ public class SupplierActivity extends AppCompatActivity {
             if (stockEntry.size() > 0) {
                 Intent h = new Intent(SupplierActivity.this, StockEntryActivity.class);
                 h.putExtra("stockEntryId", stockEntry.get(0).stockEntryId);
+                h.putExtra("isIGST", isIGST);
                 startActivity(h);
             } else {
                 if (binding.selectSupplier.getText().length() > 0) {
@@ -126,6 +128,11 @@ public class SupplierActivity extends AppCompatActivity {
                     binding.editInvoice.setText(stockEntry.get(0).supplierInvoiceNo);
                     binding.editDate.setText(stockEntry.get(0).invoiceDate);
                     binding.checkTax.setChecked(stockEntry.get(0).taxInclusiveValue);
+
+                    binding.selectSupplier.setEnabled(false);
+                    binding.editInvoice.setEnabled(false);
+                    binding.editDate.setEnabled(false);
+                    binding.checkTax.setEnabled(false);
 
                 }
 

@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities;
+package com.nsretail.ui.activities.StockDispatch;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

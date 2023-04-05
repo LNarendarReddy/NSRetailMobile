@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities;
+package com.nsretail.ui.activities.StockCounting;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -19,8 +19,9 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.data.model.DispatchModel.DispatchDetail;
 import com.nsretail.data.model.DispatchModel.DispatchModel;
-import com.nsretail.databinding.ActivityStockEntryBinding;
+import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockDispatch.AddStockItemActivity;
 import com.nsretail.ui.adapter.StockDispatchAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -32,9 +33,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StockDispatchActivity extends AppCompatActivity implements OnItemClickListener {
+public class StockCountingActivity extends AppCompatActivity implements OnItemClickListener {
 
-    ActivityStockEntryBinding binding;
+    ActivityStockBinding binding;
     StockDispatchAdapter adapter;
     ArrayList<DispatchModel> dispatchList;
     ArrayList<DispatchDetail> dispatchDetail;
@@ -44,13 +45,13 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityStockEntryBinding.inflate(getLayoutInflater());
+        binding = ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.includeStock.textTitle.setText("Stock Dispatch");
+        binding.includeStock.textTitle.setText("Stock Counting");
 
 
-        if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
+        if (NetworkStatus.getInstance(StockCountingActivity.this).isConnected())
             getDispatchData();
         else
             Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
@@ -92,7 +93,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
         });
 
         binding.addItemFab.setOnClickListener(view -> {
-            Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
+            Intent h = new Intent(StockCountingActivity.this, AddStockItemActivity.class);
             h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
             h.putExtra("categoryId", dispatchList.get(0).categoryId);
             activityResult.launch(h);
@@ -109,14 +110,14 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
         });
 
         binding.addSubmitFab.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
+            if (NetworkStatus.getInstance(StockCountingActivity.this).isConnected())
                 updateDispatch();
             else
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
         binding.addCancelFab.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
+            if (NetworkStatus.getInstance(StockCountingActivity.this).isConnected())
                 discardDispatch();
             else
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
@@ -133,7 +134,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this, R.style.AlertDialogCustom);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this, R.style.AlertDialogCustom);
                     try {
                         builder.setMessage(response.body().string())
                                 .setCancelable(false)
@@ -147,7 +148,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
                     AlertDialog alert = builder.create();
                     alert.show();
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
@@ -165,7 +166,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
                 builder.setMessage(t.getMessage())
                         .setCancelable(false)
                         .setPositiveButton("OK", (dialog, id) -> {
@@ -187,7 +188,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this, R.style.AlertDialogCustom);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this, R.style.AlertDialogCustom);
                     try {
                         builder.setMessage(response.body().string())
                                 .setCancelable(false)
@@ -201,7 +202,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
                     AlertDialog alert = builder.create();
                     alert.show();
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
@@ -219,7 +220,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
                 builder.setMessage(t.getMessage())
                         .setCancelable(false)
                         .setPositiveButton("OK", (dialog, id) -> {
@@ -255,17 +256,17 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
                     binding.textDealerName.setText(dispatchList.get(0).toBranchName + " / " +
                             dispatchList.get(0).categoryName + " / " + dispatchList.get(0).stockDispatchId);
 
-                    adapter = new StockDispatchAdapter(StockDispatchActivity.this, dispatchDetail, StockDispatchActivity.this);
+                    adapter = new StockDispatchAdapter(StockCountingActivity.this, dispatchDetail, StockCountingActivity.this);
                     binding.recyclerViewStock.setAdapter(adapter);
                 } else {
-                    Toast.makeText(StockDispatchActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StockCountingActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<Dispatch> call, Throwable t) {
-                Toast.makeText(StockDispatchActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(StockCountingActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -277,7 +278,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             Intent data = result.getData();
             if (data != null) {
                 if (data.getBooleanExtra("refresh", false)) {
-                    if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
+                    if (NetworkStatus.getInstance(StockCountingActivity.this).isConnected())
                         getDispatchData();
                     else
                         Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
