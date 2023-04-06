@@ -24,9 +24,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonObject;
 import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.nsretail.Globals;
 import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -201,8 +204,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void afterTextChanged(Editable editable) {
                 if (binding.editQuantity.hasFocus()) {
-//                    if (binding.editQuantity.getText().length() > 0)
-                    calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
+                    if (binding.editQuantity.getText().length() > 0)
+                        calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
+                    else
+                        binding.editQuantity.setError("Please enter quantity");
                 }
             }
         });
@@ -221,8 +226,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void afterTextChanged(Editable editable) {
                 if (binding.editWeight.hasFocus()) {
-//                    if (binding.editWeight.getText().length() > 0)
-                    calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
+                    if (binding.editWeight.getText().length() > 0)
+                        calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
+                    else
+                        binding.editWeight.setError("Please enter weight");
                 }
             }
         });
@@ -365,6 +372,39 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             }
         });
 
+        binding.buttonSave.setOnClickListener(view -> {
+            if (binding.editEANCode.getText().length() > 0) {
+                if (binding.editMRP.getText().length() > 0){
+
+                } else {
+                    binding.editMRP.setError("Enter Mrp");
+                }
+            /*    if (binding.editQuantity.isEnabled()) {
+                    if (binding.editQuantity.getText().length() > 0) {
+                        if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                            saveItemEntry();
+                        else
+                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    } else {
+                        binding.editQuantity.setError("Enter Quantity");
+                    }
+                } else {
+                    if (binding.editWeight.getText().length() > 0) {
+                        if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                            saveItemEntry();
+                        else
+                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    } else {
+                        binding.editWeight.setError("Enter Weight in KGs");
+                    }
+                }*/
+
+            } else {
+                binding.editEANCode.setError("Enter EAN Code");
+            }
+
+        });
+
 
     }
 
@@ -424,6 +464,12 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                         iGST = gstList.get(i).iGST;
                         cess = gstList.get(i).cess;
                     }
+                }
+
+                if (itemList.get(0).isOpenItem) {
+                    binding.editWeight.requestFocus();
+                } else {
+                    binding.editQuantity.requestFocus();
                 }
 
                 itemData();
@@ -706,7 +752,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
         if (itemPriceSelectedList.size() > 1) {
             Intent h = new Intent(AddStockEntryActivity.this, ItemPriceActivity.class);
-            h.putExtra("itemPrice", itemPriceList);
+            h.putExtra("itemPrice", itemPriceSelectedList);
             activityResult.launch(h);
         } else {
 
@@ -725,11 +771,117 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     cess = gstList.get(i).cess;
                 }
             }
-            Log.v("onclick dialog cGST>>", " >>>> " + cGST);
 
             itemData();
 
         }
 
     }
+
+    private void saveItemEntry() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+
+        StatusAPI supplierAPI = BaseURL.getStatusAPI();
+
+        JsonObject jsonObject = null;
+        try {
+            jsonObject = new JsonObject();
+            jsonObject.addProperty("STOCKENTRYDETAILID", 0);
+            jsonObject.addProperty("STOCKENTRYID", stockEntry.get(0).stockEntryId);
+            jsonObject.addProperty("ITEMCODEID", Integer.parseInt(binding.editEANCode.getText().toString()));
+            jsonObject.addProperty("COSTPRICEWT", Double.parseDouble(binding.editCPTax.getText().toString()));
+            jsonObject.addProperty("COSTPRICEWOT", Double.parseDouble(binding.editCPTaxWO.getText().toString()));
+            jsonObject.addProperty("MRP", Double.parseDouble(binding.editMRP.getText().toString()));
+            if (binding.editQuantity.getText().length() > 0)
+                jsonObject.addProperty("QUANTITY", Integer.parseInt(binding.editQuantity.getText().toString()));
+            else
+                jsonObject.addProperty("QUANTITY", 0);
+            if (binding.editQuantity.getText().length() > 0)
+                jsonObject.addProperty("WEIGHTINKGS", Integer.parseInt(binding.editWeight.getText().toString()));
+            else
+                jsonObject.addProperty("WEIGHTINKGS", 0);
+            jsonObject.addProperty("UserID", Globals.userResponse.user.get(0).userId);
+            jsonObject.addProperty("GSTID", gstId);
+            if (binding.editFreeQuantity.getText().length() > 0)
+                jsonObject.addProperty("FreeQuantity", Integer.parseInt(binding.editFreeQuantity.getText().toString()));
+            else
+                jsonObject.addProperty("FreeQuantity", 0);
+            if (binding.editDiscountFlat.getText().length() > 0)
+                jsonObject.addProperty("DiscountFlat", Double.parseDouble(binding.editDiscountFlat.getText().toString()));
+            else
+                jsonObject.addProperty("DiscountFlat", 0);
+            if (binding.editDiscount.getText().length() > 0)
+                jsonObject.addProperty("DiscountPercentage", Double.parseDouble(binding.editDiscount.getText().toString()));
+            else
+                jsonObject.addProperty("DiscountPercentage", 0);
+            if (binding.editScheme.getText().length() > 0)
+                jsonObject.addProperty("SchemePercentage", Double.parseDouble(binding.editScheme.getText().toString()));
+            else
+                jsonObject.addProperty("SchemePercentage", 0);
+            if (binding.editSchemeFlat.getText().length() > 0)
+                jsonObject.addProperty("SchemeFlat", Double.parseDouble(binding.editSchemeFlat.getText().toString()));
+            else
+                jsonObject.addProperty("SchemeFlat", 0);
+            jsonObject.addProperty("TotalPriceWT", Double.parseDouble(binding.editPriceTax.getText().toString()));
+            jsonObject.addProperty("TotalPriceWOT", Double.parseDouble(binding.editPriceWOTax.getText().toString()));
+            jsonObject.addProperty("AppliedDiscount", Double.parseDouble(binding.editAppliedDiscount.getText().toString()));
+            jsonObject.addProperty("AppliedScheme", Double.parseDouble(binding.editAppliedScheme.getText().toString()));
+            jsonObject.addProperty("AppliedGST", Double.parseDouble(binding.editAppliedGST.getText().toString()));
+            jsonObject.addProperty("FinalPrice", Double.parseDouble(binding.editFinalPrice.getText().toString()));
+            jsonObject.addProperty("CGST", Double.parseDouble(binding.editCGST.getText().toString()));
+            jsonObject.addProperty("SGST", Double.parseDouble(binding.editSGST.getText().toString()));
+            jsonObject.addProperty("IGST", Double.parseDouble(binding.editIGST.getText().toString()));
+            jsonObject.addProperty("CESS", Double.parseDouble(binding.editCESS.getText().toString()));
+            jsonObject.addProperty("HSNCODE", binding.editHSNCode.getText().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Call<ResponseBody> call = supplierAPI.saveItemData(true, jsonObject);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                try {
+                    if (response.code() == 200) {
+
+                        if (response.body().string().equalsIgnoreCase("Successfully saved")) {
+                            Toast.makeText(AddStockEntryActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+
+                            binding.editEANCode.setText("");
+                            clearData();
+                            binding.editEANCode.requestFocus();
+                        }
+
+                    } else {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
+                        builder.setMessage(response.errorBody().string())
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                    clearData();
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddStockEntryActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+    }
+
+
 }

@@ -48,6 +48,9 @@ public interface StatusAPI {
     @POST("stockentry/saveinvoice")
     Call<ResponseBody> saveInvoiceData(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
 
+    @POST("stockentry/saveinvoicedetail")
+    Call<ResponseBody> saveItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("jsonstring") JsonObject jsonObject);
+
     @GET("stockentry/getitem")
     Call<ItemModel> getEntryItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
 

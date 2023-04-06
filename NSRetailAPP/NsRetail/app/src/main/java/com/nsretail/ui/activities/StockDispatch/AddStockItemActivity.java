@@ -207,7 +207,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                             else
                                 Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                         } else {
-                            binding.editQuantity.setError("Enter Weight in KGs");
+                            binding.editWeight.setError("Enter Weight in KGs");
                         }
                     }
                 } else {
