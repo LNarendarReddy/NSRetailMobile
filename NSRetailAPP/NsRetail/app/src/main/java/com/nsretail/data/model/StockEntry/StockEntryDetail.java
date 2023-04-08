@@ -4,7 +4,9 @@ package com.nsretail.data.model.StockEntry;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StockEntryDetail {
+import java.io.Serializable;
+
+public class StockEntryDetail implements Serializable {
 
     @SerializedName("STOCKENTRYDETAILID")
     @Expose
@@ -99,4 +101,7 @@ public class StockEntryDetail {
     @SerializedName("CESS")
     @Expose
     public double cess;
+    @SerializedName("HSNCODE")
+    @Expose
+    public double hsnCode;
 }

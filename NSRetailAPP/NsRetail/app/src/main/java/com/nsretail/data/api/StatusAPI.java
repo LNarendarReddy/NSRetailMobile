@@ -54,6 +54,16 @@ public interface StatusAPI {
     @GET("stockentry/getitem")
     Call<ItemModel> getEntryItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("ItemCode") String itemCode);
 
+    @POST("stockentry/deleteinvoicedetail")
+    Call<ResponseBody> deleteStockEntry(@Query("StockEntryDetailID") int entryId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockentry/updateinvoice")
+    Call<ResponseBody> updateInvoice(@Query("jsonstring") JsonObject jsonObject, @Query("UseWHConnection") boolean useWHConnection);
+
+    @POST("stockentry/discardinvoice")
+    Call<ResponseBody> discardEntry(@Query("StockEntryID") int entryId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
+
+
     @GET("stockdispatch/getitem")
     Call<ItemModel> getDispatchItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("CategoryID") int categoryId, @Query("ItemCode") String itemCode);
 

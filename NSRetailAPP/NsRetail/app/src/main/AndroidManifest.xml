@@ -33,6 +33,7 @@
         <activity android:name=".ui.activities.StockEntry.AddStockEntryActivity" />
         <activity android:name=".ui.activities.StockEntry.StockEntryActivity" />
         <activity android:name=".ui.activities.StockEntry.ItemPriceActivity" />
+        <activity android:name=".ui.activities.StockEntry.StockPreviewActivity" />
         <activity android:name=".ui.activities.StockDispatch.BranchActivity" />
         <activity android:name=".ui.activities.StockDispatch.CategoryActivity" />
         <activity android:name=".ui.activities.StockDispatch.StockDispatchActivity" />

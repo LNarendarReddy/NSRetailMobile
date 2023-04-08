@@ -436,6 +436,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void showPriceDialog() {
 
         dialogPrice = new Dialog(AddStockItemActivity.this);

@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,6 +39,7 @@ import com.nsretail.data.model.ItemModel.ItemCode;
 import com.nsretail.data.model.ItemModel.ItemModel;
 import com.nsretail.data.model.ItemModel.ItemPrice;
 import com.nsretail.data.model.StockEntry.StockEntry;
+import com.nsretail.data.model.StockEntry.StockEntryDetail;
 import com.nsretail.databinding.ActivityAddStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.ItemCodeAdapter;
@@ -64,6 +66,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     ArrayList<ItemPrice> itemPriceList;
     ArrayList<ItemPrice> itemPriceSelectedList;
     ArrayList<StockEntry> stockEntry;
+    StockEntryDetail stockEntryDetail;
     int isIGST, gstId;
     double gstValue, finalPriceWO = -1, finalPrice = -1;
     double cGST, sGST, iGST, cess;
@@ -87,6 +90,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
         if (getIntent() != null) {
             stockEntry = (ArrayList<StockEntry>) getIntent().getSerializableExtra("stockEntry");
+            stockEntryDetail = (StockEntryDetail) getIntent().getSerializableExtra("stockEntryDetail");
             isIGST = getIntent().getIntExtra("isIGST", -1);
         }
 
@@ -106,7 +110,67 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         binding.editIGST.setEnabled(false);
         binding.editCESS.setEnabled(false);
 
-        binding.includeStockAdd.imageBack.setOnClickListener(view -> finish());
+        if (stockEntryDetail != null) {
+
+            binding.editEANCode.setText(stockEntryDetail.itemCode);
+            binding.editItemName.setText(stockEntryDetail.itemName);
+            if (stockEntryDetail.isOpenItem) {
+                binding.editWeight.setText("" + stockEntryDetail.weightInKgs);
+                binding.editQuantity.setEnabled(false);
+                binding.editWeight.setEnabled(true);
+            } else {
+                binding.editQuantity.setText("" + stockEntryDetail.quantity);
+                binding.editQuantity.setEnabled(true);
+                binding.editWeight.setEnabled(false);
+            }
+
+            binding.editMRP.setText("" + stockEntryDetail.mrp);
+            binding.editSalePrice.setText("" + stockEntryDetail.salePrice);
+            if (stockEntry.get(0).taxInclusiveValue) {
+                binding.editCPTax.setEnabled(true);
+                binding.editCPTaxWO.setEnabled(false);
+            } else {
+                binding.editCPTax.setEnabled(false);
+                binding.editCPTaxWO.setEnabled(true);
+            }
+
+            binding.editCPTaxWO.setText("" + stockEntryDetail.costPriceWOT);
+            binding.editCPTax.setText("" + stockEntryDetail.costPriceWt);
+            binding.editFreeQuantity.setText("" + stockEntryDetail.freeQuantity);
+            binding.editDiscount.setText("" + stockEntryDetail.discountPercentage);
+            binding.editDiscountFlat.setText("" + stockEntryDetail.discountFlat);
+            binding.editScheme.setText("" + stockEntryDetail.schemePercentage);
+            binding.editSchemeFlat.setText("" + stockEntryDetail.schemeFlat);
+            binding.selectGST.setText("" + stockEntryDetail.gstCode);
+            binding.editAppliedGST.setText("" + stockEntryDetail.appliedDGst);
+            binding.editCGST.setText("" + stockEntryDetail.cGst);
+            binding.editSGST.setText("" + stockEntryDetail.sGst);
+            binding.editIGST.setText("" + stockEntryDetail.iGst);
+            binding.editCESS.setText("" + stockEntryDetail.cess);
+            binding.editAppliedDiscount.setText("" + stockEntryDetail.appliedDiscount);
+            binding.editAppliedScheme.setText("" + stockEntryDetail.appliedScheme);
+            binding.editPriceWOTax.setText("" + stockEntryDetail.totalPriceWOT);
+            binding.editPriceTax.setText("" + stockEntryDetail.totalPriceWT);
+            binding.editFinalPrice.setText("" + stockEntryDetail.finalPrice);
+            binding.editHSNCode.setText("" + stockEntryDetail.hsnCode);
+
+            gstId = stockEntryDetail.gstId;
+            cGST = stockEntryDetail.cGst;
+            sGST = stockEntryDetail.sGst;
+            iGST = stockEntryDetail.iGst;
+            cess = stockEntryDetail.cess;
+
+            finalPrice = stockEntryDetail.totalPriceWT;
+            finalPriceWO = stockEntryDetail.totalPriceWOT;
+
+        }
+
+        binding.includeStockAdd.imageBack.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            intent.putExtra("refresh", true);
+            setResult(113, intent);
+            super.onBackPressed();
+        });
 
         binding.selectGST.setOnItemClickListener((adapterView, view, pos, l) -> {
             for (int i = 0; i < gstList.size(); i++) {
@@ -119,11 +183,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     cess = gstList.get(i).cess;
                 }
             }
-            if (!itemList.get(0).isOpenItem)
-                if (binding.editQuantity.getText().length() > 0)
-                    calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
-                else if (binding.editWeight.getText().length() > 0)
-                    calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
+            if (!itemList.get(0).isOpenItem) if (binding.editQuantity.getText().length() > 0)
+                calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
+            else if (binding.editWeight.getText().length() > 0)
+                calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
 
         });
 
@@ -206,8 +269,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (binding.editQuantity.hasFocus()) {
                     if (binding.editQuantity.getText().length() > 0)
                         calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
-                    else
-                        binding.editQuantity.setError("Please enter quantity");
+                    else binding.editQuantity.setError("Please enter quantity");
                 }
             }
         });
@@ -228,8 +290,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (binding.editWeight.hasFocus()) {
                     if (binding.editWeight.getText().length() > 0)
                         calculateTax(Integer.parseInt(binding.editWeight.getText().toString()));
-                    else
-                        binding.editWeight.setError("Please enter weight");
+                    else binding.editWeight.setError("Please enter weight");
                 }
             }
         });
@@ -374,30 +435,32 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
         binding.buttonSave.setOnClickListener(view -> {
             if (binding.editEANCode.getText().length() > 0) {
-                if (binding.editMRP.getText().length() > 0){
-
+                if (binding.editMRP.getText().length() > 0) {
+                    if (binding.editSalePrice.getText().length() > 0) {
+                        if (binding.editHSNCode.getText().length() > 0) {
+                            if (binding.editCPTax.isEnabled()) {
+                                if (binding.editCPTax.getText().length() > 0) {
+                                    checkQtyWeight();
+                                } else {
+                                    binding.editCPTax.setError("Enter CP with Tax");
+                                }
+                            } else {
+                                if (binding.editCPTaxWO.getText().length() > 0) {
+                                    checkQtyWeight();
+                                } else {
+                                    binding.editCPTaxWO.setError("Enter CP W/O Tax");
+                                }
+                            }
+                        } else {
+                            binding.editHSNCode.setError("Enter HSN Code");
+                        }
+                    } else {
+                        binding.editSalePrice.setError("Enter Sale price");
+                    }
                 } else {
                     binding.editMRP.setError("Enter Mrp");
                 }
-            /*    if (binding.editQuantity.isEnabled()) {
-                    if (binding.editQuantity.getText().length() > 0) {
-                        if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
-                            saveItemEntry();
-                        else
-                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                    } else {
-                        binding.editQuantity.setError("Enter Quantity");
-                    }
-                } else {
-                    if (binding.editWeight.getText().length() > 0) {
-                        if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
-                            saveItemEntry();
-                        else
-                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                    } else {
-                        binding.editWeight.setError("Enter Weight in KGs");
-                    }
-                }*/
+
 
             } else {
                 binding.editEANCode.setError("Enter EAN Code");
@@ -406,6 +469,28 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         });
 
 
+    }
+
+    private void checkQtyWeight() {
+        if (binding.editQuantity.isEnabled()) {
+            if (binding.editQuantity.getText().length() > 0) {
+                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                    saveItemEntry();
+                else
+                    Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            } else {
+                binding.editQuantity.setError("Enter Quantity");
+            }
+        } else {
+            if (binding.editWeight.getText().length() > 0) {
+                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                    saveItemEntry();
+                else
+                    Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            } else {
+                binding.editWeight.setError("Enter Weight in KGs");
+            }
+        }
     }
 
     private void clearData() {
@@ -457,6 +542,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
                 for (int i = 0; i < gstList.size(); i++) {
                     if (gstList.get(i).gstId == itemPriceSelectedList.get(pos).gstId) {
+                        gstId = gstList.get(i).gstId;
                         binding.selectGST.setText("" + gstList.get(i).gstCode);
                         gstValue = gstList.get(i).gstValue;
                         sGST = gstList.get(i).sGST;
@@ -512,8 +598,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             binding.editAppliedDiscount.setText(binding.editDiscountFlat.getText());
         } else if (binding.editDiscount.getText().length() > 0) {
 
-            double discountValue = Math.abs(Double.parseDouble(binding.editPriceWOTax.getText().toString()) *
-                    (Double.parseDouble(binding.editDiscount.getText().toString()) / 100));
+            double discountValue = Math.abs(Double.parseDouble(binding.editPriceWOTax.getText().toString()) * (Double.parseDouble(binding.editDiscount.getText().toString()) / 100));
 
             binding.editAppliedDiscount.setText("" + discountValue);
         } else {
@@ -532,14 +617,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         }
 
         if (binding.editPriceWOTax.getText().length() > 0)
-            finalPriceWO = Double.parseDouble(binding.editPriceWOTax.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedDiscount.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedScheme.getText().toString());
+            finalPriceWO = Double.parseDouble(binding.editPriceWOTax.getText().toString()) - Double.parseDouble(binding.editAppliedDiscount.getText().toString()) - Double.parseDouble(binding.editAppliedScheme.getText().toString());
 
         if (binding.editPriceTax.getText().length() > 0)
-            finalPrice = Double.parseDouble(binding.editPriceTax.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedDiscount.getText().toString()) -
-                    Double.parseDouble(binding.editAppliedScheme.getText().toString());
+            finalPrice = Double.parseDouble(binding.editPriceTax.getText().toString()) - Double.parseDouble(binding.editAppliedDiscount.getText().toString()) - Double.parseDouble(binding.editAppliedScheme.getText().toString());
 
         if (stockEntry.get(0).taxInclusiveValue) {
             if (finalPrice != -1) {
@@ -557,10 +638,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 }
                 binding.editCESS.setText("" + String.format("%.2f", Math.abs(finalPrice * (cess / 100))));
 
-                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString())
-                        + Double.parseDouble(binding.editSGST.getText().toString())
-                        + Double.parseDouble(binding.editCESS.getText().toString())
-                        + Double.parseDouble(binding.editIGST.getText().toString());
+                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString()) + Double.parseDouble(binding.editSGST.getText().toString()) + Double.parseDouble(binding.editCESS.getText().toString()) + Double.parseDouble(binding.editIGST.getText().toString());
                 binding.editAppliedGST.setText("" + appliedGst);
 
                 binding.editFinalPrice.setText(String.format("%.3f", finalPrice));
@@ -583,10 +661,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
                 binding.editCESS.setText("" + String.format("%.2f", Math.abs(finalPriceWO * (cess / 100))));
 
-                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString())
-                        + Double.parseDouble(binding.editSGST.getText().toString())
-                        + Double.parseDouble(binding.editCESS.getText().toString())
-                        + Double.parseDouble(binding.editIGST.getText().toString());
+                double appliedGst = Double.parseDouble(binding.editCGST.getText().toString()) + Double.parseDouble(binding.editSGST.getText().toString()) + Double.parseDouble(binding.editCESS.getText().toString()) + Double.parseDouble(binding.editIGST.getText().toString());
                 binding.editAppliedGST.setText("" + appliedGst);
 
                 binding.editFinalPrice.setText(String.format("%.3f", (finalPriceWO + appliedGst)));
@@ -629,12 +704,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                         }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
-                        builder.setMessage(response.errorBody().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                    clearData();
-                                });
+                        builder.setMessage(response.errorBody().string()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                            dialog.cancel();
+                            clearData();
+                        });
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
@@ -680,10 +753,12 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         Window window = dialog.getWindow();
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+        TextView textView = dialog.findViewById(R.id.textView);
+        textView.setText("EAN Code List");
+
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 
-        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
         Drawable divider = ContextCompat.getDrawable(this, R.drawable.divider);
         if (divider != null) {
             horizontalDecoration.setDrawable(divider);
@@ -709,6 +784,12 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     gstArray = new ArrayList<>();
                     gstList = response.body();
                     for (int i = 0; i < gstList.size(); i++) {
+                        if (stockEntryDetail != null) {
+                            if (stockEntryDetail.gstId == gstList.get(i).gstId) {
+                                gstValue = gstList.get(i).gstValue;
+                            }
+                        }
+
                         gstArray.add(gstList.get(i).gstCode);
                     }
 
@@ -763,6 +844,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
             for (int i = 0; i < gstList.size(); i++) {
                 if (gstList.get(i).gstId == itemPriceSelectedList.get(0).gstId) {
+                    gstId = gstList.get(i).gstId;
                     binding.selectGST.setText(gstList.get(i).gstCode);
                     gstValue = gstList.get(i).gstValue;
                     sGST = gstList.get(i).sGST;
@@ -786,17 +868,25 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         JsonObject jsonObject = null;
         try {
             jsonObject = new JsonObject();
-            jsonObject.addProperty("STOCKENTRYDETAILID", 0);
+            if (stockEntryDetail != null)
+                jsonObject.addProperty("STOCKENTRYDETAILID", stockEntryDetail.stockEntryDetailId);
+            else
+                jsonObject.addProperty("STOCKENTRYDETAILID", 0);
             jsonObject.addProperty("STOCKENTRYID", stockEntry.get(0).stockEntryId);
-            jsonObject.addProperty("ITEMCODEID", Integer.parseInt(binding.editEANCode.getText().toString()));
+            if (itemCodeList != null)
+                jsonObject.addProperty("ITEMCODEID", itemCodeList.get(0).itemCodeId);
+            else {
+                if (stockEntryDetail != null)
+                    jsonObject.addProperty("ITEMCODEID", stockEntryDetail.itemCodeId);
+            }
             jsonObject.addProperty("COSTPRICEWT", Double.parseDouble(binding.editCPTax.getText().toString()));
             jsonObject.addProperty("COSTPRICEWOT", Double.parseDouble(binding.editCPTaxWO.getText().toString()));
             jsonObject.addProperty("MRP", Double.parseDouble(binding.editMRP.getText().toString()));
+            jsonObject.addProperty("SALEPRICE", Double.parseDouble(binding.editSalePrice.getText().toString()));
             if (binding.editQuantity.getText().length() > 0)
                 jsonObject.addProperty("QUANTITY", Integer.parseInt(binding.editQuantity.getText().toString()));
-            else
-                jsonObject.addProperty("QUANTITY", 0);
-            if (binding.editQuantity.getText().length() > 0)
+            else jsonObject.addProperty("QUANTITY", 0);
+            if (binding.editWeight.getText().length() > 0)
                 jsonObject.addProperty("WEIGHTINKGS", Integer.parseInt(binding.editWeight.getText().toString()));
             else
                 jsonObject.addProperty("WEIGHTINKGS", 0);
@@ -804,24 +894,19 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             jsonObject.addProperty("GSTID", gstId);
             if (binding.editFreeQuantity.getText().length() > 0)
                 jsonObject.addProperty("FreeQuantity", Integer.parseInt(binding.editFreeQuantity.getText().toString()));
-            else
-                jsonObject.addProperty("FreeQuantity", 0);
+            else jsonObject.addProperty("FreeQuantity", 0);
             if (binding.editDiscountFlat.getText().length() > 0)
                 jsonObject.addProperty("DiscountFlat", Double.parseDouble(binding.editDiscountFlat.getText().toString()));
-            else
-                jsonObject.addProperty("DiscountFlat", 0);
+            else jsonObject.addProperty("DiscountFlat", 0);
             if (binding.editDiscount.getText().length() > 0)
                 jsonObject.addProperty("DiscountPercentage", Double.parseDouble(binding.editDiscount.getText().toString()));
-            else
-                jsonObject.addProperty("DiscountPercentage", 0);
+            else jsonObject.addProperty("DiscountPercentage", 0);
             if (binding.editScheme.getText().length() > 0)
                 jsonObject.addProperty("SchemePercentage", Double.parseDouble(binding.editScheme.getText().toString()));
-            else
-                jsonObject.addProperty("SchemePercentage", 0);
+            else jsonObject.addProperty("SchemePercentage", 0);
             if (binding.editSchemeFlat.getText().length() > 0)
                 jsonObject.addProperty("SchemeFlat", Double.parseDouble(binding.editSchemeFlat.getText().toString()));
-            else
-                jsonObject.addProperty("SchemeFlat", 0);
+            else jsonObject.addProperty("SchemeFlat", 0);
             jsonObject.addProperty("TotalPriceWT", Double.parseDouble(binding.editPriceTax.getText().toString()));
             jsonObject.addProperty("TotalPriceWOT", Double.parseDouble(binding.editPriceWOTax.getText().toString()));
             jsonObject.addProperty("AppliedDiscount", Double.parseDouble(binding.editAppliedDiscount.getText().toString()));
@@ -857,12 +942,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     } else {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
-                        builder.setMessage(response.errorBody().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                    clearData();
-                                });
+                        builder.setMessage(response.errorBody().string()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                            dialog.cancel();
+//                            clearData();
+                        });
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
@@ -879,9 +962,14 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
             }
         });
-
-
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("refresh", true);
+        setResult(113, intent);
+        super.onBackPressed();
+    }
 
 }

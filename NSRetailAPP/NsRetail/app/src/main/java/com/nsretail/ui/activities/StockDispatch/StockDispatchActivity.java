@@ -286,13 +286,13 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
         }
     });
 
-public void updateItemData(int pos){
-    Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
-    h.putExtra("stockDispatchItem", dispatchDetail.get(pos));
-    h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
-    h.putExtra("categoryId", dispatchList.get(0).categoryId);
-    activityResult.launch(h);
-}
+    public void updateItemData(int pos) {
+        Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
+        h.putExtra("stockDispatchItem", dispatchDetail.get(pos));
+        h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
+        h.putExtra("categoryId", dispatchList.get(0).categoryId);
+        activityResult.launch(h);
+    }
 
 
     @SuppressLint("NotifyDataSetChanged")
