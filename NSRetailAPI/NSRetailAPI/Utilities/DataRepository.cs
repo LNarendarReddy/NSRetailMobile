@@ -27,7 +27,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error While Retrieving {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName}", ex);
             }
             return dtReportData;
         }
@@ -52,7 +52,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error While Retrieving {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName}", ex);
             }
             return dsReportData;
         }
@@ -73,7 +73,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error While Retrieving {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName}", ex);
             }
             return obj;
         }
@@ -94,7 +94,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error While Retrieving {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName}", ex);
             }
             return rowcount;
         }

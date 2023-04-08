@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NSRetailAPI.Models;
@@ -18,6 +19,40 @@ namespace NSRetailAPI.Controllers
         public readonly IConfiguration configuration;
 
         [HttpGet]
+        [Route("getitem")]
+        public IActionResult GetItem(string ItemCode, bool useWHConnection)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "ITEMCODE", ItemCode }
+                    };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATAFORSTOCKENTRY", useWHConnection, parameters);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    int Ivalue = 0;
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (!int.TryParse(str, out Ivalue))
+                        throw new Exception(str);
+                    else
+                    {
+                        ds.Tables[0].TableName = "ITEM";
+                        ds.Tables[1].TableName = "ITEMCODE";
+                        ds.Tables[2].TableName = "ITEMPRICE";
+                        return Ok(JsonConvert.SerializeObject(ds));
+                    }
+                }
+                else
+                    throw new Exception("Itemcode does not exists");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("getinvoice")]
         public IActionResult GetInvoice(int CategoryID, int StockEntryID, int UserID, bool UseWHConnection)
         {
@@ -32,19 +67,24 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT", UseWHConnection, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "StockEntry";
-                    if (ds.Tables.Count > 1)
-                        ds.Tables[1].TableName = "StockEntryDetail";
-                    return Ok(JsonConvert.SerializeObject(ds));
+                    if (!int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
+                        return NotFound("No stock entry draft found!");
+                    else
+                    {
+                        ds.Tables[0].TableName = "StockEntry";
+                        if (ds.Tables.Count > 1)
+                            ds.Tables[1].TableName = "StockEntryDetail";
+                        return Ok(JsonConvert.SerializeObject(ds));
+                    }
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound ("No stock entry draft found!");
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.ToString());
             }
         }
 
@@ -78,13 +118,13 @@ namespace NSRetailAPI.Controllers
                 object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", UseWHConnection, parameters);
                 string str = Convert.ToString(obj);
                 if (!int.TryParse(str, out int ivalue))
-                    return BadRequest(str);
+                    throw new Exception(str);
                 else
                     return Ok(ivalue);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -97,7 +137,7 @@ namespace NSRetailAPI.Controllers
                 StockEntryDetail stockEntryDetail = JsonConvert.DeserializeObject<StockEntryDetail>(jsonstring);
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                        { "STOCKENTRYDETAILID", stockEntryDetail.STOCKENTRYID }
+                        { "STOCKENTRYDETAILID", stockEntryDetail.STOCKENTRYDETAILID }
                     , { "STOCKENTRYID", stockEntryDetail.STOCKENTRYID }
                     , { "ITEMCODEID", stockEntryDetail.ITEMCODEID }
                     , { "COSTPRICEWT", stockEntryDetail.COSTPRICEWT }
@@ -133,16 +173,16 @@ namespace NSRetailAPI.Controllers
                     int Ivalue = 0;
                     string str = Convert.ToString(dt.Rows[0][0]);
                     if (!int.TryParse(str, out Ivalue))
-                        return BadRequest(str);
+                        throw new Exception(str);
                     else
-                        return Ok(JsonConvert.SerializeObject(dt));
+                        return Ok("Successfully saved");
                 }
                 else
-                    return NotFound("Data not found");
+                    throw new Exception("Data not found");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -160,13 +200,13 @@ namespace NSRetailAPI.Controllers
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_STOCKENTRYDETAIL", UseWHConnection, parameters);
 
                 if (rowsaffected == 0)
-                    return BadRequest();
+                    throw new Exception("Error while deleting item!");    
                 else
-                    return Ok();
+                    return Ok("Item successfully deleted");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -182,7 +222,7 @@ namespace NSRetailAPI.Controllers
                         { "STOCKENTRYID", stockEntry.STOCKENTRYID }
                         ,{ "TCS", stockEntry.TCS }
                         ,{ "DISCOUNTPER", stockEntry.DISCOUNTPER }
-                        ,{ "DISCOUNT", stockEntry.DISCOUNTFLAT }
+                        ,{ "DISCOUNTFLAT", stockEntry.DISCOUNTFLAT }
                         ,{ "EXPENSES", stockEntry.EXPENSES }
                         ,{ "TRANSPORT", stockEntry.TRANSPORT}
                 };
@@ -190,13 +230,13 @@ namespace NSRetailAPI.Controllers
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY", UseWHConnetion, parameters);
 
                 if (rowsaffected == 0)
-                    return BadRequest();
+                    throw new Exception("Error while submitting stock entry!");
                 else
-                    return Ok();
+                    return Ok("Stock entry submitted successfully");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -215,13 +255,13 @@ namespace NSRetailAPI.Controllers
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", UseWHConnetion, parameters);
 
                 if (rowsaffected == 0)
-                    return BadRequest();
+                    throw new Exception("Error while discarding invoice!");
                 else
-                    return Ok();
+                    return Ok("Stock entry discarded successfully!");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
     }
