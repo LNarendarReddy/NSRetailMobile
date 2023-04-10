@@ -269,7 +269,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 if (binding.editQuantity.hasFocus()) {
                     if (binding.editQuantity.getText().length() > 0)
                         calculateTax(Integer.parseInt(binding.editQuantity.getText().toString()));
-                    else binding.editQuantity.setError("Please enter quantity");
+
                 }
             }
         });
@@ -814,7 +814,6 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         binding.editEANCode.setText(itemCodeList.get(position).itemCode);
         if (itemCodeList.get(position).hsnCode != null)
             binding.editHSNCode.setText(itemCodeList.get(position).hsnCode);
-        Log.v("onclick dialog >>", " >>>> ");
 
         selectPriceData(position);
 
@@ -932,7 +931,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     if (response.code() == 200) {
 
                         if (response.body().string().equalsIgnoreCase("Successfully saved")) {
-                            Toast.makeText(AddStockEntryActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddStockEntryActivity.this, "Successfully saved", Toast.LENGTH_SHORT).show();
 
                             binding.editEANCode.setText("");
                             clearData();

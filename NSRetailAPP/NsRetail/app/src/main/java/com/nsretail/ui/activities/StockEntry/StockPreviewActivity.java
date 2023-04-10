@@ -39,6 +39,7 @@ public class StockPreviewActivity extends AppCompatActivity {
     ArrayList<StockEntryDetail> stockEntryDetail;
 
     double totalPriceWOT, totalPriceWT, gstValue, netPrice, finalPrice;
+    double expenses, transport, tcs;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -91,21 +92,10 @@ public class StockPreviewActivity extends AppCompatActivity {
             @SuppressLint("DefaultLocale")
             @Override
             public void afterTextChanged(Editable editable) {
-
                 if (binding.editDiscount.hasFocus()) {
                     binding.editDiscountFlat.setText("");
-                    if (binding.editDiscount.getText().length() > 0) {
-                        double discount = (netPrice * (Double.parseDouble(binding.editDiscount.getText().toString()) / 100));
-                        finalPrice = (netPrice - discount) + Double.parseDouble(binding.editExpenses.getText().toString())
-                                + Double.parseDouble(binding.editTCS.getText().toString())
-                                + Double.parseDouble(binding.editTransport.getText().toString());
-                        binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
-                    } else {
-                        calculateFinalPrice();
-                    }
-
+                    calculateFinalPrice();
                 }
-
             }
         });
 
@@ -126,16 +116,7 @@ public class StockPreviewActivity extends AppCompatActivity {
 
                 if (binding.editDiscountFlat.hasFocus()) {
                     binding.editDiscount.setText("");
-                    if (binding.editDiscountFlat.getText().length() > 0) {
-                        finalPrice = (netPrice - Double.parseDouble(binding.editDiscountFlat.getText().toString()))
-                                + Double.parseDouble(binding.editExpenses.getText().toString())
-                                + Double.parseDouble(binding.editTCS.getText().toString())
-                                + Double.parseDouble(binding.editTransport.getText().toString());
-
-                        binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
-                    } else {
-                        calculateFinalPrice();
-                    }
+                    calculateFinalPrice();
                 }
 
             }
@@ -230,16 +211,37 @@ public class StockPreviewActivity extends AppCompatActivity {
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void calculateFinalPrice() {
 
-        if (binding.editExpenses.getText().length() > 0 &&
-                binding.editTransport.getText().length() > 0 &&
-                binding.editTCS.getText().length() > 0) {
-            finalPrice = netPrice
-                    + Double.parseDouble(binding.editExpenses.getText().toString())
-                    + Double.parseDouble(binding.editTCS.getText().toString())
-                    + Double.parseDouble(binding.editTransport.getText().toString());
+        if (binding.editExpenses.getText().length() > 0)
+            expenses = Double.parseDouble(binding.editExpenses.getText().toString());
+        else
+            expenses = 0;
+
+        if (binding.editTransport.getText().length() > 0)
+            transport = Double.parseDouble(binding.editTransport.getText().toString());
+        else
+            transport = 0;
+
+        if (binding.editTCS.getText().length() > 0)
+            tcs = Double.parseDouble(binding.editTCS.getText().toString());
+        else
+            tcs = 0;
+
+        finalPrice = netPrice + expenses + transport + tcs;
+        binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
+
+        if (binding.editDiscount.getText().length() > 0) {
+            double discount = (netPrice * (Double.parseDouble(binding.editDiscount.getText().toString()) / 100));
+            finalPrice = (netPrice - discount) + expenses + tcs + transport;
+            binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
+        }
+
+        if (binding.editDiscountFlat.getText().length() > 0) {
+            finalPrice = (netPrice - Double.parseDouble(binding.editDiscountFlat.getText().toString()))
+                    + expenses + tcs + transport;
 
             binding.editFinalPrice.setText(String.format("%.2f", finalPrice));
         }
+
     }
 
     private void saveEntryData() {

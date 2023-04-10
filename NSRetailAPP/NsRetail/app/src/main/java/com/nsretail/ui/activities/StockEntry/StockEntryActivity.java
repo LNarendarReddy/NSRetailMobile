@@ -21,6 +21,7 @@ import com.nsretail.data.model.StockEntry.StockEntry;
 import com.nsretail.data.model.StockEntry.StockEntryDetail;
 import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.MainActivity;
 import com.nsretail.ui.adapter.StockEntryAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -99,7 +100,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             Intent h = new Intent(StockEntryActivity.this, AddStockEntryActivity.class);
             h.putExtra("stockEntry", stockEntry);
             h.putExtra("isIGST", isIGST);
-            startActivity(h);
+            activityResult.launch(h);
 
             binding.addItemFab.hide();
             binding.addSubmitFab.hide();
@@ -153,7 +154,9 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
                         builder.setMessage(response.body().string())
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
-                                    finish();
+                                    Intent i = new Intent(StockEntryActivity.this, MainActivity.class);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(i);
                                     dialog.cancel();
                                 });
 

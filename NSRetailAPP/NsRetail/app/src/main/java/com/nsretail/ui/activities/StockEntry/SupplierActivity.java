@@ -60,10 +60,6 @@ public class SupplierActivity extends AppCompatActivity {
         serverDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         userDate = new SimpleDateFormat("dd MMM yyyy", Locale.US);
 
-        if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
-            getSupplierData();
-        } else
-            Toast.makeText(SupplierActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
         binding.editDate.setInputType(InputType.TYPE_NULL);
         binding.editDate.setKeyListener(null);
@@ -107,7 +103,15 @@ public class SupplierActivity extends AppCompatActivity {
             }
 
         });
+    }
 
+    @Override
+    protected void onResume() {
+        if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
+            getSupplierData();
+        } else
+            Toast.makeText(SupplierActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+        super.onResume();
     }
 
     private void getStockData() {
