@@ -1,10 +1,9 @@
 package com.nsretail.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -33,12 +32,12 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         globals = new Globals(SplashActivity.this);
 
-/*        new Handler().postDelayed(() -> {
+        new Handler().postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             finish();
-        }, 3000);*/
+        }, 3000);
 
-        SharedPreferences preferences = getSharedPreferences("login", Context.MODE_PRIVATE);
+        /*SharedPreferences preferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         name = preferences.getString("name", "");
         if (name.length() > 0) {
             password = preferences.getString("password", "");
@@ -47,7 +46,7 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             finish();
-        }
+        }*/
 
 
     }

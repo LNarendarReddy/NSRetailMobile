@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.BranchModel.Branch;
 import com.nsretail.databinding.ActivityBranchBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
-import com.nsretail.ui.activities.StockDispatch.CategoryActivity;
 import com.nsretail.ui.adapter.BranchAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -29,11 +27,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BranchActivity extends AppCompatActivity implements OnItemClickListener {
+public class CountingBranchActivity extends AppCompatActivity implements OnItemClickListener {
 
     ActivityBranchBinding binding;
     List<Branch> branchList;
@@ -57,11 +56,10 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         }
         binding.recyclerViewBranch.addItemDecoration(horizontalDecoration);
 
-
-        if (NetworkStatus.getInstance(BranchActivity.this).isConnected())
+        if (NetworkStatus.getInstance(CountingBranchActivity.this).isConnected())
             getBranch();
         else
-            Toast.makeText(BranchActivity.this, "No internet Connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CountingBranchActivity.this, "No internet Connection", Toast.LENGTH_SHORT).show();
 
         binding.includeBranch.imageBack.setVisibility(View.VISIBLE);
         binding.includeBranch.imageBack.setOnClickListener(v -> finish());
@@ -72,8 +70,7 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         binding.progressBar.setVisibility(View.VISIBLE);
         branchList = new ArrayList<>();
         StatusAPI branchApi = BaseURL.getStatusAPI();
-        Call<List<Branch>> call = branchApi.getBranch("stockcounting/getbranch",Globals.userResponse.user.get(0).userId);
-
+        Call<List<Branch>> call = branchApi.getBranch("stockcounting/getbranch", Globals.userResponse.user.get(0).userId);
         call.enqueue(new Callback<List<Branch>>() {
             @Override
             public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
@@ -81,11 +78,11 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
 
                 if (response.code() == 200) {
                     branchList = response.body();
-                    adapter = new BranchAdapter(getApplicationContext(), branchList, BranchActivity.this);
+                    adapter = new BranchAdapter(getApplicationContext(), branchList, CountingBranchActivity.this);
                     binding.recyclerViewBranch.setAdapter(adapter);
 
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(BranchActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CountingBranchActivity.this);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
@@ -97,25 +94,74 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
-
             }
 
             @Override
             public void onFailure(Call<List<Branch>> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Log.e("GST", "" + t.getMessage());
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(CountingBranchActivity.this);
+                try {
+                    builder.setMessage(t.getMessage())
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialog, id) ->
+                                    dialog.cancel());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
-
     }
 
     @Override
     public void onItemClick(int position, View view) {
 
-        Intent h = new Intent(BranchActivity.this, StockCountingActivity.class);
-        h.putExtra("ToBranchId", branchList.get(position).branchId);
-        startActivity(h);
-        finish();
+        if (NetworkStatus.getInstance(CountingBranchActivity.this).isConnected())
+            postCounting(position);
+        else
+            Toast.makeText(CountingBranchActivity.this, "No internet Connection", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void postCounting(int pos) {
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+
+        StatusAPI countingAPI = BaseURL.getStatusAPI();
+
+
+        Call<ResponseBody> call = countingAPI.postCounting(0,Globals.userResponse.user.get(0).userId, branchList.get(pos).branchId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+                    Intent h = new Intent(CountingBranchActivity.this, StockCountingActivity.class);
+                    h.putExtra("stockCountingId", response.message());
+                    startActivity(h);
+                    finish();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CountingBranchActivity.this);
+                    try {
+                        builder.setMessage(response.errorBody().string())
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) ->
+                                        dialog.cancel());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(CountingBranchActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 }

@@ -3,6 +3,7 @@ package com.nsretail.data.api;
 import com.google.gson.JsonObject;
 import com.nsretail.data.model.BranchModel.Branch;
 import com.nsretail.data.model.CategoryModel.Category;
+import com.nsretail.data.model.CountingModel.Counting;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.data.model.GSTModel.GST;
 import com.nsretail.data.model.ItemModel.ItemModel;
@@ -90,8 +91,32 @@ public interface StatusAPI {
 
     // StockCounting
 
-//    @GET("{endpoint}")
-//    Call<List<Branch>> getBranch(@Query("Userid") int userId);
+    @GET("stockcounting/getcounting")
+    Call<Counting> getCounting(@Query("UserID") int userId);
 
+    @GET("stockcounting/getitem")
+    Call<ItemModel> getCountingItemData(@Query("ItemCode") String itemCode);
+
+    @POST("stockcounting/savecounting")
+    Call<ResponseBody> postCounting(@Query("StockCountingID") int categoryId,
+                                    @Query("UserID") int userId,
+                                    @Query("BranchID") int branchID);
+
+    @POST("stockcounting/savecountingdetail")
+    Call<ResponseBody> saveItemCounting(@Query("StockCountingDetailID") int stockCountingDetailId,
+                                        @Query("StockCountingID") int stockCountingId,
+                                        @Query("ItemPriceID") int itemPriceId,
+                                        @Query("Quantity") int quantity,
+                                        @Query("WeightInKgs") double weightInKgs);
+
+    @POST("stockcounting/deletecountingdetail")
+    Call<ResponseBody> deleteCounting(@Query("StockCountingDetailID") int countingId);
+
+
+    @POST("stockcounting/updatecounting")
+    Call<ResponseBody> updateCounting(@Query("StockCountingID") int countingId, @Query("UserID") int userId);
+
+    @POST("stockcounting/discardcounting")
+    Call<ResponseBody> discardCounting(@Query("StockCountingID") int countingId, @Query("UserID") int userId);
 
 }

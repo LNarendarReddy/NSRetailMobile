@@ -1,4 +1,4 @@
-package com.nsretail.ui.activities.StockDispatch;
+package com.nsretail.ui.activities.StockCounting;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -24,15 +24,13 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
 import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.nsretail.Globals;
 import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
-import com.nsretail.data.model.DispatchModel.DispatchDetail;
+import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.data.model.ItemModel.Item;
 import com.nsretail.data.model.ItemModel.ItemCode;
 import com.nsretail.data.model.ItemModel.ItemModel;
@@ -51,7 +49,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddStockItemActivity extends AppCompatActivity implements OnItemClickListener {
+public class AddCountingItemActivity extends AppCompatActivity implements OnItemClickListener {
 
     ActivityAddItemBinding binding;
     ArrayList<Item> itemList;
@@ -59,9 +57,9 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
     ArrayList<ItemPrice> itemPriceList;
     ArrayList<ItemPrice> itemPriceSelectedList;
     ActivityResultLauncher<ScanOptions> barcodeLauncher;
-    DispatchDetail dispatchDetail;
+    CountingDetail countingDetail;
     Dialog dialog, dialogPrice;
-    int stockDispatchId, categoryId, itemPriceId, stockDetailId;
+    int stockCountingId, categoryId, itemPriceId, stockDetailId;
     boolean isUpdateItem;
 
     @SuppressLint("SetTextI18n")
@@ -72,45 +70,46 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         setContentView(binding.getRoot());
 
 
-        binding.includeItemAdd.textTitle.setText("Add Stock Item");
+        binding.includeItemAdd.textTitle.setText("Add Stock Counting");
         binding.includeItemAdd.imageCamera.setVisibility(View.VISIBLE);
 
+        binding.editTrayNo.setVisibility(View.GONE);
+
         if (getIntent() != null) {
-            dispatchDetail = (DispatchDetail) getIntent().getSerializableExtra("stockDispatchItem");
-            stockDispatchId = getIntent().getIntExtra("stockDispatchId", -1);
-            categoryId = getIntent().getIntExtra("categoryId", -1);
+            countingDetail = (CountingDetail) getIntent().getSerializableExtra("stockCountingItem");
+            stockCountingId = getIntent().getIntExtra("stockCountingId", -1);
         }
 
-        if (dispatchDetail != null) {
+        if (countingDetail != null) {
             isUpdateItem = true;
-            binding.editTrayNo.setEnabled(false);
+//            binding.editTrayNo.setEnabled(false);
             binding.editEANCode.setEnabled(false);
             binding.editItemName.setEnabled(false);
             binding.editMRP.setEnabled(false);
             binding.editSalePrice.setEnabled(false);
 
-            if (dispatchDetail.isOpenItem) {
+            if (countingDetail.isOpenItem) {
                 binding.editWeight.setEnabled(true);
                 binding.editQuantity.setEnabled(false);
-                binding.editWeight.setText("" + dispatchDetail.weightInKgs);
+                binding.editWeight.setText("" + countingDetail.weightInKgs);
             } else {
                 binding.editWeight.setEnabled(false);
                 binding.editQuantity.setEnabled(true);
-                binding.editQuantity.setText("" + dispatchDetail.dispatchQuantity);
+                binding.editQuantity.setText("" + countingDetail.quantity);
             }
 
-            stockDetailId = dispatchDetail.stockDispatchDetailId;
-            itemPriceId = dispatchDetail.itemPriceId;
-            binding.editTrayNo.setText("" + dispatchDetail.trayNumber);
-            binding.editEANCode.setText(dispatchDetail.itemCode);
-            binding.editItemName.setText(dispatchDetail.itemName);
-            binding.editMRP.setText("" + dispatchDetail.mrp);
-            binding.editSalePrice.setText("" + dispatchDetail.salePrice);
+            stockDetailId = countingDetail.stockCountingDetailId;
+            itemPriceId = countingDetail.itemPriceId;
+//            binding.editTrayNo.setText("" + countingDetail.trayNumber);
+            binding.editEANCode.setText(countingDetail.itemCode);
+            binding.editItemName.setText(countingDetail.itemName);
+            binding.editMRP.setText("" + countingDetail.mrp);
+            binding.editSalePrice.setText("" + countingDetail.salePrice);
 
         } else {
             isUpdateItem = false;
             stockDetailId = 0;
-            binding.editTrayNo.setEnabled(true);
+//            binding.editTrayNo.setEnabled(true);
             binding.editEANCode.setEnabled(true);
             binding.editItemName.setEnabled(false);
             binding.editMRP.setEnabled(false);
@@ -137,16 +136,16 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                 Intent originalIntent = result.getOriginalIntent();
                 if (originalIntent == null) {
                     Log.d("MainActivity", "Cancelled scan");
-                    Toast.makeText(AddStockItemActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddCountingItemActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
                     Log.d("MainActivity", "Cancelled scan due to missing camera permission");
-                    Toast.makeText(AddStockItemActivity.this, "Cancelled due to missing camera permission", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddCountingItemActivity.this, "Cancelled due to missing camera permission", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Log.d("MainActivity", "Scanned");
-                Toast.makeText(AddStockItemActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                Toast.makeText(AddCountingItemActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 binding.editEANCode.setText(result.getContents());
-                if (NetworkStatus.getInstance(AddStockItemActivity.this).isConnected())
+                if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
                     getItemData(result.getContents());
                 else Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
 
@@ -157,20 +156,20 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         binding.editEANCode.setOnEditorActionListener((textView, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.editEANCode.getText().length() > 0) {
-                    if (NetworkStatus.getInstance(AddStockItemActivity.this).isConnected())
+                    if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
                         getItemData(binding.editEANCode.getText().toString());
                     else
-                        Toast.makeText(AddStockItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddCountingItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
                 } else {
                     binding.editEANCode.setError("Enter Item code");
                 }
                 return true;
             } else if (actionId == EditorInfo.IME_NULL
                     && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                if (NetworkStatus.getInstance(AddStockItemActivity.this).isConnected())
+                if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
                     getItemData(binding.editEANCode.getText().toString());
                 else
-                    Toast.makeText(AddStockItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddCountingItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return true;
             }
 
@@ -197,33 +196,33 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         });
 
         binding.buttonSave.setOnClickListener(view -> {
-            if (binding.editTrayNo.getText().length() > 0) {
-                if (binding.editEANCode.getText().length() > 0) {
-                    if (binding.editQuantity.isEnabled()) {
-                        if (binding.editQuantity.getText().length() > 0) {
-                            if (NetworkStatus.getInstance(AddStockItemActivity.this).isConnected())
-                                saveItemStock();
-                            else
-                                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                        } else {
-                            binding.editQuantity.setError("Enter Quantity");
-                        }
+//            if (binding.editTrayNo.getText().length() > 0) {
+            if (binding.editEANCode.getText().length() > 0) {
+                if (binding.editQuantity.isEnabled()) {
+                    if (binding.editQuantity.getText().length() > 0) {
+                        if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
+                            saveItemStock();
+                        else
+                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                     } else {
-                        if (binding.editWeight.getText().length() > 0) {
-                            if (NetworkStatus.getInstance(AddStockItemActivity.this).isConnected())
-                                saveItemStock();
-                            else
-                                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                        } else {
-                            binding.editWeight.setError("Enter Weight in KGs");
-                        }
+                        binding.editQuantity.setError("Enter Quantity");
                     }
                 } else {
-                    binding.editEANCode.setError("Enter EAN Code");
+                    if (binding.editWeight.getText().length() > 0) {
+                        if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
+                            saveItemStock();
+                        else
+                            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    } else {
+                        binding.editWeight.setError("Enter Weight in KGs");
+                    }
                 }
             } else {
-                binding.editTrayNo.setError("Enter Tray No");
+                binding.editEANCode.setError("Enter EAN Code");
             }
+//            } else {
+//                binding.editTrayNo.setError("Enter Tray No");
+//            }
         });
 
     }
@@ -234,27 +233,18 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
         StatusAPI saveItemAPI = BaseURL.getStatusAPI();
 
-        JsonObject jsonObject = null;
-        try {
-            jsonObject = new JsonObject();
-            jsonObject.addProperty("STOCKDISPATCHDETAILID", stockDetailId);
-            jsonObject.addProperty("STOCKDISPATCHID", stockDispatchId);
-            jsonObject.addProperty("ITEMPRICEID", itemPriceId);
-            jsonObject.addProperty("TRAYNUMBER", binding.editTrayNo.getText().toString());
-            if (binding.editQuantity.isEnabled())
-                jsonObject.addProperty("DISPATCHQUANTITY", binding.editQuantity.getText().toString());
-            else
-                jsonObject.addProperty("DISPATCHQUANTITY", 1);
-            if (binding.editWeight.isEnabled())
-                jsonObject.addProperty("WEIGHTINKGS", binding.editWeight.getText().toString());
-            else
-                jsonObject.addProperty("WEIGHTINKGS", 0);
-            jsonObject.addProperty("USERID", Globals.userResponse.user.get(0).userId);
-        } catch (Exception e) {
-            e.printStackTrace();
+        int quantity, weightInKgs;
+
+        if (binding.editQuantity.isEnabled()) {
+            quantity = Integer.parseInt(binding.editQuantity.getText().toString());
+            weightInKgs = 0;
+        } else {
+            weightInKgs = Integer.parseInt(binding.editWeight.getText().toString());
+            quantity = 1;
         }
 
-        Call<ResponseBody> call = saveItemAPI.saveItemDispatch(true, jsonObject);
+        Call<ResponseBody> call = saveItemAPI.saveItemCounting(stockDetailId, stockCountingId, itemPriceId,
+                quantity, weightInKgs);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -263,7 +253,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                     if (response.code() == 200) {
 
                         if (response.body().string().equalsIgnoreCase("Successfully saved")) {
-                            Toast.makeText(AddStockItemActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddCountingItemActivity.this, "Successfully saved", Toast.LENGTH_SHORT).show();
 
                             binding.editEANCode.setText("");
                             clearData();
@@ -272,7 +262,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
                     } else {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
@@ -291,7 +281,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(AddStockItemActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddCountingItemActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -301,8 +291,8 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
     private void clearData() {
 
         if (isUpdateItem) {
-            binding.editTrayNo.setText("");
-            binding.editTrayNo.setEnabled(true);
+//            binding.editTrayNo.setText("");
+//            binding.editTrayNo.setEnabled(true);
             binding.editEANCode.setEnabled(true);
             binding.editItemName.setEnabled(true);
             binding.editQuantity.setEnabled(true);
@@ -327,7 +317,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         itemPriceSelectedList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
-        Call<ItemModel> call = itemAPI.getDispatchItemData(true, categoryId, itemCode);
+        Call<ItemModel> call = itemAPI.getCountingItemData(itemCode);
 
         call.enqueue(new Callback<ItemModel>() {
             @Override
@@ -348,7 +338,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                         selectPriceData(0);
                     }
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this, R.style.AlertDialogCustom);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this, R.style.AlertDialogCustom);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
@@ -388,7 +378,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
     private void showItemCodeDialog() {
 
-        dialog = new Dialog(AddStockItemActivity.this);
+        dialog = new Dialog(AddCountingItemActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.custom_dialog);
@@ -409,7 +399,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         }
         recyclerView.addItemDecoration(horizontalDecoration);
 
-        ItemCodeAdapter adapter = new ItemCodeAdapter(dialog.getContext(), itemCodeList, AddStockItemActivity.this);
+        ItemCodeAdapter adapter = new ItemCodeAdapter(dialog.getContext(), itemCodeList, AddCountingItemActivity.this);
         recyclerView.setAdapter(adapter);
 
         dialog.show();
@@ -447,7 +437,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
     @SuppressLint("SetTextI18n")
     private void showPriceDialog() {
 
-        dialogPrice = new Dialog(AddStockItemActivity.this);
+        dialogPrice = new Dialog(AddCountingItemActivity.this);
         dialogPrice.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogPrice.setCancelable(false);
         dialogPrice.setContentView(R.layout.custom_dialog);
@@ -470,7 +460,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         recyclerView.addItemDecoration(horizontalDecoration);
 
 
-        ItemPriceAdapter adapter = new ItemPriceAdapter(dialogPrice.getContext(), itemPriceSelectedList, AddStockItemActivity.this, true);
+        ItemPriceAdapter adapter = new ItemPriceAdapter(dialogPrice.getContext(), itemPriceSelectedList, AddCountingItemActivity.this, true);
         recyclerView.setAdapter(adapter);
 
         dialogPrice.show();

@@ -16,13 +16,12 @@ import com.nsretail.Globals;
 import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
-import com.nsretail.data.model.DispatchModel.Dispatch;
-import com.nsretail.data.model.DispatchModel.DispatchDetail;
-import com.nsretail.data.model.DispatchModel.DispatchModel;
+import com.nsretail.data.model.CountingModel.Counting;
+import com.nsretail.data.model.CountingModel.CountingDetail;
+import com.nsretail.data.model.CountingModel.CountingModel;
 import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
-import com.nsretail.ui.activities.StockDispatch.AddStockItemActivity;
-import com.nsretail.ui.adapter.StockDispatchAdapter;
+import com.nsretail.ui.adapter.StockCountingAdapter;
 import com.nsretail.utils.NetworkStatus;
 
 import java.io.IOException;
@@ -36,9 +35,9 @@ import retrofit2.Response;
 public class StockCountingActivity extends AppCompatActivity implements OnItemClickListener {
 
     ActivityStockBinding binding;
-    StockDispatchAdapter adapter;
-    ArrayList<DispatchModel> dispatchList;
-    ArrayList<DispatchDetail> dispatchDetail;
+    StockCountingAdapter adapter;
+    ArrayList<CountingModel> countingList;
+    ArrayList<CountingDetail> countingDetails;
     Boolean isAllFabsVisible;
 
     @SuppressLint("SetTextI18n")
@@ -93,9 +92,8 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
         });
 
         binding.addItemFab.setOnClickListener(view -> {
-            Intent h = new Intent(StockCountingActivity.this, AddStockItemActivity.class);
-            h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
-            h.putExtra("categoryId", dispatchList.get(0).categoryId);
+            Intent h = new Intent(StockCountingActivity.this, AddCountingItemActivity.class);
+            h.putExtra("stockCountingId", countingList.get(0).stockCountingId);
             activityResult.launch(h);
 
             binding.addItemFab.hide();
@@ -128,7 +126,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
     private void updateDispatch() {
         binding.progressBar.setVisibility(View.VISIBLE);
         StatusAPI updateAPI = BaseURL.getStatusAPI();
-        Call<ResponseBody> call = updateAPI.updateDispatch(dispatchList.get(0).stockDispatchId, true);
+        Call<ResponseBody> call = updateAPI.updateCounting(countingList.get(0).stockCountingId, Globals.userResponse.user.get(0).userId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -182,7 +180,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
     private void discardDispatch() {
         binding.progressBar.setVisibility(View.VISIBLE);
         StatusAPI api = BaseURL.getStatusAPI();
-        Call<ResponseBody> call = api.discardDispatch(dispatchList.get(0).stockDispatchId, Globals.userResponse.user.get(0).userId, true);
+        Call<ResponseBody> call = api.discardCounting(countingList.get(0).stockCountingId, Globals.userResponse.user.get(0).userId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -235,28 +233,24 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
 
     private void getDispatchData() {
 
-        dispatchList = new ArrayList<>();
-        dispatchDetail = new ArrayList<>();
+        countingList = new ArrayList<>();
+        countingDetails = new ArrayList<>();
         StatusAPI dispatchAPI = BaseURL.getStatusAPI();
 
-        Call<Dispatch> call = dispatchAPI.getDispatch(Globals.userResponse.user.get(0).categoryId,
-                Globals.userResponse.user.get(0).userId
-                , true);
-
-        call.enqueue(new Callback<Dispatch>() {
+        Call<Counting> call = dispatchAPI.getCounting(Globals.userResponse.user.get(0).userId);
+        call.enqueue(new Callback<Counting>() {
             @SuppressLint("SetTextI18n")
             @Override
-            public void onResponse(Call<Dispatch> call, Response<Dispatch> response) {
+            public void onResponse(Call<Counting> call, Response<Counting> response) {
 
                 if (response.code() == 200) {
 
-                    dispatchList = response.body().dispatchList;
-                    dispatchDetail = response.body().dispatchDetail;
+                    countingList = response.body().countingList;
+                    countingDetails = response.body().countingDetail;
 
-                    binding.textDealerName.setText(dispatchList.get(0).toBranchName + " / " +
-                            dispatchList.get(0).categoryName + " / " + dispatchList.get(0).stockDispatchId);
+                    binding.textDealerName.setText(countingList.get(0).branchName + " / " + countingList.get(0).stockCountingId);
 
-                    adapter = new StockDispatchAdapter(StockCountingActivity.this, dispatchDetail, StockCountingActivity.this);
+                    adapter = new StockCountingAdapter(StockCountingActivity.this, countingDetails, StockCountingActivity.this);
                     binding.recyclerViewStock.setAdapter(adapter);
                 } else {
                     Toast.makeText(StockCountingActivity.this, response.message(), Toast.LENGTH_SHORT).show();
@@ -265,7 +259,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
             }
 
             @Override
-            public void onFailure(Call<Dispatch> call, Throwable t) {
+            public void onFailure(Call<Counting> call, Throwable t) {
                 Toast.makeText(StockCountingActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
@@ -288,11 +282,17 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
         }
     });
 
+    public void updateItemData(int pos) {
+        Intent h = new Intent(StockCountingActivity.this, AddCountingItemActivity.class);
+        h.putExtra("stockCountingItem", countingDetails.get(pos));
+        h.putExtra("stockCountingId", countingList.get(0).stockCountingId);
+        activityResult.launch(h);
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onItemClick(int position, View view) {
-        dispatchDetail.remove(position);
+        countingDetails.remove(position);
         adapter.notifyDataSetChanged();
     }
 }

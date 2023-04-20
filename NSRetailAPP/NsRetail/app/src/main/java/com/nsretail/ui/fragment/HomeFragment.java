@@ -16,8 +16,11 @@ import androidx.fragment.app.Fragment;
 import com.nsretail.Globals;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
+import com.nsretail.data.model.CountingModel.Counting;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.databinding.FragmentHomeBinding;
+import com.nsretail.ui.activities.StockCounting.CountingBranchActivity;
+import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.activities.StockDispatch.BranchActivity;
 import com.nsretail.ui.activities.StockDispatch.StockDispatchActivity;
 import com.nsretail.ui.activities.StockEntry.SupplierActivity;
@@ -33,7 +36,6 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
     FragmentHomeBinding binding;
-    String token;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -59,6 +61,13 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getActivity(), "No internet Connection", Toast.LENGTH_SHORT).show();
         });
 
+        binding.buttonCounting.setOnClickListener(view -> {
+            if (NetworkStatus.getInstance(getActivity()).isConnected())
+                getCounting();
+            else
+                Toast.makeText(getActivity(), "No internet Connection", Toast.LENGTH_SHORT).show();
+        });
+
         return binding.getRoot();
     }
 
@@ -78,7 +87,8 @@ public class HomeFragment extends Fragment {
                     } else {
                         startActivity(new Intent(getActivity(), StockDispatchActivity.class));
                     }
-                } if (response.code() == 404){
+                }
+                if (response.code() == 404) {
                     Log.v("rsponse >>>", response.message());
                     try {
                         if (response.errorBody().string().equalsIgnoreCase("DISPATCH DOES NOT EXISTS")) {
@@ -94,6 +104,44 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Dispatch> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+
+            }
+        });
+    }
+
+    private void getCounting() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        StatusAPI planAPI = BaseURL.getStatusAPI();
+        Call<Counting> call = planAPI.getCounting(Globals.userResponse.user.get(0).userId);
+
+        call.enqueue(new Callback<Counting>() {
+            @Override
+            public void onResponse(Call<Counting> call, Response<Counting> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+                    if (response.message().equalsIgnoreCase("No counting data found")) {
+                        startActivity(new Intent(getActivity(), CountingBranchActivity.class));
+                    } else {
+                        startActivity(new Intent(getActivity(), StockCountingActivity.class));
+                    }
+                }
+                if (response.code() == 404) {
+                    Log.v("rsponse cunty >>>", response.message());
+                    try {
+                        if (response.errorBody().string().equalsIgnoreCase("No counting data found")) {
+                            startActivity(new Intent(getActivity(), CountingBranchActivity.class));
+                        } else {
+                            startActivity(new Intent(getActivity(), StockCountingActivity.class));
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Counting> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
 
             }

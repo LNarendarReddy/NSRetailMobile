@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
@@ -229,6 +230,13 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 } else {
                     binding.editEANCode.setError("Enter Item code");
                 }
+                return true;
+            }else if (actionId == EditorInfo.IME_NULL
+                    && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
+                    getItemData(binding.editEANCode.getText().toString());
+                else
+                    Toast.makeText(AddStockEntryActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
                 return true;
             }
             return false;
