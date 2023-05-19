@@ -19,6 +19,7 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.CountingModel.Counting;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.databinding.FragmentHomeBinding;
+import com.nsretail.ui.activities.ItemDetailActivity;
 import com.nsretail.ui.activities.StockCounting.CountingBranchActivity;
 import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.activities.StockDispatch.BranchActivity;
@@ -66,6 +67,10 @@ public class HomeFragment extends Fragment {
                 getCounting();
             else
                 Toast.makeText(getActivity(), "No internet Connection", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.buttonDetails.setOnClickListener(view -> {
+            startActivity(new Intent(getActivity(), ItemDetailActivity.class));
         });
 
         return binding.getRoot();

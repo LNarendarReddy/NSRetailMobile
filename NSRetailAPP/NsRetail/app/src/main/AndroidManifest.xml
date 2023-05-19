@@ -41,6 +41,7 @@
         <activity android:name=".ui.activities.StockCounting.StockCountingActivity" />
         <activity android:name=".ui.activities.StockCounting.CountingBranchActivity" />
         <activity android:name=".ui.activities.StockCounting.AddCountingItemActivity" />
+        <activity android:name=".ui.activities.ItemDetailActivity" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
