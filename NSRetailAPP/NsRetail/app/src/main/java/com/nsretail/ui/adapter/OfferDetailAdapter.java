@@ -8,19 +8,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.ItemDetail.Offer;
 import com.nsretail.databinding.ItemOfferBinding;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class OfferDetailAdapter extends RecyclerView.Adapter<OfferDetailAdapter.ViewHolder> {
 
-    private final List<Branch> branchList;
+    private final ArrayList<Offer> offerList;
     private final Context mContext;
 
-    public OfferDetailAdapter(Context context, List<Branch> branchArrayList) {
+    public OfferDetailAdapter(Context context, ArrayList<Offer> offerArrayList) {
         this.mContext = context;
-        this.branchList = branchArrayList;
+        this.offerList = offerArrayList;
     }
 
     @NonNull
@@ -34,8 +34,9 @@ public class OfferDetailAdapter extends RecyclerView.Adapter<OfferDetailAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-//        holder.itemStockBinding.textBranch.setText(branchList.get(position).branchName);
-
+        holder.itemOfferBinding.textOffer.setText(offerList.get(position).offerTypeName);
+        holder.itemOfferBinding.textCode.setText(offerList.get(position).offerCode);
+        holder.itemOfferBinding.textValue.setText("" + offerList.get(position).offerValue);
 
     }
 
@@ -55,6 +56,6 @@ public class OfferDetailAdapter extends RecyclerView.Adapter<OfferDetailAdapter.
 
     @Override
     public int getItemCount() {
-        return 2;
+        return offerList.size();
     }
 }

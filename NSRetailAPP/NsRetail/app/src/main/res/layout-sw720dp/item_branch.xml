@@ -19,34 +19,23 @@
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/textOffer"
+            android:id="@+id/textBranch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Name" />
+            tools:text="Branch Name" />
 
-        <TextView
-            android:id="@+id/textCode"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_17sdp"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            tools:text="Offer Code" />
-
-        <TextView
-            android:id="@+id/textValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            tools:text="Offer Value" />
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_right_arrow" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

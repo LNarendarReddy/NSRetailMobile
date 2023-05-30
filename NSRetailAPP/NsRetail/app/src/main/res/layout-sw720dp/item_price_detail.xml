@@ -19,34 +19,26 @@
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/textOffer"
+            android:id="@+id/textMrp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:text="Mrp"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Name" />
+            tools:ignore="HardcodedText" />
 
         <TextView
-            android:id="@+id/textCode"
+            android:id="@+id/textSalePrice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:text="Sale Price"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Code" />
-
-        <TextView
-            android:id="@+id/textValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            tools:text="Offer Value" />
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

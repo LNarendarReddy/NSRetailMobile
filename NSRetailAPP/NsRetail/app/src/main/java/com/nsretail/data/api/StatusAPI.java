@@ -6,6 +6,8 @@ import com.nsretail.data.model.CategoryModel.Category;
 import com.nsretail.data.model.CountingModel.Counting;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.data.model.GSTModel.GST;
+import com.nsretail.data.model.ItemDetail.ItemBranch;
+import com.nsretail.data.model.ItemDetail.ItemResult;
 import com.nsretail.data.model.ItemModel.ItemModel;
 import com.nsretail.data.model.StockEntry.Invoice;
 import com.nsretail.data.model.SupplierModel.Supplier;
@@ -64,7 +66,6 @@ public interface StatusAPI {
     @POST("stockentry/discardinvoice")
     Call<ResponseBody> discardEntry(@Query("StockEntryID") int entryId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
 
-
     @GET("stockdispatch/getitem")
     Call<ItemModel> getDispatchItemData(@Query("UseWHConnection") boolean useWHConnection, @Query("CategoryID") int categoryId, @Query("ItemCode") String itemCode);
 
@@ -118,5 +119,16 @@ public interface StatusAPI {
 
     @POST("stockcounting/discardcounting")
     Call<ResponseBody> discardCounting(@Query("StockCountingID") int countingId, @Query("UserID") int userId);
+
+    // ItemDetail
+
+    @GET("Item/getbranch")
+    Call<ItemBranch> getItemBranch(@Query("Userid") int userId);
+
+    @GET("Item/getitem")
+    Call<ItemModel> getItemDetail(@Query("ItemCode") String itemCode, @Query("UseWHConnection") boolean useWHConnection);
+
+    @GET("Item/getitemdata")
+    Call<ItemResult> getItemPrice(@Query("ItemCodeID") int itemCodeId, @Query("BranchID") int branchId, @Query("UseWHConnection") boolean useWHConnection);
 
 }

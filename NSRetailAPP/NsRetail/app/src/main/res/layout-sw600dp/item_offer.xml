@@ -26,17 +26,19 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Name" />
+            android:text="Offer Name"
+            tools:ignore="HardcodedText" />
 
         <TextView
-            android:id="@+id/textCode"
+            android:id="@+id/textType"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Code" />
+            android:text="Offer Type"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/textValue"
@@ -46,7 +48,8 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Value" />
+            android:text="Offer Value"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

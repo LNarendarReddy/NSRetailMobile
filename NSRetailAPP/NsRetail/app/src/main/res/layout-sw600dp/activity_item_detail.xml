@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:checked="true"
+                    android:checked="false"
                     android:padding="4dp"
                     android:text="Warehouse"
                     android:textSize="@dimen/_16sdp"
@@ -60,29 +60,6 @@
 
             </RadioGroup>
 
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:hint="Branch"
-                android:textColorHint="@color/grey_shade"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/purple_500"
-                app:hintTextColor="@color/purple_500"
-                tools:ignore="HardcodedText">
-
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/selectBranch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:paddingStart="0dp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="RtlSymmetry" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -164,115 +141,74 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/priceLayout"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/rounded_corner"
-                android:orientation="vertical">
+                android:text="Price Details"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Price Details"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp"
-                    tools:ignore="HardcodedText" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/offerLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/rounded_corner"
-                android:orientation="vertical">
+                android:layout_margin="@dimen/_10sdp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Offer Details"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp"
-                    tools:ignore="HardcodedText" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewOffer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/costPriceLayout"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/rounded_corner"
-                android:orientation="vertical">
+                android:text="Offer Details"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Cost Price Details"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp"
-                    tools:ignore="HardcodedText" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerCostPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/stockLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewOffer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/rounded_corner"
-                android:orientation="vertical">
+                android:text="Cost Price Details"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Stock Details"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_18ssp"
-                    tools:ignore="HardcodedText" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCostPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <TextView
-                    android:id="@+id/textStock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_14ssp"
-                    tools:text="Branch" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:text="Stock Details"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
 
-            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewStock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

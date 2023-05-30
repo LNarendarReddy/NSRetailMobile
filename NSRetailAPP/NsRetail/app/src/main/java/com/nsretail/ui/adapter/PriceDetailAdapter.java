@@ -8,19 +8,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.ItemModel.ItemPrice;
 import com.nsretail.databinding.ItemPriceDetailBinding;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class PriceDetailAdapter extends RecyclerView.Adapter<PriceDetailAdapter.ViewHolder> {
 
-    private final List<Branch> branchList;
+    private final ArrayList<ItemPrice> itemPriceList;
     private final Context mContext;
 
-    public PriceDetailAdapter(Context context, List<Branch> branchArrayList) {
+    public PriceDetailAdapter(Context context, ArrayList<ItemPrice> itemPrices) {
         this.mContext = context;
-        this.branchList = branchArrayList;
+        this.itemPriceList = itemPrices;
     }
 
     @NonNull
@@ -34,8 +34,9 @@ public class PriceDetailAdapter extends RecyclerView.Adapter<PriceDetailAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-//        holder.itemPriceBinding.textMrp.setText("Mrp");
-
+        holder.itemPriceBinding.textMrp.setText("MRP: "+itemPriceList.get(position).mrp);
+        holder.itemPriceBinding.textSalePrice.setText("SP: "+itemPriceList.get(position).salePrice);
+        holder.itemPriceBinding.textStatus.setText("Status: "+itemPriceList.get(position).status);
 
     }
 
@@ -55,6 +56,6 @@ public class PriceDetailAdapter extends RecyclerView.Adapter<PriceDetailAdapter.
 
     @Override
     public int getItemCount() {
-        return 3;
+        return itemPriceList.size();
     }
 }

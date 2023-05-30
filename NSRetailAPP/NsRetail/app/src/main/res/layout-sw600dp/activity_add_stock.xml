@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/includeStockAdd"
+        layout="@layout/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/includeStockAdd"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="EAN Code"
+                android:textColorHint="@color/grey_shade"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/purple_500"
+                app:hintTextColor="@color/purple_500"
+                tools:ignore="HardcodedText">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editEANCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:paddingStart="0dp"
+                    android:paddingBottom="5dp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"
+                    tools:ignore="RtlSymmetry" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Item Name"
+                android:textColorHint="@color/grey_shade"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/purple_500"
+                app:hintTextColor="@color/purple_500"
+                tools:ignore="HardcodedText">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editItemName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:imeOptions="actionNext"
+                    android:inputType="none"
+                    android:maxLines="1"
+                    android:paddingStart="0dp"
+                    android:paddingBottom="5dp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"
+                    tools:ignore="RtlSymmetry" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Price Details"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Quantity"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Weight in kGS"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editWeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="MRP"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editMRP"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Sale Price"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editSalePrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="CP W/O Tax"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCPTaxWO"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="CP with Tax"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCPTax"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:text="Discount Options"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Free Item Code"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/selectItemCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Free Quantity"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editFreeQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Discount %"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editDiscount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Discount Flat"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editDiscountFlat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Scheme %"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editScheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Scheme Flat"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editSchemeFlat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:text="GST Summary"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="GST Code"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/selectGST"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="none"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Applied GST"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editAppliedGST"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="CGST"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCGST"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="SGST"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editSGST"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="IGST"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editIGST"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="CESS"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCESS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:text="Purchase Summary"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Applied Discount"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editAppliedDiscount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Applied Scheme"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editAppliedScheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Total Price W/O Tax"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPriceWOTax"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Total Price with Tax"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPriceTax"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="HSN Code"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editHSNCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:hint="Final Price"
+                    android:textColorHint="@color/grey_shade"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:hintTextColor="@color/purple_500"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editFinalPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="RtlSymmetry" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSave"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:background="@drawable/button_bg"
+                android:paddingStart="@dimen/_16sdp"
+                android:paddingEnd="@dimen/_16sdp"
+                android:text="@string/save"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp"
+                app:backgroundTint="@null"
+                tools:ignore="RtlSymmetry" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</RelativeLayout>

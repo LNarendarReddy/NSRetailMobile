@@ -24,10 +24,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:text="Mrp"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:ignore="HardcodedText" />
+            tools:text="Mrp" />
 
         <TextView
             android:id="@+id/textSalePrice"
@@ -35,10 +34,18 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:text="Sale Price"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:ignore="HardcodedText" />
+            tools:text="Sale Price" />
+
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            tools:text="Status" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

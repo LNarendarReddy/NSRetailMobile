@@ -28,4 +28,7 @@ public class ItemPrice implements Serializable {
     @SerializedName("COSTPRICEWOT")
     @Expose
     public double costPriceWOT;
+    @SerializedName("STATUS")
+    @Expose
+    public String status;
 }

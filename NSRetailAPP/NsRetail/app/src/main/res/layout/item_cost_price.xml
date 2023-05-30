@@ -19,15 +19,24 @@
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/textCostPrice"
+            android:id="@+id/textPriceWT"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:text="Cost Price"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:ignore="HardcodedText" />
+            tools:text="Cost Price" />
+
+        <TextView
+            android:id="@+id/textPriceWOT"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            tools:text="Cost Price" />
 
         <TextView
             android:id="@+id/textGst"
@@ -35,10 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:text="GST"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:ignore="HardcodedText" />
+            tools:text="GST" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

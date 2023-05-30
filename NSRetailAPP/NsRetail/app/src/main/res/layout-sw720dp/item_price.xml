@@ -11,42 +11,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/textOffer"
-            android:layout_width="0dp"
+            android:id="@+id/textPrice"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Name" />
+            tools:text="Stock Entry" />
 
         <TextView
-            android:id="@+id/textCode"
-            android:layout_width="0dp"
+            android:id="@+id/textTax"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
+            android:textColor="@color/black_shade"
             android:textSize="@dimen/_14ssp"
-            tools:text="Offer Code" />
-
-        <TextView
-            android:id="@+id/textValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            tools:text="Offer Value" />
+            tools:text="Stock Entry" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
