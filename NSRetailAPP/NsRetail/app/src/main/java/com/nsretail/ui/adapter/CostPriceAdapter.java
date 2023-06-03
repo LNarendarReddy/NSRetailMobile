@@ -34,14 +34,15 @@ public class CostPriceAdapter extends RecyclerView.Adapter<CostPriceAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.itemCostBinding.textPriceWT.setText("CPWT: "+itemCostList.get(position).costPriceWT);
-        holder.itemCostBinding.textPriceWOT.setText("CPWOT: "+itemCostList.get(position).costPriceWOT);
-        holder.itemCostBinding.textGst.setText("GST: "+itemCostList.get(position).gstCode);
+        holder.itemCostBinding.textPriceWT.setText("" + itemCostList.get(position).costPriceWT);
+        holder.itemCostBinding.textPriceWOT.setText("" + itemCostList.get(position).costPriceWOT);
+        holder.itemCostBinding.textGst.setText("" + itemCostList.get(position).gstCode);
 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemCostPriceBinding itemCostBinding;
+
         public ViewHolder(ItemCostPriceBinding itemBinding) {
             super(itemBinding.getRoot());
             this.itemCostBinding = itemBinding;

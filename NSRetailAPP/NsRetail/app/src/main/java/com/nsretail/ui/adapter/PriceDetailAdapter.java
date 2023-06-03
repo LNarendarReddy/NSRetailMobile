@@ -34,9 +34,8 @@ public class PriceDetailAdapter extends RecyclerView.Adapter<PriceDetailAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.itemPriceBinding.textMrp.setText("MRP: "+itemPriceList.get(position).mrp);
-        holder.itemPriceBinding.textSalePrice.setText("SP: "+itemPriceList.get(position).salePrice);
-        holder.itemPriceBinding.textStatus.setText("Status: "+itemPriceList.get(position).status);
+        holder.itemPriceBinding.textMrp.setText("" + itemPriceList.get(position).mrp);
+        holder.itemPriceBinding.textSalePrice.setText("" + itemPriceList.get(position).salePrice);
 
     }
 

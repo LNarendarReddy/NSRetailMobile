@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
             tools:text="Mrp" />
@@ -34,18 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
             tools:text="Sale Price" />
-
-        <TextView
-            android:id="@+id/textStatus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            tools:text="Status" />
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

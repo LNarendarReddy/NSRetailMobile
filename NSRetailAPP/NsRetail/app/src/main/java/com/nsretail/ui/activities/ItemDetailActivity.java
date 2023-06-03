@@ -392,8 +392,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                             binding.recyclerViewOffer.setAdapter(adapter2);
                         }
                         if (stockList.size() > 0) {
-                            binding.textStock.setText("Qty: " + stockList.get(0).quantity
-                                    + " , W/Kgs: " + stockList.get(0).weightInKgs);
+                            binding.textStock.setText("Quantity: " + stockList.get(0).quantity
+                                    + " , Weight in KGs: " + stockList.get(0).weightInKgs);
                         }
 
                     } else {

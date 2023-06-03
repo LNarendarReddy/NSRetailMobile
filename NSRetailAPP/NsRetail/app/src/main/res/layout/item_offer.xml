@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
             tools:text="Offer Name" />
@@ -34,6 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
             tools:text="Offer Code" />
@@ -44,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
             tools:text="Offer Value" />
