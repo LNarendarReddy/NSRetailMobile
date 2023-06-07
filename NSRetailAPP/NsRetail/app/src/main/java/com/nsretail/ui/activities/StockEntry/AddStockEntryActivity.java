@@ -164,6 +164,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             finalPrice = stockEntryDetail.totalPriceWT;
             finalPriceWO = stockEntryDetail.totalPriceWOT;
 
+        } else {
+            binding.editEANCode.requestFocus();
+            binding.editWeight.setEnabled(false);
+            binding.editQuantity.setEnabled(false);
         }
 
         binding.includeStockAdd.imageBack.setOnClickListener(view -> {
@@ -231,8 +235,8 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                     binding.editEANCode.setError("Enter Item code");
                 }
                 return true;
-            }else if (actionId == EditorInfo.IME_NULL
-                    && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            } else if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                Log.i("TAG >>>> ", "" + keyEvent.getCharacters());
                 if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
                     getItemData(binding.editEANCode.getText().toString());
                 else
@@ -255,9 +259,9 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (binding.editEANCode.getText().length() > 0) {
+//                if (binding.editEANCode.getText().length() >= 0) {
                     clearData();
-                }
+//                }
             }
         });
 
@@ -484,8 +488,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             if (binding.editQuantity.getText().length() > 0) {
                 if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
                     saveItemEntry();
-                else
-                    Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
             } else {
                 binding.editQuantity.setError("Enter Quantity");
             }
@@ -493,8 +496,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             if (binding.editWeight.getText().length() > 0) {
                 if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
                     saveItemEntry();
-                else
-                    Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
             } else {
                 binding.editWeight.setError("Enter Weight in KGs");
             }
@@ -877,8 +879,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             jsonObject = new JsonObject();
             if (stockEntryDetail != null)
                 jsonObject.addProperty("STOCKENTRYDETAILID", stockEntryDetail.stockEntryDetailId);
-            else
-                jsonObject.addProperty("STOCKENTRYDETAILID", 0);
+            else jsonObject.addProperty("STOCKENTRYDETAILID", 0);
             jsonObject.addProperty("STOCKENTRYID", stockEntry.get(0).stockEntryId);
             if (itemCodeList != null)
                 jsonObject.addProperty("ITEMCODEID", itemCodeList.get(0).itemCodeId);
@@ -895,8 +896,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             else jsonObject.addProperty("QUANTITY", 0);
             if (binding.editWeight.getText().length() > 0)
                 jsonObject.addProperty("WEIGHTINKGS", Integer.parseInt(binding.editWeight.getText().toString()));
-            else
-                jsonObject.addProperty("WEIGHTINKGS", 0);
+            else jsonObject.addProperty("WEIGHTINKGS", 0);
             jsonObject.addProperty("UserID", Globals.userResponse.user.get(0).userId);
             jsonObject.addProperty("GSTID", gstId);
             if (binding.editFreeQuantity.getText().length() > 0)

@@ -114,6 +114,8 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             binding.editItemName.setEnabled(false);
             binding.editMRP.setEnabled(false);
             binding.editSalePrice.setEnabled(false);
+
+            binding.editEANCode.requestFocus();
         }
 
         binding.includeItemAdd.imageBack.setOnClickListener(view -> {
@@ -189,9 +191,9 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (binding.editEANCode.getText().length() > 0) {
+//                if (binding.editEANCode.getText().length() > 0) {
                     clearData();
-                }
+//                }
             }
         });
 

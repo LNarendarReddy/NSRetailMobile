@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -46,6 +48,7 @@ import com.nsretail.ui.adapter.CostPriceAdapter;
 import com.nsretail.ui.adapter.ItemCodeAdapter;
 import com.nsretail.ui.adapter.OfferDetailAdapter;
 import com.nsretail.ui.adapter.PriceDetailAdapter;
+import com.nsretail.ui.adapter.StockDetailsAdapter;
 import com.nsretail.utils.NetworkStatus;
 
 import java.io.IOException;
@@ -70,6 +73,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
     ArrayList<BranchStock> stockList;
     Dialog dialog;
     int branchId;
+    boolean isFocus;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -152,7 +156,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             return false;
         });
 
-       /* binding.editEANCode.addTextChangedListener(new TextWatcher() {
+        binding.editEANCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -165,11 +169,18 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (binding.editEANCode.getText().length() > 0) {
+                if (isFocus)
                     clearData();
-                }
             }
-        });*/
+        });
+
+        binding.editEANCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus)
+                    isFocus = hasFocus;
+            }
+        });
 
     }
 
@@ -277,7 +288,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                         if (itemCodeList.size() > 1) {
                             showDialog();
                         } else {
-                            Log.v("server response >>", " >>>> ");
                             binding.editEANCode.setText(itemCodeList.get(0).itemCode);
 
                             if (NetworkStatus.getInstance(ItemDetailActivity.this).isConnected())
@@ -338,11 +348,22 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
 
     private void clearData() {
-
-        binding.editEANCode.setText("");
-        binding.editEANCode.requestFocus();
+        isFocus = false;
         binding.editSKUCode.setText("");
         binding.editItemName.setText("");
+
+        if (itemCodeList != null)
+            itemCostList.clear();
+        if (itemPrices != null)
+            itemPrices.clear();
+        if (offerList != null)
+            offerList.clear();
+        if (stockList != null) {
+            stockList.clear();
+            setPriceData();
+        }
+
+
 
     }
 
@@ -350,7 +371,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
     public void onItemClick(int position, View view) {
 
         binding.editEANCode.setText(itemCodeList.get(position).itemCode);
-        binding.editSKUCode.setText(itemCodeList.get(position).itemCode);
 
         if (NetworkStatus.getInstance(ItemDetailActivity.this).isConnected())
             getItemPrice(itemCodeList.get(position).itemCodeId);
@@ -379,22 +399,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                         offerList = response.body().offerList;
                         stockList = response.body().branchStockList;
 
-                        if (itemPrices.size() > 0) {
-                            PriceDetailAdapter adapter = new PriceDetailAdapter(ItemDetailActivity.this, itemPrices);
-                            binding.recyclerViewPrice.setAdapter(adapter);
-                        }
-                        if (itemCostList.size() > 0) {
-                            CostPriceAdapter adapter1 = new CostPriceAdapter(ItemDetailActivity.this, itemCostList);
-                            binding.recyclerCostPrice.setAdapter(adapter1);
-                        }
-                        if (offerList.size() > 0) {
-                            OfferDetailAdapter adapter2 = new OfferDetailAdapter(ItemDetailActivity.this, offerList);
-                            binding.recyclerViewOffer.setAdapter(adapter2);
-                        }
-                        if (stockList.size() > 0) {
-                            binding.textStock.setText("Quantity: " + stockList.get(0).quantity
-                                    + " , Weight in KGs: " + stockList.get(0).weightInKgs);
-                        }
+                        setPriceData();
 
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(ItemDetailActivity.this);
@@ -416,6 +421,21 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
             }
         });
+    }
+
+    private void setPriceData() {
+
+        PriceDetailAdapter adapter = new PriceDetailAdapter(ItemDetailActivity.this, itemPrices);
+        binding.recyclerViewPrice.setAdapter(adapter);
+
+        CostPriceAdapter adapter1 = new CostPriceAdapter(ItemDetailActivity.this, itemCostList);
+        binding.recyclerCostPrice.setAdapter(adapter1);
+
+        OfferDetailAdapter adapter2 = new OfferDetailAdapter(ItemDetailActivity.this, offerList);
+        binding.recyclerViewOffer.setAdapter(adapter2);
+
+        StockDetailsAdapter adapter3 = new StockDetailsAdapter(ItemDetailActivity.this, stockList);
+        binding.recyclerStock.setAdapter(adapter3);
     }
 
 }

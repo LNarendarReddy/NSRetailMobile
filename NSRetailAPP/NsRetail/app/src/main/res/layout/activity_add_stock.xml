@@ -46,6 +46,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:maxLines="1"
+                    android:selectAllOnFocus="true"
                     android:paddingStart="0dp"
                     android:paddingBottom="5dp"
                     android:textColor="@color/black"

@@ -8,19 +8,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.ItemDetail.BranchStock;
 import com.nsretail.databinding.ItemStockDetailBinding;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class StockDetailsAdapter extends RecyclerView.Adapter<StockDetailsAdapter.ViewHolder> {
 
-    private final List<Branch> branchList;
+    private final ArrayList<BranchStock> stockList;
     private final Context mContext;
 
-    public StockDetailsAdapter(Context context, List<Branch> branchArrayList) {
+    public StockDetailsAdapter(Context context, ArrayList<BranchStock> stockArrayList) {
         this.mContext = context;
-        this.branchList = branchArrayList;
+        this.stockList = stockArrayList;
     }
 
     @NonNull
@@ -34,7 +34,8 @@ public class StockDetailsAdapter extends RecyclerView.Adapter<StockDetailsAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-//        holder.itemStockBinding.textBranch.setText(branchList.get(position).branchName);
+        holder.itemStockBinding.textQuantity.setText("" + stockList.get(position).quantity);
+        holder.itemStockBinding.textWeightInKgs.setText("" + stockList.get(position).weightInKgs);
 
     }
 
@@ -54,6 +55,6 @@ public class StockDetailsAdapter extends RecyclerView.Adapter<StockDetailsAdapte
 
     @Override
     public int getItemCount() {
-        return 10;
+        return stockList.size();
     }
 }

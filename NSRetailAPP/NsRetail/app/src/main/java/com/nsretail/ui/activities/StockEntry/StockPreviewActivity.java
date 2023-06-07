@@ -75,6 +75,8 @@ public class StockPreviewActivity extends AppCompatActivity {
             binding.editPriceTax.setText("" + totalPriceWT);
             binding.editGstValue.setText("" + gstValue);
             binding.editNetPrice.setText("" + netPrice);
+            binding.editFinalPrice.setText("" + netPrice);
+
 
         }
 
