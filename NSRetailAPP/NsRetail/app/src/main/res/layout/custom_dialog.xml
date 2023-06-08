@@ -6,18 +6,29 @@
     android:layout_height="match_parent"
     tools:ignore="HardcodedText">
 
+    <ImageView
+        android:id="@+id/imageCancel"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/app_name"
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/ic_cancel" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
         android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textSize="@dimen/_14sdp"
+        app:layout_constraintTop_toBottomOf="@id/imageCancel"
         tools:text="@string/app_name" />
 
     <androidx.recyclerview.widget.RecyclerView

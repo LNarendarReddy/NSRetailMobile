@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -260,7 +261,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void afterTextChanged(Editable editable) {
 //                if (binding.editEANCode.getText().length() >= 0) {
-                    clearData();
+                clearData();
 //                }
             }
         });
@@ -765,6 +766,9 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
         TextView textView = dialog.findViewById(R.id.textView);
         textView.setText("EAN Code List");
+
+        ImageView imageCancel = dialog.findViewById(R.id.imageCancel);
+        imageCancel.setOnClickListener(view -> dialog.dismiss());
 
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 

@@ -24,21 +24,21 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:text="Offer Name"
-            tools:ignore="HardcodedText" />
+            tools:text="Offer Name" />
 
         <TextView
-            android:id="@+id/textType"
+            android:id="@+id/textCode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:text="Offer Type"
-            tools:ignore="HardcodedText" />
+            tools:text="Offer Code" />
 
         <TextView
             android:id="@+id/textValue"
@@ -46,10 +46,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:text="Offer Value"
-            tools:ignore="HardcodedText" />
+            tools:text="Offer Value" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

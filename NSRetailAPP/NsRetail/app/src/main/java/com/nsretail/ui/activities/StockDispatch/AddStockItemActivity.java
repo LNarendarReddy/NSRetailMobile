@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -401,6 +402,9 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         TextView textView = dialog.findViewById(R.id.textView);
         textView.setText("EAN Code List");
 
+        ImageView imageCancel = dialog.findViewById(R.id.imageCancel);
+        imageCancel.setOnClickListener(view -> dialog.dismiss());
+
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 
         DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
@@ -460,6 +464,9 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
         TextView textView = dialogPrice.findViewById(R.id.textView);
         textView.setText("MRP List");
+
+        ImageView imageCancel = dialogPrice.findViewById(R.id.imageCancel);
+        imageCancel.setOnClickListener(view -> dialogPrice.dismiss());
 
         RecyclerView recyclerView = dialogPrice.findViewById(R.id.recyclerViewItem);
 

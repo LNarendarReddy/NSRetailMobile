@@ -24,7 +24,7 @@
             android:text="@string/stock_counting"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14sdp"
             app:backgroundTint="@null"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
             android:text="@string/stock_dispatch"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14sdp"
             app:backgroundTint="@null"
             app:layout_constraintTop_toBottomOf="@+id/buttonCounting"
             tools:ignore="RtlSymmetry" />
@@ -61,7 +61,7 @@
             android:text="@string/stock_entry"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14sdp"
             app:backgroundTint="@null"
             app:layout_constraintTop_toBottomOf="@+id/buttonDispatch"
             tools:ignore="RtlSymmetry" />
@@ -78,7 +78,7 @@
             android:text="@string/item_details"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14sdp"
             app:backgroundTint="@null"
             app:layout_constraintTop_toBottomOf="@+id/buttonEntry"
             tools:ignore="RtlSymmetry" />

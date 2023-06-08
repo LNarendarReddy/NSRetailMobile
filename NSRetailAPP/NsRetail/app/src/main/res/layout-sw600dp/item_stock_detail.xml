@@ -19,37 +19,26 @@
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/textBranch"
+            android:id="@+id/textQuantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:text="Branch"
-            tools:ignore="HardcodedText" />
+            tools:text="Quantity"/>
 
         <TextView
-            android:id="@+id/textValue"
+            android:id="@+id/textWeightInKgs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:text="Value"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/textIntransit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"
-            android:text="Intransit"
-            tools:ignore="HardcodedText" />
+            tools:text="Weight In KGs" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
