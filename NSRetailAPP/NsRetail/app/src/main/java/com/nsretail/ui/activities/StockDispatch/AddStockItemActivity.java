@@ -194,7 +194,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             @Override
             public void afterTextChanged(Editable editable) {
 //                if (binding.editEANCode.getText().length() > 0) {
-                    clearData();
+                clearData();
 //                }
             }
         });
@@ -355,8 +355,12 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) ->
-                                        dialog.cancel());
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                    binding.editEANCode.setText("");
+                                    clearData();
+                                    binding.editEANCode.requestFocus();
+                                });
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -403,7 +407,12 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         textView.setText("EAN Code List");
 
         ImageView imageCancel = dialog.findViewById(R.id.imageCancel);
-        imageCancel.setOnClickListener(view -> dialog.dismiss());
+        imageCancel.setOnClickListener(view -> {
+            dialog.dismiss();
+            binding.editEANCode.setText("");
+            clearData();
+            binding.editEANCode.requestFocus();
+        });
 
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 
@@ -466,7 +475,12 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
         textView.setText("MRP List");
 
         ImageView imageCancel = dialogPrice.findViewById(R.id.imageCancel);
-        imageCancel.setOnClickListener(view -> dialogPrice.dismiss());
+        imageCancel.setOnClickListener(view -> {
+            dialogPrice.dismiss();
+            binding.editEANCode.setText("");
+            clearData();
+            binding.editEANCode.requestFocus();
+        });
 
         RecyclerView recyclerView = dialogPrice.findViewById(R.id.recyclerViewItem);
 

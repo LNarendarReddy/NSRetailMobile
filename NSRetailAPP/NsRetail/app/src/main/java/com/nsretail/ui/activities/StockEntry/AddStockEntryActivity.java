@@ -717,7 +717,9 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
                         builder.setMessage(response.errorBody().string()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
                             dialog.cancel();
+                            binding.editEANCode.setText("");
                             clearData();
+                            binding.editEANCode.requestFocus();
                         });
                         AlertDialog alert = builder.create();
                         alert.show();
@@ -768,7 +770,12 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         textView.setText("EAN Code List");
 
         ImageView imageCancel = dialog.findViewById(R.id.imageCancel);
-        imageCancel.setOnClickListener(view -> dialog.dismiss());
+        imageCancel.setOnClickListener(view -> {
+            dialog.dismiss();
+            binding.editEANCode.setText("");
+            clearData();
+            binding.editEANCode.requestFocus();
+        });
 
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 

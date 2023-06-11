@@ -157,32 +157,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             return false;
         });
 
-        binding.editEANCode.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (isFocus)
-                    clearData();
-            }
-        });
-
-        binding.editEANCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus)
-                    isFocus = hasFocus;
-            }
-        });
-
     }
 
     private void getBranch() {
@@ -208,6 +182,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                     if (binding.selectBranch != null) {
                         binding.selectBranch.setAdapter(adapter);
                     }
+
+                    binding.selectBranch.requestFocus();
 
                     if (binding.priceLayout != null)
                         if (response.body().accessList.get(0).showItemPrice)
@@ -283,13 +259,13 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                         itemList = response.body().itemList;
                         itemCodeList = response.body().itemCodeList;
 
-                        binding.editItemName.setText(itemList.get(0).itemName);
-                        binding.editSKUCode.setText(itemList.get(0).skuCode);
 
                         if (itemCodeList.size() > 1) {
                             showDialog();
                         } else {
-                            binding.editEANCode.setText(itemCodeList.get(0).itemCode);
+//                            binding.editEANCode.setText(itemCodeList.get(0).itemCode);
+
+                            setEANCode(itemCodeList.get(0).itemCode);
 
                             if (NetworkStatus.getInstance(ItemDetailActivity.this).isConnected())
                                 getItemPrice(itemCodeList.get(0).itemCodeId);
@@ -297,11 +273,14 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                                 Toast.makeText(ItemDetailActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
 
                         }
+
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(ItemDetailActivity.this);
                         builder.setMessage(response.errorBody().string()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
                             dialog.cancel();
+                            binding.editEANCode.setText("");
                             clearData();
+                            binding.editEANCode.requestFocus();
                         });
                         AlertDialog alert = builder.create();
                         alert.show();
@@ -319,6 +298,32 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
         });
     }
 
+    private void setEANCode(String itemCode) {
+
+        binding.editEANCode.setText(itemCode);
+
+        binding.editItemName.setText(itemList.get(0).itemName);
+        binding.editSKUCode.setText(itemList.get(0).skuCode);
+        binding.editEANCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (binding.editEANCode.getText().length() > 0)
+                    clearData();
+            }
+        });
+
+    }
+
     private void showDialog() {
 
         dialog = new Dialog(ItemDetailActivity.this);
@@ -333,7 +338,12 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
         textView.setText("EAN Code List");
 
         ImageView imageCancel = dialog.findViewById(R.id.imageCancel);
-        imageCancel.setOnClickListener(view -> dialog.dismiss());
+        imageCancel.setOnClickListener(view -> {
+            dialog.dismiss();
+            binding.editEANCode.setText("");
+            clearData();
+            binding.editEANCode.requestFocus();
+        });
 
         RecyclerView recyclerView = dialog.findViewById(R.id.recyclerViewItem);
 
@@ -367,14 +377,15 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             setPriceData();
         }
 
-
-
     }
 
     @Override
     public void onItemClick(int position, View view) {
 
-        binding.editEANCode.setText(itemCodeList.get(position).itemCode);
+//        binding.editEANCode.setText(itemCodeList.get(position).itemCode);
+
+        setEANCode(itemCodeList.get(position).itemCode);
+
 
         if (NetworkStatus.getInstance(ItemDetailActivity.this).isConnected())
             getItemPrice(itemCodeList.get(position).itemCodeId);
