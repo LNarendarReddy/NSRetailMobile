@@ -181,11 +181,15 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
-                builder.setMessage(t.getMessage())
-                        .setCancelable(false)
-                        .setPositiveButton("OK", (dialog, id) -> {
-                            dialog.cancel();
-                        });
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
                 AlertDialog alert = builder.create();
                 alert.show();
             }
@@ -222,7 +226,18 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
 
             @Override
             public void onFailure(Call<Invoice> call, Throwable t) {
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
     }

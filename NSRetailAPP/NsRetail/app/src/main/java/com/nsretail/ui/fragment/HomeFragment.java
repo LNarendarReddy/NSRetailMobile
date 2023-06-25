@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.nsretail.Globals;
@@ -20,6 +21,7 @@ import com.nsretail.data.model.CountingModel.Counting;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.databinding.FragmentHomeBinding;
 import com.nsretail.ui.activities.ItemDetailActivity;
+import com.nsretail.ui.activities.LoginActivity;
 import com.nsretail.ui.activities.StockCounting.CountingBranchActivity;
 import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.activities.StockDispatch.BranchActivity;
@@ -110,7 +112,18 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<Dispatch> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
     }
@@ -148,7 +161,18 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<Counting> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
     }

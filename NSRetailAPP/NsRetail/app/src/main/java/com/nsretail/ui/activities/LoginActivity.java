@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,13 +48,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        
         StatusAPI loginAPI = BaseURL.getStatusAPI();
 
         Call<Response> call = loginAPI.login(binding.editUserName.getText().toString(), binding.editPassword.getText().toString(),
-                "1.1");
+                "1.2");
         call.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                binding.progressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
 
                     SharedPreferences preferences1 = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -84,16 +88,16 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Response> call, Throwable t) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AlertDialogCustom);
-                try {
-                    builder.setMessage(t.getMessage())
-                            .setCancelable(false)
-                            .setPositiveButton("OK", (dialog, id) -> {
-                                finish();
-                                dialog.cancel();
-                            });
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                binding.progressBar.setVisibility(View.GONE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
                 }
                 AlertDialog alert = builder.create();
                 alert.show();

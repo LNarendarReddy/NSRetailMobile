@@ -100,13 +100,14 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
             public void onFailure(Call<List<Branch>> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(CountingBranchActivity.this);
-                try {
-                    builder.setMessage(t.getMessage())
-                            .setCancelable(false)
-                            .setPositiveButton("OK", (dialog, id) ->
-                                    dialog.cancel());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
                 }
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -159,7 +160,18 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(CountingBranchActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(CountingBranchActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });

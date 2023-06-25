@@ -40,4 +40,8 @@ public class CountingDetail implements Serializable {
     @SerializedName("ISOPENITEM")
     @Expose
     public boolean isOpenItem;
+    @SerializedName("SKUCODE")
+    @Expose
+    public String skuCode;
+
 }

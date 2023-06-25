@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -21,6 +22,7 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.CategoryModel.Category;
 import com.nsretail.databinding.ActivityBranchBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockEntry.SupplierActivity;
 import com.nsretail.ui.adapter.CategoryAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -94,7 +96,19 @@ public class CategoryActivity extends AppCompatActivity implements OnItemClickLi
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Log.e("GST", "" + t.getMessage());
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                        finish();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });
@@ -148,7 +162,18 @@ public class CategoryActivity extends AppCompatActivity implements OnItemClickLi
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(CategoryActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });

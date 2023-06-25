@@ -60,7 +60,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
     ActivityResultLauncher<ScanOptions> barcodeLauncher;
     CountingDetail countingDetail;
     Dialog dialog, dialogPrice;
-    int stockCountingId, categoryId, itemPriceId, stockDetailId;
+    int stockCountingId, itemPriceId, stockDetailId;
     boolean isUpdateItem;
 
     @SuppressLint("SetTextI18n")
@@ -104,6 +104,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 //            binding.editTrayNo.setText("" + countingDetail.trayNumber);
             binding.editEANCode.setText(countingDetail.itemCode);
             binding.editItemName.setText(countingDetail.itemName);
+            binding.editSKUCode.setText(countingDetail.skuCode);
             binding.editMRP.setText("" + countingDetail.mrp);
             binding.editSalePrice.setText("" + countingDetail.salePrice);
 
@@ -115,6 +116,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             binding.editItemName.setEnabled(false);
             binding.editMRP.setEnabled(false);
             binding.editSalePrice.setEnabled(false);
+            binding.editSKUCode.setEnabled(false);
 
             binding.editEANCode.requestFocus();
         }
@@ -193,7 +195,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void afterTextChanged(Editable editable) {
 //                if (binding.editEANCode.getText().length() > 0) {
-                    clearData();
+                clearData();
 //                }
             }
         });
@@ -284,7 +286,18 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(AddCountingItemActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });
@@ -305,6 +318,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
         }
 
         binding.editItemName.setText("");
+        binding.editSKUCode.setText("");
         binding.editQuantity.setText("");
         binding.editWeight.setText("");
         binding.editMRP.setText("");
@@ -362,7 +376,18 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onFailure(Call<ItemModel> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
@@ -371,6 +396,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
     private void itemData() {
 
         binding.editItemName.setText(itemList.get(0).itemName);
+        binding.editSKUCode.setText(itemList.get(0).skuCode);
 
         if (itemList.get(0).isOpenItem) {
             binding.editWeight.setEnabled(true);

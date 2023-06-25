@@ -101,6 +101,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             Toast.makeText(AddStockEntryActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
         binding.editItemName.setEnabled(false);
+        binding.editSKUCode.setEnabled(false);
         binding.editAppliedGST.setEnabled(false);
         binding.editAppliedDiscount.setEnabled(false);
         binding.editAppliedScheme.setEnabled(false);
@@ -116,6 +117,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
             binding.editEANCode.setText(stockEntryDetail.itemCode);
             binding.editItemName.setText(stockEntryDetail.itemName);
+            binding.editSKUCode.setText(stockEntryDetail.skuCode);
             if (stockEntryDetail.isOpenItem) {
                 binding.editWeight.setText("" + stockEntryDetail.weightInKgs);
                 binding.editQuantity.setEnabled(false);
@@ -506,6 +508,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
     private void clearData() {
         binding.editItemName.setText("");
+        binding.editSKUCode.setText("");
         binding.editQuantity.setText("");
         binding.editWeight.setText("");
         binding.editMRP.setText("");
@@ -732,7 +735,18 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onFailure(Call<ItemModel> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
@@ -741,15 +755,20 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     private void itemData() {
 
         binding.editItemName.setText(itemList.get(0).itemName);
+        binding.editSKUCode.setText(itemList.get(0).skuCode);
 
         if (itemList.get(0).isOpenItem) {
             binding.editWeight.setEnabled(true);
             binding.editQuantity.setEnabled(false);
-            binding.editWeight.setText("1");
+//            binding.editWeight.setText("1");
+            binding.editWeight.requestFocus();
+            binding.editQuantity.clearFocus();
         } else {
             binding.editWeight.setEnabled(false);
             binding.editQuantity.setEnabled(true);
-            binding.editQuantity.setText("1");
+//            binding.editQuantity.setText("1");
+            binding.editQuantity.requestFocus();
+            binding.editWeight.clearFocus();
         }
 
         calculateTax(1);
@@ -822,7 +841,18 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
             @Override
             public void onFailure(Call<List<GST>> call, Throwable t) {
-                Log.e("GST", "" + t.getMessage());
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });
@@ -976,7 +1006,18 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(AddStockEntryActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });

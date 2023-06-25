@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.JsonObject;
@@ -70,14 +71,6 @@ public class SupplierActivity extends AppCompatActivity {
 
         setDateTimeField();
 
-        binding.selectSupplier.setOnItemClickListener((adapterView, view, pos, l) -> {
-            for (int i = 0; i < supplierList.size(); i++) {
-                if (supplierList.get(i).dealerName.equalsIgnoreCase(binding.selectSupplier.getText().toString())) {
-                    supplierId = supplierList.get(i).dealerId;
-                    isIGST = supplierList.get(i).isIGST;
-                }
-            }
-        });
 
         binding.includeSupplier.imageBack.setOnClickListener(view -> finish());
 
@@ -129,6 +122,7 @@ public class SupplierActivity extends AppCompatActivity {
                     stockEntry = response.body().stockEntry;
 
                     binding.selectSupplier.setText(stockEntry.get(0).dealerName);
+                    binding.editGst.setText(stockEntry.get(0).gstIn);
                     binding.editInvoice.setText(stockEntry.get(0).supplierInvoiceNo);
                     binding.editDate.setText(stockEntry.get(0).invoiceDate);
                     binding.checkTax.setChecked(stockEntry.get(0).taxInclusiveValue);
@@ -139,6 +133,7 @@ public class SupplierActivity extends AppCompatActivity {
                     binding.checkTax.setEnabled(false);
 
                 }
+
 
             }
 
@@ -170,12 +165,14 @@ public class SupplierActivity extends AppCompatActivity {
     }
 
     private void getSupplierData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
         StatusAPI planAPI = BaseURL.getStatusAPI();
         Call<List<Supplier>> call = planAPI.supplierData(true);
 
         call.enqueue(new Callback<List<Supplier>>() {
             @Override
             public void onResponse(Call<List<Supplier>> call, Response<List<Supplier>> response) {
+                binding.progressBar.setVisibility(View.GONE);
 
                 if (response.code() == 200) {
                     supplierList = new ArrayList<>();
@@ -188,6 +185,17 @@ public class SupplierActivity extends AppCompatActivity {
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.item_spinner, supplierArray);
                     binding.selectSupplier.setAdapter(adapter);
 
+                    binding.selectSupplier.setOnItemClickListener((adapterView, view, pos, l) -> {
+                        for (int i = 0; i < supplierList.size(); i++) {
+                            if (supplierList.get(i).dealerName.equalsIgnoreCase(binding.selectSupplier.getText().toString())) {
+                                supplierId = supplierList.get(i).dealerId;
+                                isIGST = supplierList.get(i).isIGST;
+                                binding.editGst.setText(supplierList.get(i).gstin);
+                            }
+                        }
+                    });
+
+
                 }
                 if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
                     getStockData();
@@ -198,7 +206,23 @@ public class SupplierActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Supplier>> call, Throwable t) {
-                Log.e("supplier", "" + t.getMessage());
+
+                binding.progressBar.setVisibility(View.GONE);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(SupplierActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                        finish();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
+
                 if (NetworkStatus.getInstance(SupplierActivity.this).isConnected()) {
                     getStockData();
                 } else
@@ -252,7 +276,18 @@ public class SupplierActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-                Toast.makeText(SupplierActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(SupplierActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });

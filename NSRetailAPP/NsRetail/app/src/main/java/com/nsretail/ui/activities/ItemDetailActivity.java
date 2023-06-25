@@ -45,6 +45,7 @@ import com.nsretail.data.model.ItemModel.ItemModel;
 import com.nsretail.data.model.ItemModel.ItemPrice;
 import com.nsretail.databinding.ActivityItemDetailBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockDispatch.CategoryActivity;
 import com.nsretail.ui.adapter.CostPriceAdapter;
 import com.nsretail.ui.adapter.ItemCodeAdapter;
 import com.nsretail.ui.adapter.OfferDetailAdapter;
@@ -248,7 +249,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
         itemCodeList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
-        Call<ItemModel> call = itemAPI.getItemDetail(itemCode, true);
+        Call<ItemModel> call = itemAPI.getItemDetail(itemCode, binding.wareRadio.isChecked());
         call.enqueue(new Callback<ItemModel>() {
             @Override
             public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
@@ -293,7 +294,18 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             @Override
             public void onFailure(Call<ItemModel> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(ItemDetailActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
     }
@@ -400,7 +412,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
         itemCodeList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
-        Call<ItemResult> call = itemAPI.getItemPrice(itemCodeId, branchId, true);
+        Call<ItemResult> call = itemAPI.getItemPrice(itemCodeId, branchId, binding.wareRadio.isChecked());
         call.enqueue(new Callback<ItemResult>() {
             @SuppressLint("SetTextI18n")
             @Override

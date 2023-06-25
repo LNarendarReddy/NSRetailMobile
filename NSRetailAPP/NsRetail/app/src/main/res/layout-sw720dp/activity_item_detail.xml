@@ -221,7 +221,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:background="@color/grey_shade"/>
+                    android:background="@color/grey_shade" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewPrice"
@@ -302,7 +302,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:background="@color/grey_shade"/>
+                    android:background="@color/grey_shade" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewOffer"
@@ -380,7 +380,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:background="@color/grey_shade"/>
+                    android:background="@color/grey_shade" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerCostPrice"
@@ -446,7 +446,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:background="@color/grey_shade"/>
+                    android:background="@color/grey_shade" />
 
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -462,11 +462,30 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <ProgressBar
+    <LinearLayout
         android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:background="@color/transparent"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/connecting_api"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp" />
+    </LinearLayout>
 
 </RelativeLayout>

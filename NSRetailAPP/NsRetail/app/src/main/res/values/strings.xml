@@ -14,4 +14,5 @@
     <string name="tax_inclusive">Tax Inclusive</string>
     <string name="save">Save</string>
     <string name="submit">Submit</string>
+    <string name="connecting_api">Connecting to API</string>
 </resources>
