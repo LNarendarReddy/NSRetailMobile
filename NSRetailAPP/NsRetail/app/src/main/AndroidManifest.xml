@@ -27,21 +27,51 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.LoginActivity" />
-        <activity android:name=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.StockEntry.SupplierActivity" />
-        <activity android:name=".ui.activities.StockEntry.AddStockEntryActivity" />
-        <activity android:name=".ui.activities.StockEntry.StockEntryActivity" />
-        <activity android:name=".ui.activities.StockEntry.ItemPriceActivity" />
-        <activity android:name=".ui.activities.StockEntry.StockPreviewActivity" />
-        <activity android:name=".ui.activities.StockDispatch.BranchActivity" />
-        <activity android:name=".ui.activities.StockDispatch.CategoryActivity" />
-        <activity android:name=".ui.activities.StockDispatch.StockDispatchActivity" />
-        <activity android:name=".ui.activities.StockDispatch.AddStockItemActivity" />
-        <activity android:name=".ui.activities.StockCounting.StockCountingActivity" />
-        <activity android:name=".ui.activities.StockCounting.CountingBranchActivity" />
-        <activity android:name=".ui.activities.StockCounting.AddCountingItemActivity" />
-        <activity android:name=".ui.activities.ItemDetailActivity" />
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockEntry.SupplierActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockEntry.AddStockEntryActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockEntry.StockEntryActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockEntry.ItemPriceActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockEntry.StockPreviewActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockDispatch.BranchActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockDispatch.CategoryActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockDispatch.StockDispatchActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockDispatch.AddStockItemActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockCounting.StockCountingActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockCounting.CountingBranchActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.StockCounting.AddCountingItemActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.ItemDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

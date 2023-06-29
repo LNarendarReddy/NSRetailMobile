@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         StatusAPI loginAPI = BaseURL.getStatusAPI();
 
         Call<Response> call = loginAPI.login(binding.editUserName.getText().toString(), binding.editPassword.getText().toString(),
-                "1.2");
+                "1.4");
         call.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor1 = preferences1.edit();
                     editor1.putString("name", binding.editUserName.getText().toString());
                     editor1.putString("password", binding.editPassword.getText().toString());
-                    editor1.putString("version", "1.1");
+                    editor1.putString("version", "1.4");
                     editor1.apply();
 
                     Globals.userResponse = response.body();

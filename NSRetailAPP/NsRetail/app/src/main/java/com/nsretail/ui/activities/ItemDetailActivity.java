@@ -313,6 +313,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
     private void setEANCode(String itemCode) {
 
         binding.editEANCode.setText(itemCode);
+        binding.editEANCode.setSelection(binding.editEANCode.getText().length());
+
 
         binding.editItemName.setText(itemList.get(0).itemName);
         binding.editSKUCode.setText(itemList.get(0).skuCode);
@@ -329,8 +331,11 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (binding.editEANCode.getText().length() > 0)
+                if (binding.editEANCode.getText().length() > 0) {
+                    binding.editEANCode.setSelectAllOnFocus(true);
+                    binding.editEANCode.selectAll();
                     clearData();
+                }
             }
         });
 
