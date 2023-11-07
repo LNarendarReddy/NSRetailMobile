@@ -27,7 +27,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while executing {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return dtReportData;
         }
@@ -52,7 +52,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while executing {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return dsReportData;
         }
@@ -73,28 +73,35 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while executing {procedureName}", ex);
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return obj;
         }
-        public int ExecuteNonQuery(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        public int ExecuteNonQuery(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null, bool UseTransaction = false)
         {
+            SqlTransaction sqlTransaction = null;   
             int rowcount = 0;
             try
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
+                    if (UseTransaction)
+                        sqlTransaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudconn(configuration).BeginTransaction();
                     cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
+                    if (UseTransaction)
+                        cmd.Transaction = sqlTransaction;
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;
                     ProcessParameters(cmd, parameters);
                     rowcount = cmd.ExecuteNonQuery();
+                    sqlTransaction?.Commit();
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while executing {procedureName}", ex);
+                sqlTransaction?.Rollback();
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return rowcount;
         }

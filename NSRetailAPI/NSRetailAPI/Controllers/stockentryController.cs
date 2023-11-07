@@ -212,7 +212,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("updateinvoice")]
-        public IActionResult UpdateInvoice(string jsonstring, bool UseWHConnetion)
+        public IActionResult UpdateInvoice(string jsonstring, bool UseWHConnection)
         {
             try
             {
@@ -227,7 +227,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "TRANSPORT", stockEntry.TRANSPORT}
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY", UseWHConnetion, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY", UseWHConnection, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while submitting stock entry!");
@@ -242,7 +242,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("discardinvoice")]
-        public IActionResult DiscardInvoice(int StockEntryID, int UserID, bool UseWHConnetion)
+        public IActionResult DiscardInvoice(int StockEntryID, int UserID, bool UseWHConnection)
         {
             try
             {
@@ -252,7 +252,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "UserID", UserID}
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", UseWHConnetion, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", UseWHConnection, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while discarding invoice!");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using NSRetailAPI.Models;
 using NSRetailAPI.Utilities;
@@ -207,7 +208,7 @@ namespace NSRetailAPI.Controllers
                 {
                         { "STOCKDISPATCHID", StockDispatchID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKDISPATCH", UseWHConnection, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKDISPATCH", UseWHConnection, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while submitting dispatch");

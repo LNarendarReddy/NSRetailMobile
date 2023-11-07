@@ -43,7 +43,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.ToString());
             }
         }
 
@@ -94,19 +94,26 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "CLOUD_USP_R_STOCKCOUNTING", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "Counting";
-                    if (ds.Tables.Count > 1)
-                        ds.Tables[1].TableName = "CountingDetail";
-                    return Ok(JsonConvert.SerializeObject(ds));
+                    if (int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int countingid) && countingid > 0)
+                    {
+                        ds.Tables[0].TableName = "Counting";
+                        if (ds.Tables.Count > 1)
+                            ds.Tables[1].TableName = "CountingDetail";
+                        return Ok(JsonConvert.SerializeObject(ds));
+                    }
+                    else
+                    {
+                        return NotFound("No counting data found");
+                    }
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("No counting data found");
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -133,7 +140,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -157,11 +164,11 @@ namespace NSRetailAPI.Controllers
                 if (!int.TryParse(str, out int Ivalue))
                     return BadRequest(str);
                 else
-                    return Ok(JsonConvert.SerializeObject(Ivalue));
+                    return Ok("Successfully saved");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -178,13 +185,13 @@ namespace NSRetailAPI.Controllers
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_D_STOCKCOUNTINGDETAIL1", false, parameters);
                 
                 if (rowsaffected == 0)
-                    return BadRequest();
+                    return BadRequest("Error while deleting item");
                 else
-                    return Ok();
+                    return Ok("Item deleted successfully");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -203,13 +210,13 @@ namespace NSRetailAPI.Controllers
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_U_STOCKCOUNTING", false, parameters);
 
                 if (rowsaffected == 0)
-                    return BadRequest();
+                    return BadRequest("Error while submitting stockcounting");
                 else
-                    return Ok();
+                    return Ok("Stock counting submitted successfully");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -224,7 +231,7 @@ namespace NSRetailAPI.Controllers
                         { "STOCKCOUNTINGID", StockCountingID}
                     ,{ "USERID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISPATCH", false, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_D_STOCKCOUNTING", false, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while discarding counting");
