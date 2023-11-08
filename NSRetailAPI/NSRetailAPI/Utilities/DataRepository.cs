@@ -85,9 +85,10 @@ namespace NSRetailAPI.Utilities
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
+                    SqlConnection sqlConnection = useWHConn ? SQLCon.SqlWHconn(configuration): SQLCon.SqlCloudconn(configuration);
                     if (UseTransaction)
-                        sqlTransaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudconn(configuration).BeginTransaction();
-                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
+                        sqlTransaction = sqlConnection.BeginTransaction();
+                    cmd.Connection = sqlConnection;
                     if (UseTransaction)
                         cmd.Transaction = sqlTransaction;
                     cmd.CommandTimeout = 1800;
