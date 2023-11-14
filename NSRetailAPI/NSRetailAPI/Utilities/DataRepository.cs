@@ -11,17 +11,20 @@ namespace NSRetailAPI.Utilities
             DataTable dtReportData = new DataTable();
             try
             {
-                using (SqlCommand cmd = new SqlCommand())
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
                 {
-                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
-                    cmd.CommandTimeout = 1800;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = procedureName;
-                    ProcessParameters(cmd, parameters);
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    using (SqlCommand cmd = new SqlCommand())
                     {
-                        da.Fill(dtReportData);
+                        cmd.Connection = connection;
+                        cmd.CommandTimeout = 1800;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = procedureName;
+                        ProcessParameters(cmd, parameters);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dtReportData);
+                        }
                     }
                 }
             }
@@ -36,17 +39,20 @@ namespace NSRetailAPI.Utilities
             DataSet dsReportData = new DataSet();
             try
             {
-                using (SqlCommand cmd = new SqlCommand())
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
                 {
-                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
-                    cmd.CommandTimeout = 1800;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = procedureName;
-                    ProcessParameters(cmd, parameters);
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    using (SqlCommand cmd = new SqlCommand())
                     {
-                        da.Fill(dsReportData);
+                        cmd.Connection = connection;
+                        cmd.CommandTimeout = 1800;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = procedureName;
+                        ProcessParameters(cmd, parameters);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsReportData);
+                        }
                     }
                 }
             }
@@ -61,14 +67,17 @@ namespace NSRetailAPI.Utilities
             object? obj = null;
             try
             {
-                using (SqlCommand cmd = new SqlCommand())
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
                 {
-                    cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
-                    cmd.CommandTimeout = 1800;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = procedureName;
-                    ProcessParameters(cmd, parameters);
-                    obj = cmd.ExecuteScalar();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
+                        cmd.CommandTimeout = 1800;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = procedureName;
+                        ProcessParameters(cmd, parameters);
+                        obj = cmd.ExecuteScalar();
+                    }
                 }
             }
             catch (Exception ex)
@@ -87,18 +96,20 @@ namespace NSRetailAPI.Utilities
                     SqlTransaction sqlTransaction = null;
                     try
                     {
-                        SqlCommand cmd = new SqlCommand();
-                        if (UseTransaction)
-                            sqlTransaction = sqlConnection.BeginTransaction();
-                        cmd.Connection = sqlConnection;
-                        if (UseTransaction)
-                            cmd.Transaction = sqlTransaction;
-                        cmd.CommandTimeout = 1800;
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = procedureName;
-                        ProcessParameters(cmd, parameters);
-                        rowcount = cmd.ExecuteNonQuery();
-                        sqlTransaction?.Commit();
+                        using (SqlCommand cmd = new SqlCommand())
+                        {
+                            if (UseTransaction)
+                                sqlTransaction = sqlConnection.BeginTransaction();
+                            cmd.Connection = sqlConnection;
+                            if (UseTransaction)
+                                cmd.Transaction = sqlTransaction;
+                            cmd.CommandTimeout = 1800;
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.CommandText = procedureName;
+                            ProcessParameters(cmd, parameters);
+                            rowcount = cmd.ExecuteNonQuery();
+                            sqlTransaction?.Commit();
+                        }
                     }
                     catch (Exception ex)
                     {
