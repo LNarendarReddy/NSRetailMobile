@@ -4,13 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
@@ -37,6 +37,7 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
     ActivityBranchBinding binding;
     List<Branch> branchList;
     BranchAdapter adapter;
+    ArrayList<Branch> filteredData;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -47,6 +48,8 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
 
 
         binding.includeBranch.textTitle.setText("Branches");
+
+        binding.includeBranch.searchView.setVisibility(View.VISIBLE);
 
         DividerItemDecoration horizontalDecoration = new DividerItemDecoration(binding.recyclerViewBranch.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -65,13 +68,28 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         binding.includeBranch.imageBack.setVisibility(View.VISIBLE);
         binding.includeBranch.imageBack.setOnClickListener(v -> finish());
 
+        binding.includeBranch.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                searchData(newText);
+//                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
     }
 
     private void getBranch() {
         binding.progressBar.setVisibility(View.VISIBLE);
         branchList = new ArrayList<>();
         StatusAPI branchApi = BaseURL.getStatusAPI();
-        Call<List<Branch>> call = branchApi.getBranch("stockdispatch/getbranch",Globals.userResponse.user.get(0).userId);
+        Call<List<Branch>> call = branchApi.getBranch("stockdispatch/getbranch", Globals.userResponse.user.get(0).userId);
 
         call.enqueue(new Callback<List<Branch>>() {
             @Override
@@ -126,5 +144,18 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         h.putExtra("ToBranchId", branchList.get(position).branchId);
         startActivity(h);
         finish();
+    }
+
+    public void searchData(String searchText) {
+        filteredData = new ArrayList<>();
+
+        for (Branch detail : branchList) {
+            if (detail.branchName.toLowerCase().contains(searchText)) {
+                filteredData.add(detail);
+            }
+        }
+
+        adapter.updateList(filteredData);
+
     }
 }

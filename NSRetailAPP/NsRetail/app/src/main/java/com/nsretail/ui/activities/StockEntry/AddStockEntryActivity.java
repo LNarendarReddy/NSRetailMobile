@@ -69,7 +69,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     ArrayList<ItemPrice> itemPriceSelectedList;
     ArrayList<StockEntry> stockEntry;
     StockEntryDetail stockEntryDetail;
-    int isIGST, gstId;
+    int itemCodeId, isIGST, gstId;
     double gstValue, finalPriceWO = -1, finalPrice = -1;
     double cGST, sGST, iGST, cess;
     ActivityResultLauncher<ScanOptions> barcodeLauncher;
@@ -487,23 +487,58 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     }
 
     private void checkQtyWeight() {
-        if (binding.editQuantity.isEnabled()) {
-            if (binding.editQuantity.getText().length() > 0) {
-                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
-                    saveItemEntry();
-                else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+        if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected()) {
+            if (binding.editQuantity.isEnabled()) {
+                if (binding.editQuantity.getText().length() > 0) {
+                    if (Double.parseDouble(binding.editCPTax.getText().toString()) < Double.parseDouble(binding.editMRP.getText().toString())) {
+                        if (Double.parseDouble(binding.editSalePrice.getText().toString()) <= Double.parseDouble(binding.editMRP.getText().toString())) {
+                            if (Double.parseDouble(binding.editSalePrice.getText().toString()) > Double.parseDouble(binding.editCPTax.getText().toString())) {
+                                saveItemEntry();
+                            } else {
+                                showAlert("SalePrice should not less than Cost price with tax");
+                            }
+                        }else {
+                            showAlert("SalePrice should not greater than mrp");
+                        }
+                    } else {
+                        showAlert("Cost price with tax should not greater than mrp");
+                    }
+                } else {
+                    binding.editQuantity.setError("Enter Quantity");
+                }
             } else {
-                binding.editQuantity.setError("Enter Quantity");
+                if (binding.editWeight.getText().length() > 0) {
+                    if (Double.parseDouble(binding.editCPTax.getText().toString()) < Double.parseDouble(binding.editMRP.getText().toString())) {
+                        if (Double.parseDouble(binding.editSalePrice.getText().toString()) <= Double.parseDouble(binding.editMRP.getText().toString())) {
+                            if (Double.parseDouble(binding.editSalePrice.getText().toString()) > Double.parseDouble(binding.editCPTax.getText().toString())) {
+                                saveItemEntry();
+                            } else {
+                                showAlert("SalePrice should not less than Cost price with tax");
+                            }
+                        }else {
+                            showAlert("SalePrice should not greater than mrp");
+                        }
+                    } else {
+                        showAlert("Cost price with tax should not greater than mrp");
+                    }
+                } else {
+                    binding.editWeight.setError("Enter Weight in KGs");
+                }
             }
         } else {
-            if (binding.editWeight.getText().length() > 0) {
-                if (NetworkStatus.getInstance(AddStockEntryActivity.this).isConnected())
-                    saveItemEntry();
-                else Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-            } else {
-                binding.editWeight.setError("Enter Weight in KGs");
-            }
+            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showAlert(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this, R.style.AlertDialogCustom);
+        builder.setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Ok", (dialog, id) -> {
+                    dialog.cancel();
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void clearData() {
@@ -636,6 +671,19 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
         if (binding.editPriceTax.getText().length() > 0)
             finalPrice = Double.parseDouble(binding.editPriceTax.getText().toString()) - Double.parseDouble(binding.editAppliedDiscount.getText().toString()) - Double.parseDouble(binding.editAppliedScheme.getText().toString());
 
+        if (stockEntryDetail != null){
+            for (int i = 0; i < gstList.size(); i++) {
+                if (gstList.get(i).gstId == stockEntryDetail.gstId) {
+                    gstId = stockEntryDetail.gstId;
+                    gstValue = gstList.get(i).gstValue;
+                    sGST = gstList.get(i).sGST;
+                    cGST = gstList.get(i).cGST;
+                    iGST = gstList.get(i).iGST;
+                    cess = gstList.get(i).cess;
+                }
+            }
+        }
+
         if (stockEntry.get(0).taxInclusiveValue) {
             if (finalPrice != -1) {
 //                double appliedGst = Math.round(finalPrice * gstValue / 100);
@@ -689,10 +737,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
     private void getItemData(String itemCode) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        itemList = new ArrayList<>();
-        itemCodeList = new ArrayList<>();
-        itemPriceList = new ArrayList<>();
-        itemPriceSelectedList = new ArrayList<>();
+
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
         Call<ItemModel> call = itemAPI.getEntryItemData(true, itemCode);
@@ -701,6 +746,10 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
                 binding.progressBar.setVisibility(View.GONE);
+                itemList = new ArrayList<>();
+                itemCodeList = new ArrayList<>();
+                itemPriceList = new ArrayList<>();
+                itemPriceSelectedList = new ArrayList<>();
                 try {
                     if (response.code() == 200) {
 
@@ -863,6 +912,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
     public void onItemClick(int position, View view) {
 
         binding.editEANCode.setText(itemCodeList.get(position).itemCode);
+        itemCodeId = itemCodeList.get(position).itemCodeId;
         if (itemCodeList.get(position).hsnCode != null)
             binding.editHSNCode.setText(itemCodeList.get(position).hsnCode);
 
@@ -912,6 +962,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
 
     private void saveItemEntry() {
         binding.progressBar.setVisibility(View.VISIBLE);
+        binding.buttonSave.setEnabled(false);
 
         StatusAPI supplierAPI = BaseURL.getStatusAPI();
 
@@ -922,9 +973,13 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
                 jsonObject.addProperty("STOCKENTRYDETAILID", stockEntryDetail.stockEntryDetailId);
             else jsonObject.addProperty("STOCKENTRYDETAILID", 0);
             jsonObject.addProperty("STOCKENTRYID", stockEntry.get(0).stockEntryId);
-            if (itemCodeList != null)
-                jsonObject.addProperty("ITEMCODEID", itemCodeList.get(0).itemCodeId);
-            else {
+            if (itemCodeList != null) {
+                if (itemCodeList.size() > 1) {
+                    jsonObject.addProperty("ITEMCODEID", itemCodeId);
+                } else {
+                    jsonObject.addProperty("ITEMCODEID", itemCodeList.get(0).itemCodeId);
+                }
+            } else {
                 if (stockEntryDetail != null)
                     jsonObject.addProperty("ITEMCODEID", stockEntryDetail.itemCodeId);
             }
@@ -976,6 +1031,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 try {
                     if (response.code() == 200) {
 
@@ -1006,6 +1062,7 @@ public class AddStockEntryActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddStockEntryActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {

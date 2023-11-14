@@ -2,6 +2,7 @@ package com.nsretail.ui.activities.StockDispatch;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -11,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.nsretail.Globals;
 import com.nsretail.R;
@@ -21,6 +25,7 @@ import com.nsretail.data.model.DispatchModel.DispatchDetail;
 import com.nsretail.data.model.DispatchModel.DispatchModel;
 import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.adapter.StockDispatchAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -38,7 +43,7 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
     StockDispatchAdapter adapter;
     ArrayList<DispatchModel> dispatchList;
     ArrayList<DispatchDetail> dispatchDetail;
-    Boolean isAllFabsVisible;
+    ArrayList<DispatchDetail> filteredData;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -49,76 +54,71 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
 
         binding.includeStock.textTitle.setText("Stock Dispatch");
 
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(binding.recyclerViewStock.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable divider = ContextCompat.getDrawable(this, R.drawable.divider);
+        if (divider != null) {
+            horizontalDecoration.setDrawable(divider);
+        }
+        binding.recyclerViewStock.addItemDecoration(horizontalDecoration);
 
         if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
             getDispatchData();
         else
             Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
-
-        binding.addItemFab.setVisibility(View.GONE);
-        binding.addSubmitFab.setVisibility(View.GONE);
-        binding.addCancelFab.setVisibility(View.GONE);
-        binding.addSubmitActionText.setVisibility(View.GONE);
-        binding.addItemActionText.setVisibility(View.GONE);
-        binding.addCancelActionText.setVisibility(View.GONE);
-
-        isAllFabsVisible = false;
+        binding.includeStock.searchView.setVisibility(View.VISIBLE);
 
         binding.includeStock.imageBack.setOnClickListener(view -> finish());
-
-        binding.addFab.setOnClickListener(view -> {
-            if (!isAllFabsVisible) {
-
-                binding.addItemFab.show();
-                binding.addSubmitFab.show();
-                binding.addCancelFab.show();
-                binding.addSubmitActionText.setVisibility(View.VISIBLE);
-                binding.addItemActionText.setVisibility(View.VISIBLE);
-                binding.addCancelActionText.setVisibility(View.VISIBLE);
-
-                isAllFabsVisible = true;
-
-            } else {
-                binding.addItemFab.hide();
-                binding.addSubmitFab.hide();
-                binding.addCancelFab.hide();
-                binding.addSubmitActionText.setVisibility(View.GONE);
-                binding.addItemActionText.setVisibility(View.GONE);
-                binding.addCancelActionText.setVisibility(View.GONE);
-
-                isAllFabsVisible = false;
-            }
-        });
 
         binding.addItemFab.setOnClickListener(view -> {
             Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
             h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
             h.putExtra("categoryId", dispatchList.get(0).categoryId);
             activityResult.launch(h);
+        });
 
-            binding.addItemFab.hide();
-            binding.addSubmitFab.hide();
-            binding.addCancelFab.hide();
-            binding.addSubmitActionText.setVisibility(View.GONE);
-            binding.addItemActionText.setVisibility(View.GONE);
-            binding.addCancelActionText.setVisibility(View.GONE);
+        binding.includeStock.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-            isAllFabsVisible = false;
+            @Override
+            public boolean onQueryTextChange(String newText) {
 
+                searchData(newText);
+                return false;
+            }
         });
 
         binding.addSubmitFab.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
-                updateDispatch();
-            else
+            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to Update the stock?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            updateDispatch();
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
         binding.addCancelFab.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
-                discardDispatch();
-            else
+            if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to Discard the stock?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            discardDispatch();
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
@@ -266,7 +266,14 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
                     adapter = new StockDispatchAdapter(StockDispatchActivity.this, dispatchDetail, StockDispatchActivity.this);
                     binding.recyclerViewStock.setAdapter(adapter);
                 } else {
-                    Toast.makeText(StockDispatchActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                    builder.setMessage(response.message())
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialog, id) -> {
+                                dialog.cancel();
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
 
             }
@@ -294,24 +301,49 @@ public class StockDispatchActivity extends AppCompatActivity implements OnItemCl
             Intent data = result.getData();
             if (data != null) {
                 if (data.getBooleanExtra("refresh", false)) {
+                    binding.includeStock.searchView.setIconified(true);
+                    binding.includeStock.searchView.onActionViewCollapsed();
                     if (NetworkStatus.getInstance(StockDispatchActivity.this).isConnected())
                         getDispatchData();
-                    else
-                        Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+                    else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(StockDispatchActivity.this);
+                        builder.setMessage("Please check your internet connection")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
 
                 }
             }
         }
     });
 
+    public void searchData(String searchText) {
+        filteredData = new ArrayList<>();
+
+        for (DispatchDetail detail : dispatchDetail) {
+            if (detail.itemCode.contains(searchText) || detail.itemName.toLowerCase().contains(searchText.toLowerCase())) {
+                filteredData.add(detail);
+            }
+        }
+
+        adapter.updateList(filteredData);
+
+    }
+
     public void updateItemData(int pos) {
         Intent h = new Intent(StockDispatchActivity.this, AddStockItemActivity.class);
-        h.putExtra("stockDispatchItem", dispatchDetail.get(pos));
+        if (filteredData.size() > 0)
+            h.putExtra("stockDispatchItem", filteredData.get(pos));
+        else
+            h.putExtra("stockDispatchItem", dispatchDetail.get(pos));
         h.putExtra("stockDispatchId", dispatchList.get(0).stockDispatchId);
         h.putExtra("categoryId", dispatchList.get(0).categoryId);
         activityResult.launch(h);
     }
-
 
     @SuppressLint("NotifyDataSetChanged")
     @Override

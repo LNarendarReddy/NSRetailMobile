@@ -18,6 +18,15 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UseCompoundDrawables">
 
+        <TextView
+            android:id="@+id/textSNO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            tools:text="1" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"

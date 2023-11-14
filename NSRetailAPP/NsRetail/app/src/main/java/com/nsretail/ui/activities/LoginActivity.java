@@ -32,6 +32,9 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+//        binding.editUserName.setText("naren");
+//        binding.editPassword.setText("1234");
+
         binding.buttonSubmit.setOnClickListener(view -> {
             if (Objects.requireNonNull(binding.editUserName.getText()).toString().length() > 0) {
                 if (Objects.requireNonNull(binding.editPassword.getText()).toString().length() > 0) {

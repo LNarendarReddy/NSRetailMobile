@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -434,7 +435,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="bottom"
                         android:imeOptions="actionNext"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:maxLines="1"
                         android:paddingStart="0dp"
                         android:paddingBottom="5dp"
@@ -497,7 +498,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="bottom"
                         android:imeOptions="actionNext"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:maxLines="1"
                         android:paddingStart="0dp"
                         android:paddingBottom="5dp"

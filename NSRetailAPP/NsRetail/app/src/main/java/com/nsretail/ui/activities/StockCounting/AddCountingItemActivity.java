@@ -234,6 +234,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 
     private void saveItemStock() {
 
+        binding.buttonSave.setEnabled(false);
         binding.progressBar.setVisibility(View.VISIBLE);
 
         StatusAPI saveItemAPI = BaseURL.getStatusAPI();
@@ -254,25 +255,32 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 try {
                     if (response.code() == 200) {
-
                         if (response.body().string().equalsIgnoreCase("Successfully saved")) {
                             Toast.makeText(AddCountingItemActivity.this, "Successfully saved", Toast.LENGTH_SHORT).show();
 
                             binding.editEANCode.setText("");
                             clearData();
                             binding.editEANCode.requestFocus();
+
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
+                            builder.setMessage(response.errorBody().string())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                            AlertDialog alert = builder.create();
+                            alert.show();
                         }
-
                     } else {
-
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
-                                    clearData();
                                 });
                         AlertDialog alert = builder.create();
                         alert.show();
@@ -286,6 +294,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {

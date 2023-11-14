@@ -38,7 +38,7 @@ public class StockPreviewActivity extends AppCompatActivity {
     StockEntry stockEntry;
     ArrayList<StockEntryDetail> stockEntryDetail;
 
-    double totalPriceWOT, totalPriceWT, gstValue, netPrice, finalPrice;
+    double totalPriceWOT, totalPriceWT, gstValue, netPrice, finalPrice, cessValue;
     double expenses, transport, tcs;
 
     @SuppressLint("SetTextI18n")
@@ -62,13 +62,13 @@ public class StockPreviewActivity extends AppCompatActivity {
         }
 
         if (stockEntryDetail.size() > 0) {
-            for (int i = 0; i < stockEntryDetail.size(); i++) {
 
+            for (int i = 0; i < stockEntryDetail.size(); i++) {
                 totalPriceWOT = totalPriceWOT + stockEntryDetail.get(i).totalPriceWOT;
                 totalPriceWT = totalPriceWT + stockEntryDetail.get(i).totalPriceWT;
                 gstValue = gstValue + stockEntryDetail.get(i).appliedDGst;
                 netPrice = netPrice + stockEntryDetail.get(i).finalPrice;
-
+                cessValue = cessValue + stockEntryDetail.get(i).cess;
             }
 
             binding.editPriceWOTax.setText("" + totalPriceWOT);
@@ -76,7 +76,8 @@ public class StockPreviewActivity extends AppCompatActivity {
             binding.editGstValue.setText("" + gstValue);
             binding.editNetPrice.setText("" + netPrice);
             binding.editFinalPrice.setText("" + netPrice);
-
+            binding.editCess.setText("" + cessValue);
+            binding.editTaxValue.setText("" + (gstValue - cessValue));
 
         }
 
@@ -193,10 +194,18 @@ public class StockPreviewActivity extends AppCompatActivity {
             if (binding.editExpenses.getText().length() > 0) {
                 if (binding.editTransport.getText().length() > 0) {
                     if (binding.editTCS.getText().length() > 0) {
-                        if (NetworkStatus.getInstance(StockPreviewActivity.this).isConnected())
-                            saveEntryData();
-                        else
-                            Toast.makeText(this, "Please check the internet connection", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(StockPreviewActivity.this, R.style.AlertDialogCustom);
+                        builder.setMessage("Are you sure you want to Submit the stock?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", (dialog, id) -> {
+                                    if (NetworkStatus.getInstance(StockPreviewActivity.this).isConnected())
+                                        saveEntryData();
+                                    else
+                                        Toast.makeText(this, "Please c  heck the internet connection", Toast.LENGTH_SHORT).show();
+                                    dialog.cancel();
+                                }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     } else {
                         binding.editTCS.setError("Enter TCS");
                     }

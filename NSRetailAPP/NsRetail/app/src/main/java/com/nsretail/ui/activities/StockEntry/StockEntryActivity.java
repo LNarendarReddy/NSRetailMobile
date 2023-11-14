@@ -2,6 +2,7 @@ package com.nsretail.ui.activities.StockEntry;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -11,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.nsretail.Globals;
 import com.nsretail.R;
@@ -22,6 +26,7 @@ import com.nsretail.data.model.StockEntry.StockEntryDetail;
 import com.nsretail.databinding.ActivityStockBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.activities.MainActivity;
+import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.adapter.StockEntryAdapter;
 import com.nsretail.utils.NetworkStatus;
 
@@ -39,7 +44,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
     StockEntryAdapter adapter;
     ArrayList<StockEntry> stockEntry;
     ArrayList<StockEntryDetail> stockEntryDetails;
-    Boolean isAllFabsVisible;
+    ArrayList<StockEntryDetail> filteredData;
     int isIGST;
 
     @SuppressLint("SetTextI18n")
@@ -60,57 +65,39 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
         else
             Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
 
+        binding.includeStock.searchView.setVisibility(View.VISIBLE);
 
-        binding.addItemFab.setVisibility(View.GONE);
-        binding.addSubmitFab.setVisibility(View.GONE);
-        binding.addCancelFab.setVisibility(View.GONE);
-        binding.addSubmitActionText.setVisibility(View.GONE);
-        binding.addItemActionText.setVisibility(View.GONE);
-        binding.addCancelActionText.setVisibility(View.GONE);
 
-        isAllFabsVisible = false;
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(binding.recyclerViewStock.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable divider = ContextCompat.getDrawable(this, R.drawable.divider);
+        if (divider != null) {
+            horizontalDecoration.setDrawable(divider);
+        }
+        binding.recyclerViewStock.addItemDecoration(horizontalDecoration);
+
 
         binding.includeStock.imageBack.setOnClickListener(view -> finish());
-
-        binding.addFab.setOnClickListener(view -> {
-            if (!isAllFabsVisible) {
-
-                binding.addItemFab.show();
-                binding.addSubmitFab.show();
-                binding.addCancelFab.show();
-                binding.addSubmitActionText.setVisibility(View.VISIBLE);
-                binding.addItemActionText.setVisibility(View.VISIBLE);
-                binding.addCancelActionText.setVisibility(View.VISIBLE);
-
-                isAllFabsVisible = true;
-
-            } else {
-                binding.addItemFab.hide();
-                binding.addSubmitFab.hide();
-                binding.addCancelFab.hide();
-                binding.addSubmitActionText.setVisibility(View.GONE);
-                binding.addItemActionText.setVisibility(View.GONE);
-                binding.addCancelActionText.setVisibility(View.GONE);
-
-                isAllFabsVisible = false;
-            }
-        });
 
         binding.addItemFab.setOnClickListener(view -> {
             Intent h = new Intent(StockEntryActivity.this, AddStockEntryActivity.class);
             h.putExtra("stockEntry", stockEntry);
             h.putExtra("isIGST", isIGST);
             activityResult.launch(h);
+        });
 
-            binding.addItemFab.hide();
-            binding.addSubmitFab.hide();
-            binding.addCancelFab.hide();
-            binding.addSubmitActionText.setVisibility(View.GONE);
-            binding.addItemActionText.setVisibility(View.GONE);
-            binding.addCancelActionText.setVisibility(View.GONE);
+        binding.includeStock.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-            isAllFabsVisible = false;
+            @Override
+            public boolean onQueryTextChange(String newText) {
 
+                searchData(newText);
+                return false;
+            }
         });
 
         binding.addSubmitFab.setOnClickListener(view -> {
@@ -118,22 +105,20 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             h.putExtra("Suppiler", stockEntry.get(0));
             h.putExtra("StockEntryDetail", stockEntryDetails);
             startActivity(h);
-
-            binding.addItemFab.hide();
-            binding.addSubmitFab.hide();
-            binding.addCancelFab.hide();
-            binding.addSubmitActionText.setVisibility(View.GONE);
-            binding.addItemActionText.setVisibility(View.GONE);
-            binding.addCancelActionText.setVisibility(View.GONE);
-
-            isAllFabsVisible = false;
-
         });
 
         binding.addCancelFab.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(StockEntryActivity.this).isConnected())
-                discardDispatch();
-            else
+            if (NetworkStatus.getInstance(StockEntryActivity.this).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to Discard the stock?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            discardDispatch();
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
@@ -197,7 +182,6 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
 
     }
 
-
     private void getStockData() {
 
         stockEntry = new ArrayList<>();
@@ -221,6 +205,15 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
 
                     adapter = new StockEntryAdapter(StockEntryActivity.this, response.body().getStockEntryDetails(), StockEntryActivity.this);
                     binding.recyclerViewStock.setAdapter(adapter);
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
+                    builder.setMessage(response.message())
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialog, id) -> {
+                                dialog.cancel();
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
 
@@ -247,19 +240,48 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             Intent data = result.getData();
             if (data != null) {
                 if (data.getBooleanExtra("refresh", false)) {
+                    binding.includeStock.searchView.setIconified(true);
+                    binding.includeStock.searchView.onActionViewCollapsed();
                     if (NetworkStatus.getInstance(StockEntryActivity.this).isConnected())
                         getStockData();
-                    else
-                        Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
-
+                    else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
+                        builder.setMessage("Please check your internet connection")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
                 }
             }
         }
     });
 
+    public void searchData(String searchText) {
+        filteredData = new ArrayList<>();
+
+        for (StockEntryDetail detail : stockEntryDetails) {
+            if (detail.itemCode.contains(searchText) || detail.itemName.toLowerCase().contains(searchText.toLowerCase())) {
+                filteredData.add(detail);
+            }
+        }
+
+        adapter.updateList(filteredData);
+
+    }
+
     public void updateItemData(int pos) {
         Intent h = new Intent(StockEntryActivity.this, AddStockEntryActivity.class);
-        h.putExtra("stockEntryDetail", stockEntryDetails.get(pos));
+        if (filteredData != null) {
+            if (filteredData.size() > 0)
+                h.putExtra("stockEntryDetail", filteredData.get(pos));
+            else
+                h.putExtra("stockEntryDetail", stockEntryDetails.get(pos));
+        } else {
+            h.putExtra("stockEntryDetail", stockEntryDetails.get(pos));
+        }
         h.putExtra("stockEntry", stockEntry);
         h.putExtra("isIGST", isIGST);
         activityResult.launch(h);

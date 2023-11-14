@@ -2,9 +2,12 @@ package com.nsretail.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +20,7 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.databinding.ItemStockEntryBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockCounting.AddCountingItemActivity;
 import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.utils.NetworkStatus;
 
@@ -30,7 +34,7 @@ import retrofit2.Response;
 
 public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdapter.ViewHolder> {
 
-    private final ArrayList<CountingDetail> countingDetails;
+    private ArrayList<CountingDetail> countingDetails;
     private final Context mContext;
     OnItemClickListener listener;
 
@@ -51,6 +55,8 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        holder.itemStockBinding.textSNO.setText("" + (position + 1) + ") ");
+
         holder.itemStockBinding.textStock.setText(countingDetails.get(position).itemCode
                 + " " + countingDetails.get(position).itemName);
 
@@ -63,9 +69,17 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
         }
 
         holder.itemStockBinding.imageDelete.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(mContext).isConnected())
-                deleteItem(position, view);
-            else
+            if (NetworkStatus.getInstance(mContext).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to delete?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            deleteItem(position, view);
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(mContext, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
@@ -140,4 +154,10 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
     public int getItemCount() {
         return countingDetails.size();
     }
+
+    public void updateList(ArrayList<CountingDetail> filterCountingDetails) {
+        countingDetails = filterCountingDetails;
+        notifyDataSetChanged();
+    }
+
 }

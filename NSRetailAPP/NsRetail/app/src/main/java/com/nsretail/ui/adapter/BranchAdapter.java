@@ -9,14 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.databinding.ItemBranchBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder> {
 
-    private final List<Branch> branchList;
+    private List<Branch> branchList;
     private final Context mContext;
     private OnItemClickListener listener;
 
@@ -63,5 +65,10 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
     @Override
     public int getItemCount() {
         return branchList.size();
+    }
+
+    public void updateList(ArrayList<Branch> filterBranch) {
+        branchList = filterBranch;
+        notifyDataSetChanged();
     }
 }

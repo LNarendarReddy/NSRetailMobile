@@ -235,6 +235,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
 
     private void saveItemStock() {
 
+        binding.buttonSave.setEnabled(false);
         binding.progressBar.setVisibility(View.VISIBLE);
 
         StatusAPI saveItemAPI = BaseURL.getStatusAPI();
@@ -264,6 +265,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 try {
                     if (response.code() == 200) {
 
@@ -282,7 +284,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
-                                    clearData();
+//                                    clearData();
                                 });
                         AlertDialog alert = builder.create();
                         alert.show();
@@ -296,6 +298,7 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.buttonSave.setEnabled(true);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddStockItemActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
@@ -371,9 +374,9 @@ public class AddStockItemActivity extends AppCompatActivity implements OnItemCli
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
-                                    binding.editEANCode.setText("");
-                                    clearData();
-                                    binding.editEANCode.requestFocus();
+//                                    binding.editEANCode.setText("");
+//                                    clearData();
+//                                    binding.editEANCode.requestFocus();
                                 });
                     } catch (IOException e) {
                         throw new RuntimeException(e);

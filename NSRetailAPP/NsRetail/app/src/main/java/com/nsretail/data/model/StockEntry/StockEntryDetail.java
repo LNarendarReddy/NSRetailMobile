@@ -103,5 +103,5 @@ public class StockEntryDetail implements Serializable {
     public double cess;
     @SerializedName("HSNCODE")
     @Expose
-    public double hsnCode;
+    public String hsnCode;
 }

@@ -14,7 +14,7 @@ public class BaseURL {
     private static Retrofit getBaseUrl() {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor).build();
 

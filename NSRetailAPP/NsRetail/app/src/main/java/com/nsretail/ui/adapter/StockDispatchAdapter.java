@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
+import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.data.model.DispatchModel.DispatchDetail;
 import com.nsretail.databinding.ItemStockEntryBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
@@ -30,7 +31,7 @@ import retrofit2.Response;
 
 public class StockDispatchAdapter extends RecyclerView.Adapter<StockDispatchAdapter.ViewHolder> {
 
-    private final ArrayList<DispatchDetail> dispatchDetails;
+    private ArrayList<DispatchDetail> dispatchDetails;
     private final Context mContext;
     OnItemClickListener listener;
 
@@ -51,6 +52,8 @@ public class StockDispatchAdapter extends RecyclerView.Adapter<StockDispatchAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        holder.itemStockBinding.textSNO.setText("" + (position + 1) + ") ");
+
         holder.itemStockBinding.textStock.setText(dispatchDetails.get(position).itemCode
                 + " " + dispatchDetails.get(position).itemName);
 
@@ -65,9 +68,17 @@ public class StockDispatchAdapter extends RecyclerView.Adapter<StockDispatchAdap
         }
 
         holder.itemStockBinding.imageDelete.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(mContext).isConnected())
-                deleteItem(position, view);
-            else
+            if (NetworkStatus.getInstance(mContext).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to delete?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            deleteItem(position, view);
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(mContext, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
@@ -142,4 +153,10 @@ public class StockDispatchAdapter extends RecyclerView.Adapter<StockDispatchAdap
     public int getItemCount() {
         return dispatchDetails.size();
     }
+
+    public void updateList(ArrayList<DispatchDetail> filterCountingDetails) {
+        dispatchDetails = filterCountingDetails;
+        notifyDataSetChanged();
+    }
+
 }

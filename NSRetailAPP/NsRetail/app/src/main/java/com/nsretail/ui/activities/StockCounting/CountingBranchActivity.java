@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
@@ -18,6 +19,7 @@ import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.BranchModel.Branch;
+import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.databinding.ActivityBranchBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.BranchAdapter;
@@ -37,6 +39,7 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
     ActivityBranchBinding binding;
     List<Branch> branchList;
     BranchAdapter adapter;
+    ArrayList<Branch> filteredData;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -47,6 +50,8 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
 
 
         binding.includeBranch.textTitle.setText("Branches");
+
+        binding.includeBranch.searchView.setVisibility(View.VISIBLE);
 
         DividerItemDecoration horizontalDecoration = new DividerItemDecoration(binding.recyclerViewBranch.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -63,6 +68,21 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
 
         binding.includeBranch.imageBack.setVisibility(View.VISIBLE);
         binding.includeBranch.imageBack.setOnClickListener(v -> finish());
+
+        binding.includeBranch.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                searchData(newText);
+//                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
 
     }
 
@@ -175,5 +195,18 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
 
             }
         });
+    }
+
+    public void searchData(String searchText) {
+        filteredData = new ArrayList<>();
+
+        for (Branch detail : branchList) {
+            if (detail.branchName.toLowerCase().contains(searchText)) {
+                filteredData.add(detail);
+            }
+        }
+
+        adapter.updateList(filteredData);
+
     }
 }

@@ -36,6 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/imageBack"
+                android:layout_toStartOf="@+id/searchView"
+                android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_16ssp"
                 tools:ignore="RelativeOverlap"
@@ -50,9 +53,20 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:contentDescription="@string/app_name"
                 android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_camera"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:iconifiedByDefault="false"
+                android:padding="@dimen/_5sdp"
                 android:visibility="gone"
-                tools:visibility="visible"
-                android:src="@drawable/ic_camera" />
+                tools:visibility="visible" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 </com.google.android.material.appbar.AppBarLayout>

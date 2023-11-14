@@ -31,7 +31,7 @@ import retrofit2.Response;
 
 public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.ViewHolder> {
 
-    private final ArrayList<StockEntryDetail> stockEntryList;
+    private ArrayList<StockEntryDetail> stockEntryList;
     private final Context mContext;
     OnItemClickListener listener;
 
@@ -52,6 +52,8 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        holder.itemStockBinding.textSNO.setText("" + (position + 1) + ") ");
+
         holder.itemStockBinding.textStock.setText(stockEntryList.get(position).itemCode
                 + " " + stockEntryList.get(position).itemName);
 
@@ -66,9 +68,17 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Vi
         }
 
         holder.itemStockBinding.imageDelete.setOnClickListener(view -> {
-            if (NetworkStatus.getInstance(mContext).isConnected())
-                deleteItem(position, view);
-            else
+            if (NetworkStatus.getInstance(mContext).isConnected()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
+                builder.setMessage("Are you sure you want to delete?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            deleteItem(position, view);
+                            dialog.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else
                 Toast.makeText(mContext, "No internet connection", Toast.LENGTH_SHORT).show();
         });
 
@@ -144,4 +154,11 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Vi
     public int getItemCount() {
         return stockEntryList.size();
     }
+
+
+    public void updateList(ArrayList<StockEntryDetail> filterCountingDetails) {
+        stockEntryList = filterCountingDetails;
+        notifyDataSetChanged();
+    }
+
 }
