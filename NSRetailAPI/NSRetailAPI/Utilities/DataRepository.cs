@@ -12,19 +12,17 @@ namespace NSRetailAPI.Utilities
             try
             {
                 using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
                 {
-                    using (SqlCommand cmd = new SqlCommand())
-                    {
-                        cmd.Connection = connection;
-                        cmd.CommandTimeout = 1800;
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = procedureName;
-                        ProcessParameters(cmd, parameters);
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
 
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            da.Fill(dtReportData);
-                        }
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dtReportData);
                     }
                 }
             }
@@ -34,25 +32,24 @@ namespace NSRetailAPI.Utilities
             }
             return dtReportData;
         }
+
         public DataSet GetDataset(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             DataSet dsReportData = new DataSet();
             try
             {
                 using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
                 {
-                    using (SqlCommand cmd = new SqlCommand())
-                    {
-                        cmd.Connection = connection;
-                        cmd.CommandTimeout = 1800;
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = procedureName;
-                        ProcessParameters(cmd, parameters);
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
 
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            da.Fill(dsReportData);
-                        }
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dsReportData);
                     }
                 }
             }
@@ -62,22 +59,21 @@ namespace NSRetailAPI.Utilities
             }
             return dsReportData;
         }
+
         public object ExecuteScalar(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             object? obj = null;
             try
             {
                 using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
                 {
-                    using (SqlCommand cmd = new SqlCommand())
-                    {
-                        cmd.Connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
-                        cmd.CommandTimeout = 1800;
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = procedureName;
-                        ProcessParameters(cmd, parameters);
-                        obj = cmd.ExecuteScalar();
-                    }
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+                    obj = cmd.ExecuteScalar();
                 }
             }
             catch (Exception ex)
@@ -86,45 +82,43 @@ namespace NSRetailAPI.Utilities
             }
             return obj;
         }
+
         public int ExecuteNonQuery(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null, bool UseTransaction = false)
         {
             int rowcount = 0;
+            SqlTransaction sqlTransaction = null;
+
             try
             {
                 using (SqlConnection sqlConnection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
                 {
-                    SqlTransaction sqlTransaction = null;
-                    try
-                    {
-                        using (SqlCommand cmd = new SqlCommand())
-                        {
-                            if (UseTransaction)
-                                sqlTransaction = sqlConnection.BeginTransaction();
-                            cmd.Connection = sqlConnection;
-                            if (UseTransaction)
-                                cmd.Transaction = sqlTransaction;
-                            cmd.CommandTimeout = 1800;
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.CommandText = procedureName;
-                            ProcessParameters(cmd, parameters);
-                            rowcount = cmd.ExecuteNonQuery();
-                            sqlTransaction?.Commit();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        sqlTransaction?.Rollback();
-                        throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
-                    }
-                    finally { sqlTransaction?.Dispose(); }
+                    if (UseTransaction)
+                        sqlTransaction = sqlConnection.BeginTransaction();
+                    cmd.Connection = sqlConnection;
+                    if (UseTransaction)
+                        cmd.Transaction = sqlTransaction;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+                    rowcount = cmd.ExecuteNonQuery();
+                    sqlTransaction?.Commit();
                 }
             }
             catch (Exception ex)
             {
+                sqlTransaction?.Rollback();
                 throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
+            finally
+            {
+                sqlTransaction?.Dispose();
+            }
+
             return rowcount;
         }
+
         private void ProcessParameters(SqlCommand sqlCommand, Dictionary<string, object>? parameters)
         {
             if (parameters == null) return;

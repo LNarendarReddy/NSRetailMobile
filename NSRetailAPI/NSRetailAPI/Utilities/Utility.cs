@@ -37,5 +37,18 @@ namespace NSRetailAPI.Utilities
         {
             return Encoding.UTF8.GetString(Decrypt(Convert.FromBase64String(input)));
         }
+
+        public const string Path_StockCounting = "D:\\Telemetry\\SaveCountingDetail.txt"; 
+        public const string Action_StockCounting_SaveStockCountingDetail = "SaveStockCountingDetail";
+
+        public const string Path_SQLConn = "D:\\Telemetry\\SQLConn.txt";
+        public const string Action_SQLConn_WHConn = "WHConn";
+        public const string Action_SQLConn_CloudConn = "CloudConn";
+
+        public static void LogTelemetry(string path, string action, params object[] parameters)
+        {
+            string message = $"{DateTime.Now:yyyy-MM-dd hh:mm:ss tt} : {action} , {string.Join(",",  parameters)} {Environment.NewLine}";
+            File.AppendAllText(path, message);
+        }
     }
 }

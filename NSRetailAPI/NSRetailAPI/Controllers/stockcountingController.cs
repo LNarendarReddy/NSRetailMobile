@@ -150,6 +150,7 @@ namespace NSRetailAPI.Controllers
         {
             try
             {
+                
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "STOCKCOUNTINGDETAILID",StockCountingDetailID }
@@ -161,13 +162,24 @@ namespace NSRetailAPI.Controllers
                 };
                 object obj = new DataRepository().ExecuteScalar(configuration, "CLOUD_USP_CU_STOCKCOUNTINGDETAIL", false, parameters);
                 string str = Convert.ToString(obj);
-                if (!int.TryParse(str, out int Ivalue))
+
+                if (!int.TryParse(str, out int Ivalue) || Ivalue <= 0)
+                {
+                    Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                        StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, str, "Bad Request");
                     return BadRequest(str);
+                }
                 else
+                {
+                    Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                        StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, str, "OK");
                     return Ok("Successfully saved");
+                }
             }
             catch (Exception ex)
             {
+                Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                        StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, ex.Message, "Bad Request");
                 return BadRequest(ex.Message);
             }
         }

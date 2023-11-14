@@ -5,6 +5,8 @@ namespace NSRetailAPI.Utilities
 {
     public class SQLCon
     {
+        static int noOfCloudConns, noOfWHConns;
+
         public static SqlConnection SqlCloudconn(IConfiguration configuration)
         {
             SqlConnection ObjCloudCon = new SqlConnection();
@@ -12,8 +14,14 @@ namespace NSRetailAPI.Utilities
             {
                 ObjCloudCon.ConnectionString = configuration.GetConnectionString("Cloudcon").ToString();
                 ObjCloudCon.Open();
+                ObjCloudCon.Disposed += ObjCloudCon_Disposed;
+                noOfCloudConns++;
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
             }
-            catch (Exception) { }
+            catch (Exception ex) 
+            {
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
+            }
             return ObjCloudCon;
         }
 
@@ -24,9 +32,26 @@ namespace NSRetailAPI.Utilities
             {
                 ObjWHCon.ConnectionString = configuration.GetConnectionString("WHcon").ToString();
                 ObjWHCon.Open();
+                ObjWHCon.Disposed += ObjWHCon_Disposed;
+                noOfWHConns++;
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Success");
             }
-            catch (Exception) { }
+            catch (Exception ex) 
+            {
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, ex.Message);
+            }
             return ObjWHCon;
+        }
+
+        private static void ObjWHCon_Disposed(object? sender, EventArgs e)
+        {
+            noOfWHConns--;
+            Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Dispose");
+        }
+        private static void ObjCloudCon_Disposed(object? sender, EventArgs e)
+        {
+            noOfCloudConns--;
+            Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Dispose");
         }
 
         //private static SqlConnection? ObjCloudCon = null;
