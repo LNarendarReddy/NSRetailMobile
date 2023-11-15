@@ -194,7 +194,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("Error while deleting item");
+                return BadRequest("Error while deleting item : " + ex.Message);
             }
         }
 

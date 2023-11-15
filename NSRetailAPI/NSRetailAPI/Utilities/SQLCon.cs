@@ -21,6 +21,7 @@ namespace NSRetailAPI.Utilities
             catch (Exception ex) 
             {
                 Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
+                throw ex;
             }
             return ObjCloudCon;
         }
@@ -39,6 +40,7 @@ namespace NSRetailAPI.Utilities
             catch (Exception ex) 
             {
                 Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, ex.Message);
+                throw ex;
             }
             return ObjWHCon;
         }
