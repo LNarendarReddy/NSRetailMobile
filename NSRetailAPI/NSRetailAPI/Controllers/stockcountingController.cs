@@ -150,7 +150,9 @@ namespace NSRetailAPI.Controllers
         {
             try
             {
-                
+                Utility.LogTelemetry(string.Format(Utility.Path_StockCountingDetail, StockCountingID), Utility.Action_StockCounting_SaveStockCountingDetail,
+                           StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, string.Empty, "Request Received");
+
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "STOCKCOUNTINGDETAILID",StockCountingDetailID }
@@ -165,20 +167,20 @@ namespace NSRetailAPI.Controllers
 
                 if (!int.TryParse(str, out int Ivalue) || Ivalue <= 0)
                 {
-                    Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                    Utility.LogTelemetry(string.Format(Utility.Path_StockCountingDetail, StockCountingID), Utility.Action_StockCounting_SaveStockCountingDetail,
                         StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, str, "Bad Request");
                     return BadRequest(str);
                 }
                 else
                 {
-                    Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                    Utility.LogTelemetry(string.Format(Utility.Path_StockCountingDetail, StockCountingID), Utility.Action_StockCounting_SaveStockCountingDetail,
                         StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, str, "OK");
                     return Ok("Successfully saved");
                 }
             }
             catch (Exception ex)
             {
-                Utility.LogTelemetry(Utility.Path_StockCounting, Utility.Action_StockCounting_SaveStockCountingDetail,
+                Utility.LogTelemetry(string.Format(Utility.Path_StockCountingDetail, StockCountingID), Utility.Action_StockCounting_SaveStockCountingDetail,
                         StockCountingDetailID, StockCountingID, ItemPriceID, Quantity, WeightInKgs, ex.Message, "Bad Request");
                 return BadRequest(ex.Message);
             }

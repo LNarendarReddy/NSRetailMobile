@@ -38,8 +38,8 @@ namespace NSRetailAPI.Utilities
             return Encoding.UTF8.GetString(Decrypt(Convert.FromBase64String(input)));
         }
 
-        public const string Path_StockCounting = "D:\\Telemetry\\SaveCountingDetail.txt"; 
-        public const string Action_StockCounting_SaveStockCountingDetail = "SaveStockCountingDetail";
+        public const string Path_StockCountingDetail = "D:\\Telemetry\\StockCounting\\{0}\\SaveCountingDetail.txt"; 
+        public const string Action_StockCounting_SaveStockCountingDetail = "SaveStockCountingDetail";        
 
         public const string Path_SQLConn = "D:\\Telemetry\\SQLConn.txt";
         public const string Action_SQLConn_WHConn = "WHConn";
@@ -47,8 +47,32 @@ namespace NSRetailAPI.Utilities
 
         public static void LogTelemetry(string path, string action, params object[] parameters)
         {
+            string dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                _ = Directory.CreateDirectory(dir);
+            }
+
+            if(!File.Exists(path)) { File.Create(path); }
+            while (!IsFileReady(path)) { }
+
             string message = $"{DateTime.Now:yyyy-MM-dd hh:mm:ss tt} : {action} , {string.Join(",",  parameters)} {Environment.NewLine}";
             File.AppendAllText(path, message);
+        }
+
+        private static bool IsFileReady(string filename)
+        {
+            // If the file can be opened for exclusive access it means that the file
+            // is no longer locked by another process.
+            try
+            {
+                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
+                    return inputStream.Length >= 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
