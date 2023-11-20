@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using NSRetailAPI.Models;
 using NSRetailAPI.Utilities;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace NSRetailAPI.Controllers
 {
@@ -238,6 +239,39 @@ namespace NSRetailAPI.Controllers
                     throw new Exception("Error while discarding dispatch");
                 else
                     return Ok("Stock dispatch discarded successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("currentstock")]
+        public IActionResult GetCurrentStock(int FROMBRANCHID, int TOBRANCHID,
+            int ITEMCODEID, int PARENTITEMID, int ITEMPRICEID, bool UseWHConnection)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    { "FROMBRANCHID",FROMBRANCHID }
+                    ,{ "TOBRANCHID",TOBRANCHID }
+                    ,{ "ITEMCODEID",ITEMCODEID }
+                    ,{ "PARENTITEMID",PARENTITEMID }
+                    ,{ "ITEMPRICEID",ITEMPRICEID }
+                };
+
+                DataTable dt = new DataRepository( ).GetDataTable(configuration, "USP_R_CURRENTSTOCK", UseWHConnection, parameters);
+                if (dt!= null && dt.Rows.Count > 0)
+                {
+                    dt.TableName = "CurrentStock";
+                    return Ok(JsonConvert.SerializeObject(dt));
+                }
+                else
+                {
+                    throw new Exception("Error while retrieving current stock");
+                }
             }
             catch (Exception ex)
             {
