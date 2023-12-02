@@ -17,4 +17,7 @@ public class Item {
     @SerializedName("ISOPENITEM")
     @Expose
     public boolean isOpenItem;
+    @SerializedName("PARENTITEMID")
+    @Expose
+    public int parentItemId;
 }

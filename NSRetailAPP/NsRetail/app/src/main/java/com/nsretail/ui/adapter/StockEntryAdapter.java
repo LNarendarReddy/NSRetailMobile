@@ -18,6 +18,8 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.StockEntry.StockEntryDetail;
 import com.nsretail.databinding.ItemStockEntryBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
+import com.nsretail.ui.activities.StockCounting.AddCountingItemActivity;
+import com.nsretail.ui.activities.StockDispatch.StockDispatchActivity;
 import com.nsretail.ui.activities.StockEntry.StockEntryActivity;
 import com.nsretail.utils.NetworkStatus;
 
@@ -73,7 +75,8 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Vi
                 builder.setMessage("Are you sure you want to delete?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", (dialog, id) -> {
-                            deleteItem(position, view);
+                            ((StockEntryActivity) mContext).deleteItem(position);
+
                             dialog.cancel();
                         }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
                 AlertDialog alert = builder.create();
@@ -87,51 +90,6 @@ public class StockEntryAdapter extends RecyclerView.Adapter<StockEntryAdapter.Vi
             ((StockEntryActivity) mContext).updateItemData(position);
 
             return false;
-        });
-
-    }
-
-    private void deleteItem(int position, View view) {
-        StatusAPI deleteAPI = BaseURL.getStatusAPI();
-        Call<ResponseBody> call = deleteAPI.deleteStockEntry(stockEntryList.get(position).stockEntryDetailId,
-                Globals.userResponse.user.get(0).userId, true);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() == 200) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
-                    try {
-                        builder.setMessage(response.body().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    listener.onItemClick(position, view);
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    try {
-                        builder.setMessage(response.errorBody().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
         });
 
     }

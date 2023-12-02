@@ -103,8 +103,8 @@ public class HomeFragment extends Fragment {
                         } else {
                             startActivity(new Intent(getActivity(), StockDispatchActivity.class));
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -152,8 +152,8 @@ public class HomeFragment extends Fragment {
                         } else {
                             startActivity(new Intent(getActivity(), StockCountingActivity.class));
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

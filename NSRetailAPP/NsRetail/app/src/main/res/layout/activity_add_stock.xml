@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <include
         android:id="@+id/includeStockAdd"
@@ -73,7 +73,6 @@
                     android:gravity="bottom"
                     android:imeOptions="actionNext"
                     android:inputType="none"
-                    android:maxLines="1"
                     android:paddingStart="0dp"
                     android:paddingBottom="5dp"
                     android:textColor="@color/black"

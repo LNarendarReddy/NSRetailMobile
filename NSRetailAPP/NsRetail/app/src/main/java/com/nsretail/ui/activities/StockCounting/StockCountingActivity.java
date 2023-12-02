@@ -28,7 +28,6 @@ import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.StockCountingAdapter;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -85,8 +84,10 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                searchData(newText);
-//                adapter.getFilter().filter(newText);
+                if (newText.length() > 0) {
+                    searchData(newText);
+                }
+
                 return false;
             }
         });
@@ -140,8 +141,8 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
                                     finish();
                                     dialog.cancel();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -153,8 +154,8 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -198,8 +199,8 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
                                     finish();
                                     dialog.cancel();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -211,8 +212,8 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -240,9 +241,11 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
     }
 
     private void getDispatchData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
 
         countingList = new ArrayList<>();
         countingDetails = new ArrayList<>();
+
         StatusAPI dispatchAPI = BaseURL.getStatusAPI();
 
         Call<Counting> call = dispatchAPI.getCounting(Globals.userResponse.user.get(0).userId);
@@ -250,6 +253,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<Counting> call, Response<Counting> response) {
+                binding.progressBar.setVisibility(View.GONE);
 
                 if (response.code() == 200) {
 
@@ -275,6 +279,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
 
             @Override
             public void onFailure(Call<Counting> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
@@ -291,6 +296,7 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     ActivityResultLauncher<Intent> activityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == 112) {
             Intent data = result.getData();
@@ -298,6 +304,10 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
                 if (data.getBooleanExtra("refresh", false)) {
                     binding.includeStock.searchView.setIconified(true);
                     binding.includeStock.searchView.onActionViewCollapsed();
+                    if (countingDetails.size() > 0){
+                        countingDetails.clear();
+                        adapter.notifyDataSetChanged();
+                    }
                     if (NetworkStatus.getInstance(StockCountingActivity.this).isConnected())
                         getDispatchData();
                     else {
@@ -349,4 +359,82 @@ public class StockCountingActivity extends AppCompatActivity implements OnItemCl
         countingDetails.remove(position);
         adapter.notifyDataSetChanged();
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void deleteItem(int position){
+        binding.progressBar.setVisibility(View.VISIBLE);
+        StatusAPI deleteAPI = BaseURL.getStatusAPI();
+
+        Call<ResponseBody> call;
+
+        if (filteredData != null) {
+            if (filteredData.size() > 0) {
+                call = deleteAPI.deleteCounting(filteredData.get(position).stockCountingDetailId);
+            } else {
+                call = deleteAPI.deleteCounting(countingDetails.get(position).stockCountingDetailId);
+            }
+        } else {
+            call = deleteAPI.deleteCounting(countingDetails.get(position).stockCountingDetailId);
+        }
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+
+                    try {
+                        Toast.makeText(StockCountingActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+                        countingDetails.remove(position);
+                        adapter.notifyDataSetChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
+                    try {
+                        builder.setMessage(response.errorBody().string())
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockCountingActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    if (t.getMessage().toString().length() > 0) {
+                        builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                            dialog.cancel();
+                        });
+                    } else {
+                        try {
+                            builder.setMessage("Empty response : " + call.execute().code())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
+    }
+
 }

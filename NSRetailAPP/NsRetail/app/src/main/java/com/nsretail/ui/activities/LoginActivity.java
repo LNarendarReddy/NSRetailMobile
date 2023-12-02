@@ -81,8 +81,8 @@ public class LoginActivity extends AppCompatActivity {
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                       e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();

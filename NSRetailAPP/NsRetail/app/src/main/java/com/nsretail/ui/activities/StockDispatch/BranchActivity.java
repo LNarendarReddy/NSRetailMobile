@@ -24,7 +24,6 @@ import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.BranchAdapter;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +58,6 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         }
         binding.recyclerViewBranch.addItemDecoration(horizontalDecoration);
 
-
         if (NetworkStatus.getInstance(BranchActivity.this).isConnected())
             getBranch();
         else
@@ -90,7 +88,6 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         branchList = new ArrayList<>();
         StatusAPI branchApi = BaseURL.getStatusAPI();
         Call<List<Branch>> call = branchApi.getBranch("stockdispatch/getbranch", Globals.userResponse.user.get(0).userId);
-
         call.enqueue(new Callback<List<Branch>>() {
             @Override
             public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
@@ -108,13 +105,12 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) ->
                                         dialog.cancel());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
-
             }
 
             @Override
@@ -131,17 +127,21 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
                 }
                 AlertDialog alert = builder.create();
                 alert.show();
-
             }
         });
-
     }
 
     @Override
     public void onItemClick(int position, View view) {
-
         Intent h = new Intent(BranchActivity.this, CategoryActivity.class);
-        h.putExtra("ToBranchId", branchList.get(position).branchId);
+        if (filteredData != null) {
+            if (filteredData.size() > 0)
+                h.putExtra("ToBranchId", filteredData.get(position).branchId);
+            else
+                h.putExtra("ToBranchId", branchList.get(position).branchId);
+        } else {
+            h.putExtra("ToBranchId", branchList.get(position).branchId);
+        }
         startActivity(h);
         finish();
     }
@@ -150,7 +150,7 @@ public class BranchActivity extends AppCompatActivity implements OnItemClickList
         filteredData = new ArrayList<>();
 
         for (Branch detail : branchList) {
-            if (detail.branchName.toLowerCase().contains(searchText)) {
+            if (detail.branchName.toLowerCase().contains(searchText.toLowerCase())) {
                 filteredData.add(detail);
             }
         }

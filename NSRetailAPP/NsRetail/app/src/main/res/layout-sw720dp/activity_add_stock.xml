@@ -72,7 +72,6 @@
                     android:gravity="bottom"
                     android:imeOptions="actionNext"
                     android:inputType="none"
-                    android:maxLines="1"
                     android:paddingStart="0dp"
                     android:paddingBottom="5dp"
                     android:textColor="@color/black"

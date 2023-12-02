@@ -1,13 +1,11 @@
 package com.nsretail.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,11 +18,9 @@ import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.databinding.ItemStockEntryBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
-import com.nsretail.ui.activities.StockCounting.AddCountingItemActivity;
 import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -37,11 +33,14 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
     private ArrayList<CountingDetail> countingDetails;
     private final Context mContext;
     OnItemClickListener listener;
+    ProgressDialog dialog;
 
     public StockCountingAdapter(Context context, ArrayList<CountingDetail> countingDetailArrayList, OnItemClickListener listener) {
         this.mContext = context;
         this.countingDetails = countingDetailArrayList;
         this.listener = listener;
+        dialog = new ProgressDialog(mContext);
+
     }
 
     @NonNull
@@ -74,7 +73,10 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
                 builder.setMessage("Are you sure you want to delete?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", (dialog, id) -> {
-                            deleteItem(position, view);
+//                            deleteItem(position, view);
+
+                            ((StockCountingActivity) mContext).deleteItem(position);
+
                             dialog.cancel();
                         }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
                 AlertDialog alert = builder.create();
@@ -92,49 +94,6 @@ public class StockCountingAdapter extends RecyclerView.Adapter<StockCountingAdap
 
     }
 
-    private void deleteItem(int position, View view) {
-        StatusAPI deleteAPI = BaseURL.getStatusAPI();
-        Call<ResponseBody> call = deleteAPI.deleteCounting(countingDetails.get(position).stockCountingDetailId);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() == 200) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
-                    try {
-                        builder.setMessage(response.body().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    listener.onItemClick(position, view);
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    try {
-                        builder.setMessage(response.errorBody().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-
-    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemStockEntryBinding itemStockBinding;

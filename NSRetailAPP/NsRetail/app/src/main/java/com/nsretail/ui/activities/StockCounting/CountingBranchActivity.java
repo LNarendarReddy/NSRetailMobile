@@ -19,7 +19,6 @@ import com.nsretail.R;
 import com.nsretail.data.api.BaseURL;
 import com.nsretail.data.api.StatusAPI;
 import com.nsretail.data.model.BranchModel.Branch;
-import com.nsretail.data.model.CountingModel.CountingDetail;
 import com.nsretail.databinding.ActivityBranchBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
 import com.nsretail.ui.adapter.BranchAdapter;
@@ -108,8 +107,8 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) ->
                                         dialog.cancel());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -151,8 +150,17 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
 
         StatusAPI countingAPI = BaseURL.getStatusAPI();
 
+        Call<ResponseBody> call;
 
-        Call<ResponseBody> call = countingAPI.postCounting(0,Globals.userResponse.user.get(0).userId, branchList.get(pos).branchId);
+        if (filteredData != null){
+            if (filteredData.size() > 0) {
+                call = countingAPI.postCounting(0,Globals.userResponse.user.get(0).userId, filteredData.get(pos).branchId);
+            } else {
+                call = countingAPI.postCounting(0,Globals.userResponse.user.get(0).userId, branchList.get(pos).branchId);
+            }
+        } else {
+            call = countingAPI.postCounting(0,Globals.userResponse.user.get(0).userId, branchList.get(pos).branchId);
+        }
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -169,8 +177,8 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) ->
                                         dialog.cancel());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -201,7 +209,7 @@ public class CountingBranchActivity extends AppCompatActivity implements OnItemC
         filteredData = new ArrayList<>();
 
         for (Branch detail : branchList) {
-            if (detail.branchName.toLowerCase().contains(searchText)) {
+            if (detail.branchName.toLowerCase().contains(searchText.toLowerCase())) {
                 filteredData.add(detail);
             }
         }

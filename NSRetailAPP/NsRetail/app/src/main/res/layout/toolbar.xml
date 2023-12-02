@@ -63,7 +63,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:iconifiedByDefault="false"
+                android:iconifiedByDefault="true"
                 android:padding="@dimen/_5sdp"
                 android:visibility="gone"
                 tools:visibility="visible" />

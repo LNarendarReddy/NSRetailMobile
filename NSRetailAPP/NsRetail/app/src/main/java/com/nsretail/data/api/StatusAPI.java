@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.nsretail.data.model.BranchModel.Branch;
 import com.nsretail.data.model.CategoryModel.Category;
 import com.nsretail.data.model.CountingModel.Counting;
+import com.nsretail.data.model.CurrentStock.CurrentStockModel;
 import com.nsretail.data.model.DispatchModel.Dispatch;
 import com.nsretail.data.model.GSTModel.GST;
 import com.nsretail.data.model.ItemDetail.ItemBranch;
@@ -88,6 +89,14 @@ public interface StatusAPI {
 
     @POST("stockdispatch/discarddispatch")
     Call<ResponseBody> discardDispatch(@Query("StockDispatchID") int dispatchId, @Query("UserID") int userId, @Query("UseWHConnection") boolean useWHConnection);
+
+    @GET("stockdispatch/currentstock")
+    Call<List<CurrentStockModel>> getCurrentStock(@Query("FROMBRANCHID") int fromBranchId,
+                                                  @Query("TOBRANCHID") int toBranchId,
+                                                  @Query("ITEMCODEID") int itemCodeId,
+                                                  @Query("PARENTITEMID") int parentItemId,
+                                                  @Query("ITEMPRICEID") int itemPriceId,
+                                                  @Query("UseWHConnection") boolean useWHConnection);
 
 
     // StockCounting

@@ -42,7 +42,6 @@ import com.nsretail.ui.adapter.ItemCodeAdapter;
 import com.nsretail.ui.adapter.ItemPriceAdapter;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -61,7 +60,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
     CountingDetail countingDetail;
     Dialog dialog, dialogPrice;
     int stockCountingId, itemPriceId, stockDetailId;
-    boolean isUpdateItem;
+    boolean isUpdateItem, isOnClick;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -70,6 +69,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
         binding = ActivityAddItemBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        isOnClick = true;
 
         binding.includeItemAdd.textTitle.setText("Add Stock Counting");
         binding.includeItemAdd.imageCamera.setVisibility(View.VISIBLE);
@@ -81,44 +81,50 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             stockCountingId = getIntent().getIntExtra("stockCountingId", -1);
         }
 
-        if (countingDetail != null) {
-            isUpdateItem = true;
-//            binding.editTrayNo.setEnabled(false);
-            binding.editEANCode.setEnabled(false);
-            binding.editItemName.setEnabled(false);
-            binding.editMRP.setEnabled(false);
-            binding.editSalePrice.setEnabled(false);
+        try {
 
-            if (countingDetail.isOpenItem) {
-                binding.editWeight.setEnabled(true);
-                binding.editQuantity.setEnabled(false);
-                binding.editWeight.setText("" + countingDetail.weightInKgs);
+            if (countingDetail != null) {
+                isUpdateItem = true;
+//            binding.editTrayNo.setEnabled(false);
+                binding.editEANCode.setEnabled(false);
+                binding.editItemName.setEnabled(false);
+                binding.editMRP.setEnabled(false);
+                binding.editSalePrice.setEnabled(false);
+
+                if (countingDetail.isOpenItem) {
+                    binding.editWeight.setEnabled(true);
+                    binding.editQuantity.setEnabled(false);
+                    binding.editWeight.setText("" + countingDetail.weightInKgs);
+                } else {
+                    binding.editWeight.setEnabled(false);
+                    binding.editQuantity.setEnabled(true);
+                    binding.editQuantity.setText("" + countingDetail.quantity);
+                }
+
+                stockDetailId = countingDetail.stockCountingDetailId;
+                itemPriceId = countingDetail.itemPriceId;
+//            binding.editTrayNo.setText("" + countingDetail.trayNumber);
+                binding.editEANCode.setText(countingDetail.itemCode);
+                binding.editItemName.setText(countingDetail.itemName);
+                binding.editSKUCode.setText(countingDetail.skuCode);
+                binding.editMRP.setText("" + countingDetail.mrp);
+                binding.editSalePrice.setText("" + countingDetail.salePrice);
+
             } else {
-                binding.editWeight.setEnabled(false);
-                binding.editQuantity.setEnabled(true);
-                binding.editQuantity.setText("" + countingDetail.quantity);
+                isUpdateItem = false;
+                stockDetailId = 0;
+//            binding.editTrayNo.setEnabled(true);
+                binding.editEANCode.setEnabled(true);
+                binding.editItemName.setEnabled(false);
+                binding.editMRP.setEnabled(false);
+                binding.editSalePrice.setEnabled(false);
+                binding.editSKUCode.setEnabled(false);
+
+                binding.editEANCode.requestFocus();
             }
 
-            stockDetailId = countingDetail.stockCountingDetailId;
-            itemPriceId = countingDetail.itemPriceId;
-//            binding.editTrayNo.setText("" + countingDetail.trayNumber);
-            binding.editEANCode.setText(countingDetail.itemCode);
-            binding.editItemName.setText(countingDetail.itemName);
-            binding.editSKUCode.setText(countingDetail.skuCode);
-            binding.editMRP.setText("" + countingDetail.mrp);
-            binding.editSalePrice.setText("" + countingDetail.salePrice);
-
-        } else {
-            isUpdateItem = false;
-            stockDetailId = 0;
-//            binding.editTrayNo.setEnabled(true);
-            binding.editEANCode.setEnabled(true);
-            binding.editItemName.setEnabled(false);
-            binding.editMRP.setEnabled(false);
-            binding.editSalePrice.setEnabled(false);
-            binding.editSKUCode.setEnabled(false);
-
-            binding.editEANCode.requestFocus();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         binding.includeItemAdd.imageBack.setOnClickListener(view -> {
@@ -159,25 +165,26 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 
 
         binding.editEANCode.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (binding.editEANCode.getText().length() > 0) {
+            if (isOnClick) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (binding.editEANCode.getText().length() > 0) {
+                        if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
+                            getItemData(binding.editEANCode.getText().toString());
+                        else
+                            Toast.makeText(AddCountingItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                    } else {
+                        binding.editEANCode.setError("Enter Item code");
+                    }
+                    return true;
+                } else if (actionId == EditorInfo.IME_NULL
+                        && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
                     if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
                         getItemData(binding.editEANCode.getText().toString());
                     else
                         Toast.makeText(AddCountingItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
-                } else {
-                    binding.editEANCode.setError("Enter Item code");
+                    return true;
                 }
-                return true;
-            } else if (actionId == EditorInfo.IME_NULL
-                    && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                if (NetworkStatus.getInstance(AddCountingItemActivity.this).isConnected())
-                    getItemData(binding.editEANCode.getText().toString());
-                else
-                    Toast.makeText(AddCountingItemActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
-                return true;
             }
-
             return false;
         });
 
@@ -267,27 +274,43 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
-                            builder.setMessage(response.errorBody().string())
-                                    .setCancelable(false)
-                                    .setPositiveButton("OK", (dialog, id) -> {
-                                        dialog.cancel();
-                                    });
+                            if (response.errorBody().toString().length() > 0) {
+                                builder.setMessage(response.errorBody().string())
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", (dialog, id) -> {
+                                            dialog.cancel();
+                                        });
+                            } else {
+                                builder.setMessage("Empty response :" + response.code())
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", (dialog, id) -> {
+                                            dialog.cancel();
+                                        });
+                            }
                             AlertDialog alert = builder.create();
                             alert.show();
                         }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
-                        builder.setMessage(response.errorBody().string())
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, id) -> {
-                                    dialog.cancel();
-                                });
+                        if (response.errorBody().toString().length() > 0) {
+                            builder.setMessage(response.errorBody().string())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                        } else {
+                            builder.setMessage("Empty response :" + response.code())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                        }
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -301,9 +324,21 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
                         dialog.cancel();
                     });
                 } else {
-                    builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
-                        dialog.cancel();
-                    });
+                    if (t.getMessage().toString().length() > 0) {
+                        builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                            dialog.cancel();
+                        });
+                    } else {
+                        try {
+                            builder.setMessage("Empty response : " + call.execute().code())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -326,6 +361,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             binding.editMRP.setEnabled(true);
         }
 
+        stockDetailId = 0;
         binding.editItemName.setText("");
         binding.editSKUCode.setText("");
         binding.editQuantity.setText("");
@@ -336,6 +372,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
     }
 
     private void getItemData(String itemCode) {
+        isOnClick = false;
         binding.progressBar.setVisibility(View.VISIBLE);
         itemList = new ArrayList<>();
         itemCodeList = new ArrayList<>();
@@ -349,6 +386,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
                 binding.progressBar.setVisibility(View.GONE);
+                isOnClick = true;
                 if (response.code() == 200) {
 
                     itemList = response.body().itemList;
@@ -357,25 +395,44 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
 
 //                    showItemCodeDialog();
 
-                    if (itemCodeList.size() > 1) {
-                        showItemCodeDialog();
+                    if (itemCodeList.size() > 0 && itemPriceList.size() > 0) {
+                        if (itemCodeList.size() > 1) {
+                            showItemCodeDialog();
+                        } else {
+                            binding.editEANCode.setText(itemCodeList.get(0).itemCode);
+                            selectPriceData(0);
+                        }
                     } else {
-                        binding.editEANCode.setText(itemCodeList.get(0).itemCode);
-                        selectPriceData(0);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this, R.style.AlertDialogCustom);
+                        try {
+                            builder.setMessage("Item Doesn't exist!")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                        binding.editEANCode.setText("");
+                                        clearData();
+                                        binding.editEANCode.requestFocus();
+                                    });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                 } else {
+                    isOnClick = true;
                     AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this, R.style.AlertDialogCustom);
                     try {
                         builder.setMessage(response.errorBody().string())
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) -> {
                                     dialog.cancel();
-                                    binding.editEANCode.setText("");
-                                    clearData();
-                                    binding.editEANCode.requestFocus();
+//                                    binding.editEANCode.setText("");
+//                                    clearData();
+//                                    binding.editEANCode.requestFocus();
                                 });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -385,6 +442,7 @@ public class AddCountingItemActivity extends AppCompatActivity implements OnItem
             @Override
             public void onFailure(Call<ItemModel> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                isOnClick = true;
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddCountingItemActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {

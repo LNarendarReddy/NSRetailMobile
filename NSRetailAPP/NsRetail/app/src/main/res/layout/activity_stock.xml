@@ -69,8 +69,8 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_add_item" />
 
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="Add Item"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp"
+                android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/add_item_fab"
                 app:layout_constraintEnd_toStartOf="@+id/add_item_fab"
                 app:layout_constraintTop_toTopOf="@+id/add_item_fab" />
@@ -97,8 +97,8 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_done" />
 
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:text="Submit"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp"
+                android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/add_item_fab"
                 app:layout_constraintEnd_toStartOf="@+id/add_item_fab"
                 app:layout_constraintTop_toTopOf="@+id/add_item_fab" />
@@ -124,8 +124,8 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_cancel" />
 
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:text="Discard"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp"
+                android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/add_item_fab"
                 app:layout_constraintEnd_toStartOf="@+id/add_item_fab"
                 app:layout_constraintTop_toTopOf="@+id/add_item_fab" />

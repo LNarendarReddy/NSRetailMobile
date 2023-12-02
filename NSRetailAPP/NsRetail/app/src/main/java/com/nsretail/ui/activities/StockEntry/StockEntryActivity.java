@@ -30,7 +30,6 @@ import com.nsretail.ui.activities.StockCounting.StockCountingActivity;
 import com.nsretail.ui.adapter.StockEntryAdapter;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -95,7 +94,10 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                searchData(newText);
+                if (newText.length() > 0) {
+                    searchData(newText);
+                }
+
                 return false;
             }
         });
@@ -157,8 +159,8 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -183,6 +185,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
     }
 
     private void getStockData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
 
         stockEntry = new ArrayList<>();
         stockEntryDetails = new ArrayList<>();
@@ -195,6 +198,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<Invoice> call, Response<Invoice> response) {
+                binding.progressBar.setVisibility(View.GONE);
 
                 if (response.code() == 200) {
 
@@ -219,6 +223,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
 
             @Override
             public void onFailure(Call<Invoice> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
                 if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
                     builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
@@ -235,6 +240,7 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     ActivityResultLauncher<Intent> activityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == 113) {
             Intent data = result.getData();
@@ -242,6 +248,10 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
                 if (data.getBooleanExtra("refresh", false)) {
                     binding.includeStock.searchView.setIconified(true);
                     binding.includeStock.searchView.onActionViewCollapsed();
+                    if (stockEntryDetails.size() > 0){
+                        stockEntryDetails.clear();
+                        adapter.notifyDataSetChanged();
+                    }
                     if (NetworkStatus.getInstance(StockEntryActivity.this).isConnected())
                         getStockData();
                     else {
@@ -293,4 +303,85 @@ public class StockEntryActivity extends AppCompatActivity implements OnItemClick
         stockEntryDetails.remove(position);
         adapter.notifyDataSetChanged();
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void deleteItem(int position){
+        binding.progressBar.setVisibility(View.VISIBLE);
+        StatusAPI deleteAPI = BaseURL.getStatusAPI();
+
+        Call<ResponseBody> call;
+
+        if (filteredData != null) {
+            if (filteredData.size() > 0) {
+                call = deleteAPI.deleteStockEntry(filteredData.get(position).stockEntryDetailId,
+                        Globals.userResponse.user.get(0).userId, true);
+            } else {
+                call = deleteAPI.deleteStockEntry(stockEntryDetails.get(position).stockEntryDetailId,
+                        Globals.userResponse.user.get(0).userId, true);
+            }
+        } else {
+            call = deleteAPI.deleteStockEntry(stockEntryDetails.get(position).stockEntryDetailId,
+                    Globals.userResponse.user.get(0).userId, true);
+        }
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+
+                    try {
+                        Toast.makeText(StockEntryActivity.this, response.body().string(), Toast.LENGTH_SHORT).show();
+                        stockEntryDetails.remove(position);
+                        adapter.notifyDataSetChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
+                    try {
+                        builder.setMessage(response.errorBody().string())
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, id) -> {
+                                    dialog.cancel();
+                                });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(StockEntryActivity.this);
+                if (t.getMessage().equalsIgnoreCase("Failed to connect to nsoftsol.com/122.175.62.71:6002")) {
+                    builder.setMessage("Network Issue!!").setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                } else {
+                    if (t.getMessage().toString().length() > 0) {
+                        builder.setMessage(t.getMessage()).setCancelable(false).setPositiveButton("OK", (dialog, id) -> {
+                            dialog.cancel();
+                        });
+                    } else {
+                        try {
+                            builder.setMessage("Empty response : " + call.execute().code())
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, id) -> {
+                                        dialog.cancel();
+                                    });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
+    }
+
 }

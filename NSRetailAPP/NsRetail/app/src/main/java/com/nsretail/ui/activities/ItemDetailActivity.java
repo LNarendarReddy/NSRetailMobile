@@ -45,7 +45,6 @@ import com.nsretail.data.model.ItemModel.ItemModel;
 import com.nsretail.data.model.ItemModel.ItemPrice;
 import com.nsretail.databinding.ActivityItemDetailBinding;
 import com.nsretail.ui.Interface.OnItemClickListener;
-import com.nsretail.ui.activities.StockDispatch.CategoryActivity;
 import com.nsretail.ui.adapter.CostPriceAdapter;
 import com.nsretail.ui.adapter.ItemCodeAdapter;
 import com.nsretail.ui.adapter.OfferDetailAdapter;
@@ -53,7 +52,6 @@ import com.nsretail.ui.adapter.PriceDetailAdapter;
 import com.nsretail.ui.adapter.StockDetailsAdapter;
 import com.nsretail.utils.NetworkStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,8 +215,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                                 .setCancelable(false)
                                 .setPositiveButton("OK", (dialog, id) ->
                                         dialog.cancel());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     AlertDialog alert = builder.create();
                     alert.show();
@@ -245,8 +243,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
     private void getItemData(String itemCode) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        itemList = new ArrayList<>();
-        itemCodeList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
         Call<ItemModel> call = itemAPI.getItemDetail(itemCode, binding.wareRadio.isChecked());
@@ -254,6 +250,9 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             @Override
             public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
                 binding.progressBar.setVisibility(View.GONE);
+
+                itemList = new ArrayList<>();
+                itemCodeList = new ArrayList<>();
                 try {
                     if (response.code() == 200) {
 
@@ -286,8 +285,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -312,34 +311,37 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
     private void setEANCode(String itemCode) {
 
-        binding.editEANCode.setText(itemCode);
-        binding.editEANCode.setSelection(binding.editEANCode.getText().length());
+        if (itemCode.length() > 0) {
+            binding.editEANCode.setText(itemCode);
+            binding.editEANCode.setSelection(binding.editEANCode.getText().length());
 
 
-        binding.editItemName.setText(itemList.get(0).itemName);
-        binding.editSKUCode.setText(itemList.get(0).skuCode);
-        binding.editEANCode.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (binding.editEANCode.getText().length() > 0) {
-                    binding.editEANCode.setSelectAllOnFocus(true);
-                    binding.editEANCode.selectAll();
-                    clearData();
-                }
-            }
-        });
-
+            binding.editItemName.setText(itemList.get(0).itemName);
+            binding.editSKUCode.setText(itemList.get(0).skuCode);
+        }
+        binding.editEANCode.addTextChangedListener(textWatcher);
     }
+
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (binding.editEANCode.getText().length() > 0) {
+                binding.editEANCode.setSelectAllOnFocus(true);
+                binding.editEANCode.selectAll();
+                clearData();
+            }
+        }
+    };
 
     private void showDialog() {
 
@@ -377,14 +379,13 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
         dialog.show();
     }
 
-
     private void clearData() {
-        isFocus = false;
+        isFocus = true;
         binding.editSKUCode.setText("");
         binding.editItemName.setText("");
 
         if (itemCodeList != null)
-            itemCostList.clear();
+            itemCodeList.clear();
         if (itemPrices != null)
             itemPrices.clear();
         if (offerList != null)
@@ -394,6 +395,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
             setPriceData();
         }
 
+        binding.editEANCode.removeTextChangedListener(textWatcher);
     }
 
     @Override
@@ -413,8 +415,10 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
 
     private void getItemPrice(int itemCodeId) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        itemList = new ArrayList<>();
-        itemCodeList = new ArrayList<>();
+        itemCostList = new ArrayList<>();
+        itemPrices = new ArrayList<>();
+        offerList = new ArrayList<>();
+        stockList = new ArrayList<>();
 
         StatusAPI itemAPI = BaseURL.getStatusAPI();
         Call<ItemResult> call = itemAPI.getItemPrice(itemCodeId, branchId, binding.wareRadio.isChecked());
@@ -442,8 +446,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnItemClick
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
