@@ -29,7 +29,7 @@ namespace NSRetailAPI.Controllers
                     {
                         { "USERID", Userid }
                     };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCHFORDISPATCH", false, parameters);
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCHFORDISPATCH", true, parameters);
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     dt.TableName = "Branch";
