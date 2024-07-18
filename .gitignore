@@ -11,3 +11,6 @@ Setup/NSRetailPOS/Output/*
 
 !Setup/NSRetail/Input/.gitignore
 !Setup/NSRetail/Output/.gitignore
+Publish
+appsettings.json
+appsettings.Development.json
