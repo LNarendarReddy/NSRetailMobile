@@ -218,15 +218,16 @@ namespace NSRetailAPI.Controllers
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "STOCKCOUNTINGID", StockCountingID}
-                    ,{ "USERID", UserID}
-                    ,{ "UPDATEDDATE", DateTime.Now}
+                        ,{ "USERID", UserID}
+                        ,{ "UPDATEDDATE", DateTime.Now}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_U_STOCKCOUNTING", false, parameters);
-
-                if (rowsaffected == 0)
-                    return BadRequest("Error while submitting stockcounting");
-                else
+                object obj = new DataRepository().ExecuteScalar(configuration, "CLOUD_USP_U_STOCKCOUNTING", false, parameters);
+                string str = Convert.ToString(obj);
+                if (int.TryParse(str, out int ivalue))
                     return Ok("Stock counting submitted successfully");
+                else
+                    return BadRequest(str);
+
             }
             catch (Exception ex)
             {
@@ -245,12 +246,13 @@ namespace NSRetailAPI.Controllers
                         { "STOCKCOUNTINGID", StockCountingID}
                     ,{ "USERID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_D_STOCKCOUNTING", false, parameters);
-
-                if (rowsaffected == 0)
-                    throw new Exception("Error while discarding counting");
-                else
+                object obj = new DataRepository().ExecuteScalar(configuration, "CLOUD_USP_D_STOCKCOUNTING", false, parameters);
+                
+                string str = Convert.ToString(obj);
+                if (int.TryParse(str, out int ivalue))
                     return Ok("Stock counting discarded successfully");
+                else
+                    return BadRequest(str);
             }
             catch (Exception ex)
             {

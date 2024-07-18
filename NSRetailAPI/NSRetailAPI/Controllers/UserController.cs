@@ -30,7 +30,7 @@ namespace NSRetailAPI.Controllers
                         , { "PASSWORD", Utility.Encrypt(Password) }
                         , { "APPVERSION", AppVersion }
                     };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_USERLOGIN_Mobile", true,parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_USERLOGIN_Mobile",  false,parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "User";
