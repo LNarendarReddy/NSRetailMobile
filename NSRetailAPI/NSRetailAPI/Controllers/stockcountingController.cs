@@ -196,12 +196,13 @@ namespace NSRetailAPI.Controllers
                 {
                         { "STOCKCOUNTINGDETAILID", StockCountingDetailID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "CLOUD_USP_D_STOCKCOUNTINGDETAIL1", false, parameters);
-                
-                if (rowsaffected == 0)
-                    return BadRequest("Error while deleting item");
-                else
+                object obj = new DataRepository(). ExecuteScalar(configuration, "CLOUD_USP_D_STOCKCOUNTINGDETAIL1", false, parameters);
+
+                string str = Convert.ToString(obj);
+                if (int.TryParse(str, out int ivalue))
                     return Ok("Item deleted successfully");
+                else
+                    throw new Exception(str);
             }
             catch (Exception ex)
             {
@@ -226,7 +227,7 @@ namespace NSRetailAPI.Controllers
                 if (int.TryParse(str, out int ivalue))
                     return Ok("Stock counting submitted successfully");
                 else
-                    return BadRequest(str);
+                    throw new Exception(str);
 
             }
             catch (Exception ex)
@@ -252,7 +253,7 @@ namespace NSRetailAPI.Controllers
                 if (int.TryParse(str, out int ivalue))
                     return Ok("Stock counting discarded successfully");
                 else
-                    return BadRequest(str);
+                    throw new Exception(str);
             }
             catch (Exception ex)
             {
