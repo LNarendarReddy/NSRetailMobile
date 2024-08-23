@@ -1,5 +1,8 @@
-﻿using System.Security.Cryptography;
+﻿using Newtonsoft.Json;
+using System.Data;
+using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 
 namespace NSRetailAPI.Utilities
 {
@@ -72,6 +75,39 @@ namespace NSRetailAPI.Utilities
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public static string GetJsonString(DataSet ds, Dictionary<string, string>? columnNames = null)
+        {
+            try
+            {
+                ds.DataSetName = "Holder";
+                if (columnNames != null)
+                {
+                    int i = 0;
+                    foreach (var columnName in columnNames)
+                    {
+                        ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
+                        ds.Relations[i].Nested = true;
+                        i++;
+                    }
+                }
+
+                StringWriter sw = new StringWriter();
+                ds.WriteXml(sw);
+                string xmlString = sw.ToString();
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlString);
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.TypeNameHandling = TypeNameHandling.All;
+
+                return JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

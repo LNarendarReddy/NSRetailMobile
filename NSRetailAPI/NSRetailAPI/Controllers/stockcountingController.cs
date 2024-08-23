@@ -19,7 +19,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getbranch")]
-        public IActionResult GetBranch(int Userid)
+        public IActionResult GetBranch(int Userid,bool isNested = false)
         {
             try
             {
@@ -27,16 +27,19 @@ namespace NSRetailAPI.Controllers
                     {
                         { "USERID", Userid }
                     };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCHFORCOUNTING", false, parameters);
-                if (dt != null && dt.Rows.Count > 0)
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORCOUNTING", false, parameters);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    dt.TableName = "Branch";
+                    ds.Tables[0].TableName = "Branch";
                     int Ivalue = 0;
-                    string str = Convert.ToString(dt.Rows[0][0]);
-                    if (!int.TryParse(str, out Ivalue))
-                        return BadRequest(str);
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out Ivalue))
+                        if (isNested)
+                            return Ok(Utility.GetJsonString(ds));
+                        else
+                            return Ok(JsonConvert.SerializeObject(ds.Tables[0]));
                     else
-                        return Ok(JsonConvert.SerializeObject(dt));
+                        return BadRequest(str);
                 }
                 else
                     return NotFound("Data not found");
@@ -49,7 +52,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getitem")]
-        public IActionResult GetItem(string ItemCode)
+        public IActionResult GetItem(string ItemCode,bool isNested = false)
         {
             try
             {
@@ -62,14 +65,19 @@ namespace NSRetailAPI.Controllers
                 {
                     int Ivalue = 0;
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
-                    if (!int.TryParse(str, out Ivalue))
-                        throw new Exception(str);
-                    else
+                    if (int.TryParse(str, out Ivalue))
                     {
                         ds.Tables[0].TableName = "ITEM";
                         ds.Tables[1].TableName = "ITEMCODE";
                         ds.Tables[2].TableName = "ITEMPRICE";
-                        return Ok(JsonConvert.SerializeObject(ds));
+                        if (isNested)
+                            return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }));
+                        else
+                            return Ok(JsonConvert.SerializeObject(ds));
+                    }
+                    else
+                    {
+                        throw new Exception(str);
                     }
                 }
                 else
@@ -83,7 +91,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getcounting")]
-        public IActionResult GetCounting(int UserID)
+        public IActionResult GetCounting(int UserID, bool isNested = false)
         {
             try
             {
@@ -99,7 +107,10 @@ namespace NSRetailAPI.Controllers
                         ds.Tables[0].TableName = "Counting";
                         if (ds.Tables.Count > 1)
                             ds.Tables[1].TableName = "CountingDetail";
-                        return Ok(JsonConvert.SerializeObject(ds));
+                        if (isNested)
+                            return Ok(Utility.GetJsonString(ds));
+                        else
+                            return Ok(JsonConvert.SerializeObject(ds));
                     }
                     else
                     {
