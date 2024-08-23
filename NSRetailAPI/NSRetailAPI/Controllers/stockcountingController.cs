@@ -35,7 +35,7 @@ namespace NSRetailAPI.Controllers
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
                     if (int.TryParse(str, out Ivalue))
                         if (isNested)
-                            return Ok(Utility.GetJsonString(ds));
+                            return Ok(Utility.GetJsonString(ds, null));
                         else
                             return Ok(JsonConvert.SerializeObject(ds.Tables[0]));
                     else
@@ -108,7 +108,7 @@ namespace NSRetailAPI.Controllers
                         if (ds.Tables.Count > 1)
                             ds.Tables[1].TableName = "CountingDetail";
                         if (isNested)
-                            return Ok(Utility.GetJsonString(ds));
+                            return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "STOCKCOUNTINGID", "STOCKCOUNTINGID" } }));
                         else
                             return Ok(JsonConvert.SerializeObject(ds));
                     }

@@ -78,7 +78,7 @@ namespace NSRetailAPI.Utilities
             }
         }
 
-        public static string GetJsonString(DataSet ds, Dictionary<string, string>? columnNames = null)
+        public static string GetJsonString(DataSet ds, Dictionary<string, string>? columnNames)
         {
             try
             {
