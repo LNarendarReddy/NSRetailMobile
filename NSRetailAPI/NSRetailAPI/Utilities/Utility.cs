@@ -98,10 +98,13 @@ namespace NSRetailAPI.Utilities
                 ds.WriteXml(sw);
                 string xmlString = sw.ToString();
 
+                for (int i = 1; i < ds.Tables.Count; i++)
+                {
+                    xmlString = xmlString.Replace($"<{ds.Tables[i].TableName}>", $"<{ds.Tables[i].TableName} xmlns:json=\"http://james.newtonking.com/projects/json\" json:Array=\"true\">");
+                }
+
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(xmlString);
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.TypeNameHandling = TypeNameHandling.All;
 
                 return JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
             }

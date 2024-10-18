@@ -68,8 +68,8 @@ namespace NSRetailAPI.Controllers
                     if (int.TryParse(str, out Ivalue))
                     {
                         ds.Tables[0].TableName = "ITEM";
-                        ds.Tables[1].TableName = "ITEMCODE";
-                        ds.Tables[2].TableName = "ITEMPRICE";
+                        ds.Tables[1].TableName = "ITEMCODES";
+                        ds.Tables[2].TableName = "ITEMPRICES";
                         if (isNested)
                             return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }));
                         else

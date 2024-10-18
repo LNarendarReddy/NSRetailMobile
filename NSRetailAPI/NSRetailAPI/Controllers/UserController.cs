@@ -39,7 +39,7 @@ namespace NSRetailAPI.Controllers
                 {
                     ds.Tables[0].TableName = "User";
                     if (ds.Tables.Count > 1)
-                        ds.Tables[1].TableName = "FeatureAccess";
+                        ds.Tables[1].TableName = "FeatureAccesses";
                     int Ivalue = 0;
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
                     if (int.TryParse(str, out Ivalue))
