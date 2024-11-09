@@ -130,17 +130,17 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savecounting")]
-        public IActionResult SaveCounting(int StockCountingID, int BranchID, int UserID)
+        public IActionResult SaveCounting(int StockCountingID, int BranchID, int UserID, string StockLocationName)
         {
             try
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
+                Dictionary<string, object> parameters = new()
                 {
-                        { "STOCKCOUNTINGID", StockCountingID}
-                        ,{ "BranchID", BranchID}
-                        ,{ "USERID",UserID }
-                        ,{ "CREATEDDATE", DateTime.Now }
-
+                    { "STOCKCOUNTINGID", StockCountingID}
+                    , { "BranchID", BranchID}
+                    , { "USERID",UserID }
+                    , { "CREATEDDATE", DateTime.Now }
+                    , { "STOCKLOCATIONNAME", StockLocationName }
                 };
                 object obj = new DataRepository().ExecuteScalar(configuration, "CLOUD_USP_CU_STOCKCOUNTING", false, parameters);
                 string str = Convert.ToString(obj);
