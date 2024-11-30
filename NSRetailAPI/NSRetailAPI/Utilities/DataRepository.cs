@@ -1,6 +1,7 @@
 ﻿using System.Data.SqlClient;
 using System.Data;
 using System.Runtime;
+using System.Transactions;
 
 namespace NSRetailAPI.Utilities
 {
@@ -60,6 +61,38 @@ namespace NSRetailAPI.Utilities
             return dsReportData;
         }
 
+        public DataSet GetDatasetWithTransaction(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            DataSet dsReportData = new DataSet();
+            SqlTransaction? transaction = null;
+            try
+            {
+                transaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudconn(configuration).BeginTransaction();
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dsReportData);
+                    }
+                    transaction?.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction?.Rollback();
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return dsReportData;
+        }
+
         public object ExecuteScalar(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             object? obj = null;
@@ -78,6 +111,34 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return obj;
+        }
+
+        public object ExecuteScalarWithTransaction(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            object? obj = null;
+            SqlTransaction? transaction = null;
+            try
+            {
+                transaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudconn(configuration).BeginTransaction();
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+                    obj = cmd.ExecuteScalar();
+                    transaction?.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction?.Rollback();
                 throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return obj;
@@ -130,5 +191,118 @@ namespace NSRetailAPI.Utilities
                 sqlCommand.Parameters.AddWithValue(paramName, param.Value);
             }
         }
+
+
+        #region 'Test methods'
+        public DataSet GetDataset_test(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            DataSet dsReportData = new DataSet();
+            try
+            {
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudTestconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dsReportData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return dsReportData;
+        }
+
+        public DataSet GetDatasetWithTransaction_test(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            DataSet dsReportData = new DataSet();
+            SqlTransaction? transaction = null;
+            try
+            {
+                transaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudTestconn(configuration).BeginTransaction();
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudTestconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dsReportData);
+                    }
+                    transaction?.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction?.Rollback();
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return dsReportData;
+        }
+
+        public object ExecuteScalar_test(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            object? obj = null;
+            try
+            {
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudTestconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+                    obj = cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return obj;
+        }
+
+        public object ExecuteScalarWithTransaction_test(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
+        {
+            object? obj = null;
+            SqlTransaction? transaction = null;
+            try
+            {
+                transaction = useWHConn ? SQLCon.SqlWHconn(configuration).BeginTransaction() : SQLCon.SqlCloudTestconn(configuration).BeginTransaction();
+                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudTestconn(configuration))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.Connection = connection;
+                    cmd.CommandTimeout = 1800;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = procedureName;
+                    ProcessParameters(cmd, parameters);
+                    obj = cmd.ExecuteScalar();
+                    transaction?.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction?.Rollback();
+                throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
+            }
+            return obj;
+        }
+        #endregion
     }
 }

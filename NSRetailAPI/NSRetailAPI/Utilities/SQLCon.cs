@@ -35,6 +35,33 @@ namespace NSRetailAPI.Utilities
             return ObjCloudCon;
         }
 
+        public static SqlConnection SqlCloudTestconn(IConfiguration configuration)
+        {
+            SqlConnection ObjCloudCon = new SqlConnection();
+            try
+            {
+
+                string stwesar1sdfda = Utility.Decrypt(configuration.GetConnectionString("f7ea6ebe-d717-4cc6-b45d-410e5f4c13ff").ToString());
+                string stdvcxz2q2w3s = Utility.Decrypt(configuration.GetConnectionString("0f7d60c8-b011-422d-a1f7-8fed8eaad5c8").ToString());
+                string ssfdatr3sdabd = Utility.Decrypt(configuration.GetConnectionString("bd62557d-d076-4c99-aecd-01f7e0c9990d").ToString());
+                string stretwr4awqas = Utility.Decrypt(configuration.GetConnectionString("73a09af2-858d-4b7f-a463-0585ebdeb650").ToString());
+
+                string njkfgrrtdd = $"Data Source = {stwesar1sdfda}; Initial Catalog = {stdvcxz2q2w3s}; User Id = {ssfdatr3sdabd}; Password = {stretwr4awqas}; Pooling = True; Connect Timeout = 5; Max Pool Size = 2000;MultipleActiveResultSets=true;";
+
+                ObjCloudCon.ConnectionString = njkfgrrtdd;
+                ObjCloudCon.Open();
+                ObjCloudCon.Disposed += ObjCloudCon_Disposed;
+                noOfCloudConns++;
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
+            }
+            catch (Exception ex)
+            {
+                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
+                throw ex;
+            }
+            return ObjCloudCon;
+        }
+
         public static SqlConnection SqlWHconn(IConfiguration configuration)
         {
             SqlConnection ObjWHCon = new SqlConnection();
