@@ -4,45 +4,33 @@ namespace NSRetailAPI.Models
 {
     public class BillingBase
     {
-        int userID;
-        public int UserID { get { return userID; } set { userID = value; } }
+        public int UserID { get; set; }
 
-        int billID;
-        public int BillID { get { return billID; } set { billID = value; } }
+        public int BillID { get; set; }
 
-        int billDetailID;
-        public int BillDetailID { get { return billDetailID; } set { billDetailID = value; } }
+        public int BillDetailID { get; set; }
 
-        int branchCounterID;
-        public int BranchCounterID { get { return branchCounterID; } set { branchCounterID = value; } }
+        public int BranchCounterID { get; set; }
 
-        int branchID;
-        public int BranchID { get { return branchID; } set { branchID = value; } }
+        public int BranchID { get; set; }
     }
-    public class SaveBillDetail: BillingBase
+    public class SaveBillDetail : BillingBase
     {
 
-        int itemPriceID;
-        public int ItemPriceID { get { return itemPriceID; } set { itemPriceID = value; } }
+        public int ItemPriceID { get; set; }
 
-        int quantity;
-        public int Quantity { get { return quantity; } set { quantity = value; } }
+        public int Quantity { get; set; }
 
-        double weightInKGS;
-        public double WeightInKGS { get { return weightInKGS; } set { weightInKGS = value; } }
+        public double WeightInKGS { get; set; }
 
+        public bool IsBillOfferItem { get; set; }
 
-        bool isBillOfferItem;
-        public bool IsBillOfferItem { get { return isBillOfferItem; } set { isBillOfferItem = value; } }
-
-        double? billOfferPrice;
-        public double? BillOfferPrice { get { return billOfferPrice; } set { billOfferPrice = value; } }
+        public double? BillOfferPrice { get; set; }
     }
 
     public class DeleteBillDetail : BillingBase
     {
-        List<Sno> snos;
-        public List<Sno> Snos { get { return snos; } set { snos = value; } }
+        public List<Sno> Snos { get; set; }
     }
     public class Sno
     {
@@ -51,54 +39,39 @@ namespace NSRetailAPI.Models
 
     public class FinishBill : BillingBase
     {
-        int daySequenceID;
-        public int DaySequenceID { get { return daySequenceID; } set { daySequenceID = value; } }
+        public int DaySequenceID { get; set; }
 
-        string customerName;
-        public string CustomerName { get { return customerName; } set { customerName = value; } }
+        public string CustomerName { get; set; }
 
-        string customerNumber;
-        public string CustomerNumber { get { return customerNumber; } set { customerNumber = value; } }
+        public string CustomerNumber { get; set; }
 
-        string customerGST;
-        public string CustomerGST { get { return customerGST; } set { CustomerGST = value; } }
+        public string CustomerGST { get; set; }
 
-        double rounding;
-        public double Rounding { get { return rounding; } set { rounding = value; } }
+        public double Rounding { get; set; }
 
-        bool isDoorDelivery;
-        public bool IsDoorDelivery { get { return isDoorDelivery; } set { isDoorDelivery = value; } }
+        public bool IsDoorDelivery { get; set; }
 
-        double tenderedCash;
-        public double TenderedCash { get { return tenderedCash; } set { tenderedCash = value; } }
+        public double TenderedCash { get; set; }
 
-        double tenderedChange;
-        public double TenderedChange { get { return tenderedChange; } set { tenderedCash = value; } }
+        public double TenderedChange { get; set; }
 
-        List<MOPValues> mOPValues;
-        public List<MOPValues> MopValues { get { return mOPValues; } set { mOPValues = value; } }
+        public List<MOPValues> MopValues { get; set; }
     }
     public class MOPValues
     {
-        int mopID;
-        public int MopID { get {return mopID; } set { mopID = value; } }
+        public int MopID { get; set; }
 
-        decimal mopValue;
-        public decimal MopValue { get { return mopValue; } set {  mopValue = value; } }
+        public decimal MopValue { get; set; }
     }
 
     public class SaveDayClosure : BillingBase
     {
-        double refundAmount;
-        public double RefundAmount { get { return refundAmount; } set { refundAmount = value; } }
+        public double RefundAmount { get; set; }
 
-        int daySequenceID;
-        public int DaySequenceID { get { return daySequenceID; } set { daySequenceID = value; } }
+        public int DaySequenceID { get; set; }
 
-        List<MOPValues> mOPValues;
-        public List<MOPValues> MopValues { get { return mOPValues; } set { mOPValues = value; } }
+        public List<MOPValues> MopValues { get; set; }
 
-        List<MOPValues> denominations;
-        public List<MOPValues> Denominations { get { return denominations; } set { denominations = value; } }
+        public List<MOPValues> Denominations { get; set; }
     }
 }

@@ -20,6 +20,53 @@ namespace NSRetailAPI.Controllers
             configuration = _configuration;
         }
 
+        [HttpPost]
+        [Route("savecounteridentifier")]
+        public IActionResult SaveCounterIdentifier([FromQuery] string Identifier, [FromQuery] int CounterID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "IDENTIFIER", Identifier },
+                        { "COUNTERID", CounterID}
+
+                    };
+                object objReturn = new DataRepository().ExecuteScalar(configuration, "POS_USP_U_COUNTERIDENTIFIER", false, parameters);
+                if (int.TryParse(Convert.ToString(objReturn), out int BranchCounterID) && BranchCounterID > 0)
+                    return Ok(BranchCounterID);
+                else
+                    return NotFound("Data not found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
+
+        [HttpGet]
+        [Route("getcounterbyidentifier")]
+        public IActionResult GetCountersByIdentifier([FromQuery] string Identifier)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "IDENTIFIER", Identifier }
+
+                    };
+                object objReturn = new DataRepository().ExecuteScalar(configuration, "POS_USP_R_BRANCHCOUNTERIDBYIDENTIFIER", false, parameters);
+                if (int.TryParse(Convert.ToString(objReturn), out int CounterID) && CounterID > 0)
+                    return Ok(CounterID);
+                else
+                    return NotFound("Data not found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
+
         [HttpGet]
         [Route("getcounters")]
         public IActionResult GetCounters([FromQuery] int BranchID, [FromQuery] bool isMobileCounter = true)
@@ -32,11 +79,12 @@ namespace NSRetailAPI.Controllers
                         { "ISMOBILECOUNTER", isMobileCounter}
 
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "USP_R_BRANCHCOUNTER", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHCOUNTER", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "BRANCHCOUNTER";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "BRANCH";
+                    ds.Tables[1].TableName = "BRANCHCOUNTER";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BRANCHID", "BRANCHID" } }));
                 }
                 else
                     return NotFound("Data not found");
@@ -57,7 +105,7 @@ namespace NSRetailAPI.Controllers
                     {
                         { "ITEMCODE", ItemCode }
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "USP_R_ITEMDATAFORBILLING", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATAFORBILLING", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     int Ivalue = 0;
@@ -65,8 +113,8 @@ namespace NSRetailAPI.Controllers
                     if (int.TryParse(str, out Ivalue))
                     {
                         ds.Tables[0].TableName = "ITEM";
-                        ds.Tables[1].TableName = "ITEMCODES";
-                        ds.Tables[2].TableName = "ITEMPRICES";
+                        ds.Tables[1].TableName = "ITEMCODE";
+                        ds.Tables[2].TableName = "ITEMPRICE";
                         return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }));
                     }
                     else
@@ -84,27 +132,6 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getitemcodes")]
-        public IActionResult GetItemCodes()
-        {
-            try
-            {
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_ITEMCODES", false, null);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    ds.Tables[0].TableName = "ITEMCODE";
-                    return Ok(Utility.GetJsonString(ds, null));
-                }
-                else
-                    return NotFound("Data not found");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.ToString());
-            }
-        }
-
-        [HttpGet]
         [Route("getinitialload")]
         public IActionResult GetInitialLoad([FromQuery] int userID, [FromQuery] int branchCounterID)
         {
@@ -115,16 +142,16 @@ namespace NSRetailAPI.Controllers
                         { "UserID", userID },
                         { "BranchCounterID", branchCounterID }
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_LOAD", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_LOAD", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "DAYSEQUENCE";
                     if (ds.Tables.Count > 1)
                     {
                         ds.Tables[1].TableName = "BILL";
-                        ds.Tables[2].TableName = "BILLDETAILS";
+                        ds.Tables[2].TableName = "BILLDETAIL";
                     }
-                    return Ok(Utility.GetJsonString(ds, null));
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BRANCHCOUNTERID", "BRANCHCOUNTERID" }, { "BILLID", "BILLID" } }));
                 }
                 else
                 {
@@ -150,42 +177,12 @@ namespace NSRetailAPI.Controllers
                         { "BranchCounterID", branchCounterID },
 
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_LOAD", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_BILL", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "BILL";
-                    ds.Tables[1].TableName = "BILLDETAILS";
-                    return Ok(Utility.GetJsonString(ds, null));
-                }
-                else
-                {
-                    return NotFound("Data not found");
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.ToString());
-            }
-        }
-
-        [HttpGet]
-        [Route("getmrplist")]
-        public IActionResult GetMRPList([FromQuery] int itemCodeID, [FromQuery] int branchID, [FromQuery] bool showAllMRP = false)
-        {
-            try
-            {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "ITEMCODEID", itemCodeID},
-                        { "FilterMRPByStock", showAllMRP },
-                        { "BRANCHID", branchID },
-
-                    };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_ITEMMRPLIST", false, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    ds.Tables[0].TableName = "ITEMPRICE";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[1].TableName = "BILLDETAIL";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BILLID", "BILLID" } }));
                 }
                 else
                 {
@@ -210,11 +207,12 @@ namespace NSRetailAPI.Controllers
                         { "BRANCHID", branchID }
 
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_GETOFFERS", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_GETOFFERS", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "ITEMPRICE";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "HOLDER";
+                    ds.Tables[1].TableName = "OFFER";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
                 }
                 else
                 {
@@ -229,7 +227,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("deletebilldetail")]
-        public IActionResult DeleteBillDetail([FromBody] string jsonString)
+        public IActionResult DeleteBillDetail([FromQuery] string jsonString)
         {
             try
             {
@@ -243,11 +241,12 @@ namespace NSRetailAPI.Controllers
                         { "BRANCHID", billDetail.BranchID}
 
                     };
-                DataSet ds = new DataRepository().GetDatasetWithTransaction_test(configuration, "POS_USP_D_BILLDETAIL", false, parameters);
+                DataSet ds = new DataRepository().GetDatasetWithTransaction(configuration, "POS_USP_D_BILLDETAIL", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "BILLDETAIL";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "BILL";
+                    ds.Tables[1].TableName = "BILLDETAIL";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BILLID", "BILLID" } }));
                 }
                 else
                 {
@@ -262,7 +261,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savebilldetail")]
-        public IActionResult SaveBillDetail([FromBody] string jsonString)
+        public IActionResult SaveBillDetail([FromQuery] string jsonString)
         {
             try
             {
@@ -280,11 +279,12 @@ namespace NSRetailAPI.Controllers
                         { "BranchCounterID", billDetail.BranchCounterID },
                         { "BranchID", billDetail.BranchID }
                     };
-                DataSet ds = new DataRepository().GetDatasetWithTransaction_test(configuration, "POS_USP_CU_BILLDETAIL", false, parameters);
+                DataSet ds = new DataRepository().GetDatasetWithTransaction(configuration, "POS_USP_CU_BILLDETAIL", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "BILLDETAIL";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "BILL";
+                    ds.Tables[1].TableName = "BILLDETAIL";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BILLID", "BILLID" } }));
                 }
                 else
                 {
@@ -310,11 +310,12 @@ namespace NSRetailAPI.Controllers
                         { "BRANCHCOUNTERID", CounterID},
 
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_GETBILLOFFERS", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_GETBILLOFFERS", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "OFFER";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "HOLDER";
+                    ds.Tables[1].TableName = "OFFER";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
                 }
                 else
                 {
@@ -333,11 +334,12 @@ namespace NSRetailAPI.Controllers
         {
             try
             {
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_MOP", false, null);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_MOP", false, null);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "MOP";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[0].TableName = "HOLDER";
+                    ds.Tables[1].TableName = "MOP";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
                 }
                 else
                 {
@@ -352,7 +354,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("finishbill")]
-        public IActionResult FinishBill([FromBody] string jsonString)
+        public IActionResult FinishBill([FromQuery] string jsonString)
         {
             try
             {
@@ -373,12 +375,12 @@ namespace NSRetailAPI.Controllers
                         { "BRANCHCOUNTERID", finishBill.BranchCounterID},
 
                     };
-                DataSet ds = new DataRepository().GetDatasetWithTransaction_test(configuration, "POS_USP_FINISH_BILL", false, parameters);
+                DataSet ds = new DataRepository().GetDatasetWithTransaction(configuration, "POS_USP_FINISH_BILL", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "BILL";
-                    ds.Tables[1].TableName = "BILLDETAILS";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    ds.Tables[1].TableName = "BILLDETAIL";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BILLID", "BILLID" } }));
                 }
                 else
                 {
@@ -401,14 +403,20 @@ namespace NSRetailAPI.Controllers
                     {
                         { "BRANCHCOUNTERID", CounterID}
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_R_DAYCLOSURE", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_DAYCLOSURE", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    if (ds.Tables[0].Rows.Count == 1)
-                        throw new Exception(Convert.ToString(ds.Tables[0].Rows[0][0]));
-                    ds.Tables[0].TableName = "DENOMINATION";
-                    ds.Tables[1].TableName = "MOP";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out int Ivalue))
+                    {
+                        ds.Tables[0].TableName = "HOLDER";
+                        ds.Tables[1].TableName = "DENOMINATION";
+                        ds.Tables[2].TableName = "MOP";
+                        ds.Tables[3].TableName = "REFUND";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
+                    }
+                    else
+                        return BadRequest(str);
                 }
                 else
                 {
@@ -423,7 +431,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savedayclosure")]
-        public IActionResult SaveDayClosure([FromBody] string jsonString)
+        public IActionResult SaveDayClosure([FromQuery] string jsonString)
         {
 
             try
@@ -443,7 +451,7 @@ namespace NSRetailAPI.Controllers
                         { "DaySequenceID", dayClosure.DaySequenceID},
                         { "USERID", dayClosure.UserID}
                     };
-                object objReturn = new DataRepository().ExecuteScalarWithTransaction_test(configuration, "POS_USP_CU_DAYCLOSURE", false, parameters);
+                object objReturn = new DataRepository().ExecuteScalarWithTransaction(configuration, "POS_USP_CU_DAYCLOSURE", false, parameters);
                 if (int.TryParse(Convert.ToString(objReturn), out int DayClosureID))
                     return Ok(DayClosureID);
                 else
@@ -466,15 +474,15 @@ namespace NSRetailAPI.Controllers
                         { "DAYCLOSUREID", dayClosureID},
                         { "BRANCHCOUNTERID", CounterID}
                     };
-                DataSet ds = new DataRepository().GetDataset_test(configuration, "POS_USP_RPT_DAYCLOSURE", false, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_RPT_DAYCLOSURE", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "DAYCLOSURE";
                     ds.Tables[1].TableName = "DENOMINATION";
                     ds.Tables[2].TableName = "MOP";
-                    ds.Tables[3].TableName = "BILLS";
+                    ds.Tables[3].TableName = "BILL";
                     ds.Tables[4].TableName = "USERWISEMOP";
-                    return Ok(Utility.GetJsonString(ds, null));
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                 }
                 else
                 {

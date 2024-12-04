@@ -30,12 +30,13 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORCOUNTING", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "Branch";
+                    ds.Tables[0].TableName = "PARENT";
+                    ds.Tables[1].TableName = "BRANCH";
                     int Ivalue = 0;
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
                     if (int.TryParse(str, out Ivalue))
                         if (isNested)
-                            return Ok(Utility.GetJsonString(ds, null));
+                            return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }));
                         else
                             return Ok(JsonConvert.SerializeObject(ds.Tables[0]));
                     else
@@ -68,8 +69,8 @@ namespace NSRetailAPI.Controllers
                     if (int.TryParse(str, out Ivalue))
                     {
                         ds.Tables[0].TableName = "ITEM";
-                        ds.Tables[1].TableName = isNested ? "ITEMCODES" : "ITEMCODE";
-                        ds.Tables[2].TableName = isNested ? "ITEMPRICES" : "ITEMPRICE";
+                        ds.Tables[1].TableName = "ITEMCODE";
+                        ds.Tables[2].TableName = "ITEMPRICE";
                         if (isNested)
                             return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }));
                         else

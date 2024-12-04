@@ -78,7 +78,7 @@ namespace NSRetailAPI.Utilities
             }
         }
 
-        public static string GetJsonString(DataSet ds, Dictionary<string, string>? columnNames)
+        public static string GetJsonString(DataSet ds, Dictionary<string, string>? columnNames, bool multilevel = true)
         {
             try
             {
@@ -88,7 +88,19 @@ namespace NSRetailAPI.Utilities
                     int i = 0;
                     foreach (var columnName in columnNames)
                     {
-                        ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
+                        if (multilevel)
+                        {
+                            ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
+                            ds.Tables[i + 1].TableName = ds.Tables[i + 1].TableName + "List";
+                        }
+                        else
+                        {
+                            for (int j = 0; j < ds.Tables.Count - 1; j++)
+                            {
+                                ds.Relations.Add(ds.Tables[0].Columns[columnName.Key], ds.Tables[j + 1].Columns[columnName.Value]);
+                                ds.Tables[j + 1].TableName = ds.Tables[j + 1].TableName + "List";
+                            }
+                        }
                         ds.Relations[i].Nested = true;
                         i++;
                     }
