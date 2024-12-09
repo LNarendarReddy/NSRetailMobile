@@ -352,13 +352,19 @@ namespace NSRetailAPI.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("finishbill")]
         public IActionResult FinishBill([FromQuery] string jsonString)
         {
             try
             {
-                FinishBill finishBill = JsonConvert.DeserializeObject<FinishBill>(jsonString);
+                Bill finishBill = JsonConvert.DeserializeObject<Bill>(jsonString);
+                DataTable dt = new();
+                dt.Columns.Add("MOPID", typeof(int));
+                dt.Columns.Add("MOPVALUE", typeof(decimal));
+
+                finishBill.MopValueList.ForEach(x => dt.Rows.Add(x.MopID, x.MopValue));
+
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "UserID", finishBill.UserID},
@@ -371,7 +377,7 @@ namespace NSRetailAPI.Controllers
                         { "IsDoorDelivery", finishBill.IsDoorDelivery},
                         { "TenderedCash", finishBill.TenderedCash},
                         { "TenderedChange", finishBill.TenderedChange},
-                        { "MopValues", finishBill.MopValues},
+                        { "MopValues", dt},
                         { "BRANCHCOUNTERID", finishBill.BranchCounterID},
 
                     };

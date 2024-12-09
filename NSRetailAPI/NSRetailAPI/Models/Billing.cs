@@ -37,7 +37,7 @@ namespace NSRetailAPI.Models
         public int id;
     }
 
-    public class FinishBill : BillingBase
+    public class Bill : BillingBase
     {
         public int DaySequenceID { get; set; }
 
@@ -55,7 +55,7 @@ namespace NSRetailAPI.Models
 
         public double TenderedChange { get; set; }
 
-        public List<MOPValues> MopValues { get; set; }
+        public List<MOPValues> MopValueList { get; set; }
     }
     public class MOPValues
     {
