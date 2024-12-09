@@ -30,7 +30,7 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORCOUNTING", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "PARENT";
+                    ds.Tables[0].TableName = "Holder";
                     ds.Tables[1].TableName = "BRANCH";
                     int Ivalue = 0;
                     string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
