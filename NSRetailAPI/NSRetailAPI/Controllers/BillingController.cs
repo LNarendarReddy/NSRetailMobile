@@ -232,11 +232,18 @@ namespace NSRetailAPI.Controllers
             try
             {
                 DeleteBillDetail billDetail = JsonConvert.DeserializeObject<DeleteBillDetail>(jsonString);
+
+                DataTable dtSNos = new DataTable();
+                dtSNos.Columns.Add("billdetailid", typeof(int));
+                dtSNos.Columns.Add("sno", typeof(int));
+
+                billDetail.Snos.ToList().ForEach(x => dtSNos.Rows.Add(x.billdetailid, x.sno));
+
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "BillDetailID", billDetail.BillDetailID},
                         { "UserID", billDetail.UserID},
-                        { "SNos", billDetail.Snos},
+                        { "SNos", dtSNos },
                         { "BranchCounterID", billDetail.BranchCounterID},
                         { "BRANCHID", billDetail.BranchID}
 
@@ -448,11 +455,22 @@ namespace NSRetailAPI.Controllers
                 //dsInput?.Tables[0].Columns.Remove("QUANTITY");
                 //dsInput?.Tables[1].Columns.Remove("MOPNAME");
 
+                DataTable dtDenominations = new();
+                dtDenominations.Columns.Add("MOPID", typeof(int));
+                dtDenominations.Columns.Add("MOPVALUE", typeof(decimal));
+
+                DataTable dtMOP = new();
+                dtMOP.Columns.Add("MOPID", typeof(int));
+                dtMOP.Columns.Add("MOPVALUE", typeof(decimal));
+
+                dayClosure.Denominations.ToList().ForEach(x => dtDenominations.Rows.Add(x.MopID, x.MopValue));
+                dayClosure.MopValues.ToList().ForEach(x => dtMOP.Rows.Add(x.MopID, x.MopValue));
+
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "BRANCHCOUNTERID", dayClosure.BranchCounterID},
-                        { "dtDenomination", dayClosure.Denominations},
-                        { "dtMOP", dayClosure.MopValues},
+                        { "dtDenomination", dtDenominations},
+                        { "dtMOP", dtMOP},
                         { "RefundAmount", dayClosure.RefundAmount},
                         { "DaySequenceID", dayClosure.DaySequenceID},
                         { "USERID", dayClosure.UserID}

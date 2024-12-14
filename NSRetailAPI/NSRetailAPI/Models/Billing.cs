@@ -30,11 +30,14 @@ namespace NSRetailAPI.Models
 
     public class DeleteBillDetail : BillingBase
     {
-        public List<Sno> Snos { get; set; }
+        public List<BillDetailSNo> Snos { get; set; }
     }
-    public class Sno
+    public class BillDetailSNo
     {
-        public int id;
+        public int billdetailid;
+
+        public int sno;
+
     }
 
     public class Bill : BillingBase
