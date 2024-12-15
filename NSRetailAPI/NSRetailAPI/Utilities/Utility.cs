@@ -82,6 +82,16 @@ namespace NSRetailAPI.Utilities
         {
             try
             {
+
+                if (ds.Tables.Count == 1 && ds.Tables[0].Rows.Count == 1 
+                    && ds.Tables[0].Columns.Count == 1 
+                    && columnNames != null 
+                    && columnNames.Any() && multilevel)
+                {
+                    // this means it is a validation message
+                    throw new Exception(ds.Tables[0].Rows[0][0].ToString());
+                }
+
                 ds.DataSetName = "Holder";
                 if (columnNames != null)
                 {
@@ -122,7 +132,7 @@ namespace NSRetailAPI.Utilities
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }
