@@ -151,6 +151,13 @@ namespace NSRetailAPI.Controllers
                         ds.Tables[1].TableName = "BILL";
                         ds.Tables[2].TableName = "BILLDETAIL";
                     }
+                    else if (ds.Tables.Count == 1 && ds.Tables[0].Rows.Count == 1
+                    && ds.Tables[0].Columns.Count == 1)
+                    {
+                        // this means it is a validation message
+                        return BadRequest(ds.Tables[0].Rows[0][0].ToString());
+                    }
+
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BRANCHCOUNTERID", "BRANCHCOUNTERID" }, { "BILLID", "BILLID" } }));
                 }
                 else
