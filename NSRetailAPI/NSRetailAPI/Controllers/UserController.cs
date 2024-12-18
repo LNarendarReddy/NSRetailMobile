@@ -59,5 +59,30 @@ namespace NSRetailAPI.Controllers
                 return BadRequest(ex.ToString());
             }
         }
+
+        [HttpGet]
+        [Route("changepassword")]
+        public IActionResult ChangePassword([FromQuery] int UserID, [FromQuery] string OldPassword, [FromQuery] string NewPassword)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "UserID", UserID},
+                        { "OldPassword", OldPassword},
+                        { "NewPassword", NewPassword}
+
+                    };
+                object objReturn = new DataRepository().ExecuteScalar(configuration, "USP_U_CHANGEPASSWORD", false, parameters);
+                if (int.TryParse(Convert.ToString(objReturn), out int userid) && userid > 0)
+                    return Ok(userid);
+                else
+                    throw new Exception(Convert.ToString(objReturn));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

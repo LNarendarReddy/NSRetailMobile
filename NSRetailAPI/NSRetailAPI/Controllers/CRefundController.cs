@@ -21,23 +21,22 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getbillbynumber")]
-        public IActionResult GetBillByNumber([FromQuery] string billNumber, [FromQuery] bool isAdminRole, [FromQuery] int branchCounterID)
+        public IActionResult GetBillByNumber([FromQuery] string billNumber, [FromQuery] int branchCounterID)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "BILLNUMBER", billNumber },
-                        { "IsAdminRole", isAdminRole },
-                        { "BranchCounterID", branchCounterID },
+                        { "CounterID", branchCounterID },
 
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_BILLBYNUMBER", false, parameters);
                 if (ds != null && ds.Tables[0].Rows.Count > 0
                        && int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
                 {
-                    ds.Tables[0].TableName = "BILL";
-                    ds.Tables[1].TableName = "BILLDETAIL";
+                    ds.Tables[0].TableName = "CR_BILL";
+                    ds.Tables[1].TableName = "CR_BILLDETAIL";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "BILLID", "BILLID" } }));
                 }
                 else
@@ -56,10 +55,18 @@ namespace NSRetailAPI.Controllers
             try
             {
                 SaveCRefund crefund = JsonConvert.DeserializeObject<SaveCRefund>(jsonString);
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("BILLDETAILID", typeof(int));
+                dataTable.Columns.Add("REFUNDQUANTITY", typeof(int));
+                dataTable.Columns.Add("REFUNDWEIGHTINKGS", typeof(decimal));
+                dataTable.Columns.Add("REFUNDAMOUNT", typeof(decimal));
+
+                crefund.CRefundDetail.ForEach(x => dataTable.Rows.Add(x.BILLDETAILID, x.REFUNDQUANTITY, x.REFUNDWEIGHTINKGS, x.REFUNDAMOUNT));
+
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
-                        { "dtRefund",  crefund.CRefundDetail},
+                        { "dtRefund",  dataTable},
                         { "UserID", crefund.UserID},
                         { "BillID", crefund.BillID },
                         { "CustomerName", crefund.CustomerName},

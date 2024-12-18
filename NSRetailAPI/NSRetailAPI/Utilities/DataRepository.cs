@@ -125,9 +125,9 @@ namespace NSRetailAPI.Utilities
                 using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.Connection = connection;
                     transaction = connection.BeginTransaction();
                     cmd.Transaction = transaction;
+                    cmd.Connection = connection;
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;

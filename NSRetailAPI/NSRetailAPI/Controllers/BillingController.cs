@@ -46,13 +46,15 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getcounterbyidentifier")]
-        public IActionResult GetCountersByIdentifier([FromQuery] string Identifier)
+        public IActionResult GetCountersByIdentifier([FromQuery] string Identifier, [FromQuery] int BranchID)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
-                        { "IDENTIFIER", Identifier }
+                        { "IDENTIFIER", Identifier },
+                        {"BranchID", BranchID }
+
 
                     };
                 object objReturn = new DataRepository().ExecuteScalar(configuration, "POS_USP_R_BRANCHCOUNTERIDBYIDENTIFIER", false, parameters);
@@ -457,10 +459,6 @@ namespace NSRetailAPI.Controllers
             try
             {
                 SaveDayClosure dayClosure = JsonConvert.DeserializeObject<SaveDayClosure>(jsonString);
-                //dsInput?.Tables[0].Columns.Remove("DISPLAYVALUE");
-                //dsInput?.Tables[0].Columns.Remove("MULTIPLIER");
-                //dsInput?.Tables[0].Columns.Remove("QUANTITY");
-                //dsInput?.Tables[1].Columns.Remove("MOPNAME");
 
                 DataTable dtDenominations = new();
                 dtDenominations.Columns.Add("MOPID", typeof(int));
