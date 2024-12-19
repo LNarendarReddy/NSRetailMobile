@@ -60,7 +60,7 @@ namespace NSRetailAPI.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("changepassword")]
         public IActionResult ChangePassword([FromQuery] int UserID, [FromQuery] string OldPassword, [FromQuery] string NewPassword)
         {
@@ -69,8 +69,8 @@ namespace NSRetailAPI.Controllers
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "UserID", UserID},
-                        { "OldPassword", OldPassword},
-                        { "NewPassword", NewPassword}
+                        { "OldPassword", Utility.Encrypt(OldPassword) },
+                        { "NewPassword",Utility.Encrypt( NewPassword) }
 
                     };
                 object objReturn = new DataRepository().ExecuteScalar(configuration, "USP_U_CHANGEPASSWORD", false, parameters);
