@@ -26,18 +26,18 @@ namespace NSRetailAPI.Controllers
                         { "USERID", Userid }
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORITEM", false, parameters);
-                if (ds != null)
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "ACCESS";
-                    ds.Tables[1].TableName = "BRANCH";
-                    return Ok(JsonConvert.SerializeObject(ds));
+                    ds.Tables[0].TableName = "ID_ACCESS";
+                    ds.Tables[1].TableName = "ID_BRANCH";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
                 }
                 else
                     return NotFound("Data not found");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -60,13 +60,13 @@ namespace NSRetailAPI.Controllers
                         throw new Exception(str);
                     else
                     {
-                        ds.Tables[0].TableName = "ITEM";
-                        ds.Tables[1].TableName = "ITEMCODE";
-                        return Ok(JsonConvert.SerializeObject(ds));
+                        ds.Tables[0].TableName = "ID_ITEM";
+                        ds.Tables[1].TableName = "ID_ITEMCODE";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" } }));
                     }
                 }
                 else
-                    throw new Exception("Itemcode does not exists");
+                    return NotFound("Itemcode does not exists");
             }
             catch (Exception ex)
             {
@@ -87,14 +87,15 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATAFORITEMDETAILS", useWHConnection, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "ITEMPRICE";
-                    ds.Tables[1].TableName = "OFFER";
-                    ds.Tables[2].TableName = "ITEMCOSTPRICE";
-                    ds.Tables[3].TableName = "BRANCHSTOCK";
-                    return Ok(JsonConvert.SerializeObject(ds));
+                    ds.Tables[0].TableName = "HOLDER";
+                    ds.Tables[1].TableName = "ID_ITEMPRICE";
+                    ds.Tables[2].TableName = "ID_OFFER";
+                    ds.Tables[3].TableName = "ID_ITEMCOSTPRICE";
+                    ds.Tables[4].TableName = "ID_BRANCHSTOCK";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                 }
                 else
-                    throw new Exception("Itemcode does not exists");
+                    return NotFound("Itemcode does not exists");
             }
             catch (Exception ex)
             {

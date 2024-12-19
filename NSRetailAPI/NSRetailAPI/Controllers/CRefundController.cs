@@ -50,7 +50,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savecrefund")]
-        public IActionResult SaveCRefund([FromBody] string jsonString)
+        public IActionResult SaveCRefund([FromQuery] string jsonString)
         {
             try
             {
@@ -61,28 +61,28 @@ namespace NSRetailAPI.Controllers
                 dataTable.Columns.Add("REFUNDWEIGHTINKGS", typeof(decimal));
                 dataTable.Columns.Add("REFUNDAMOUNT", typeof(decimal));
 
-                crefund.CRefundDetail.ForEach(x => dataTable.Rows.Add(x.BILLDETAILID, x.REFUNDQUANTITY, x.REFUNDWEIGHTINKGS, x.REFUNDAMOUNT));
+                crefund.BillDetailList.ForEach(x => dataTable.Rows.Add(x.BillDetailId, x.RefundQuantity, x.REFUNDWEIGHTINKGS, x.RefundAmount));
 
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "dtRefund",  dataTable},
-                        { "UserID", crefund.UserID},
-                        { "BillID", crefund.BillID },
+                        { "UserID", crefund.UserId},
+                        { "BillID", crefund.BillId },
                         { "CustomerName", crefund.CustomerName},
-                        { "CustomerPhone", crefund.CustomerPhone },
-                        { "BranchCounterID", crefund.BranchCounterID },
+                        { "CustomerPhone", crefund.CustomerMobile },
+                        { "BranchCounterID", crefund.BranchCounterId },
 
                     };
-                int rowsaffacted = new DataRepository().ExecuteNonQuery(configuration, "POS_USP_CU_CREFUND", false, parameters);
-                if (rowsaffacted > 0)
-                    return Ok($"Rows inserted : {rowsaffacted}");
+                object objreturn = new DataRepository().ExecuteScalar(configuration, "POS_USP_CU_CREFUND", false, parameters);
+                if (int.TryParse(Convert.ToString(objreturn), out int ivalue))
+                    return Ok(ivalue);
                 else
                     return BadRequest("Something went wrong!");
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
     }
