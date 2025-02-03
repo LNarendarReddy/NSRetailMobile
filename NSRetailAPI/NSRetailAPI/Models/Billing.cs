@@ -1,7 +1,17 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace NSRetailAPI.Models
 {
+    internal class RootClass
+    {
+        public HolderClass Holder;
+    }
+    public class HolderClass
+    {
+
+        public DayClosure dayClosure;
+    }
     public class BillingBase
     {
         public int UserID { get; set; }
@@ -77,4 +87,78 @@ namespace NSRetailAPI.Models
 
         public List<MOPValues> Denominations { get; set; }
     }
+
+    public class DayClosure
+    {
+        public int DayClosureID;
+
+        public DateTime ClosureDate;
+
+        public decimal OpeningBalance;
+
+        public decimal ClosingBalance;
+
+        public decimal ClosingDifference;
+
+        public int ClosedBy;
+
+        public decimal RefundAmount;
+
+        public DateTime CreatedDate;
+
+        public int CompletedBills;
+
+        public int DraftBills;
+
+        public int VoidItems;
+
+        public string Address;
+
+        public string PhoneNo;
+
+        public string BranchName;
+
+        public string CounterName;
+
+        public string UserName;
+
+        public List<Denomination> DenominationsList;
+
+        public List<MOP> MopValuesList;
+
+        public List<UserMOPBreakDown> UserWiseMopBreakDownList;
+
+    }
+
+    public class Denomination
+    {
+        public int DenominationId;
+        
+        public string DisplayValue;
+
+        public decimal Multiplier;
+
+        public int Quantity;
+
+        public decimal ClosureValue;
+    }
+
+    public class MOP
+    {
+        public int MOPId;
+
+        public string MOPName;
+
+        public decimal MOPValue;
+    }
+
+    public partial class UserMOPBreakDown
+    {
+        public string UserName;
+
+        public string MopName;
+
+        public decimal MopValue;
+    }
+
 }

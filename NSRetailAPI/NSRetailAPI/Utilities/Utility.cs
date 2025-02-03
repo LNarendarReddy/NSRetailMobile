@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using NSRetailAPI.Models;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -92,6 +93,7 @@ namespace NSRetailAPI.Utilities
                         {
                             ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
                             ds.Tables[i + 1].TableName = ds.Tables[i + 1].TableName + "List";
+                            ds.Relations[i].Nested = true;
                         }
                         else
                         {
@@ -99,9 +101,9 @@ namespace NSRetailAPI.Utilities
                             {
                                 ds.Relations.Add(ds.Tables[0].Columns[columnName.Key], ds.Tables[j + 1].Columns[columnName.Value]);
                                 ds.Tables[j + 1].TableName = ds.Tables[j + 1].TableName + "List";
+                                ds.Relations[i].Nested = true;
                             }
                         }
-                        ds.Relations[i].Nested = true;
                         i++;
                     }
                 }
@@ -124,6 +126,67 @@ namespace NSRetailAPI.Utilities
             {
                 throw ex;
             }
+        }
+
+        public static string GetJsonFromClassObject(DataSet ds)
+        {
+            RootClass rootClass = new RootClass();
+            rootClass.Holder = new HolderClass();
+            rootClass.Holder.dayClosure = new DayClosure();
+            rootClass.Holder.dayClosure.DayClosureID = Convert.ToInt32(ds.Tables[0].Rows[0]["DAYCLOSUREID"]);
+            rootClass.Holder.dayClosure.ClosureDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["CLOSUREDATE"]);
+            rootClass.Holder.dayClosure.OpeningBalance = Convert.ToDecimal(ds.Tables[0].Rows[0]["OPENINGBALANCE"]);
+            rootClass.Holder.dayClosure.ClosingBalance = Convert.ToDecimal(ds.Tables[0].Rows[0]["CLOSINGBALANCE"]);
+            rootClass.Holder.dayClosure.ClosingDifference = Convert.ToDecimal(ds.Tables[0].Rows[0]["CLOSINGDIFFERENCE"]);
+            rootClass.Holder.dayClosure.ClosedBy = Convert.ToInt32(ds.Tables[0].Rows[0]["CLOSEDBY"]);
+            rootClass.Holder.dayClosure.RefundAmount = Convert.ToDecimal(ds.Tables[0].Rows[0]["REFUNDAMOUNT"]);
+            rootClass.Holder.dayClosure.CreatedDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["CREATEDDATE"]);
+            rootClass.Holder.dayClosure.CompletedBills = Convert.ToInt32(ds.Tables[0].Rows[0]["COMPLETEDBILLS"]);
+            rootClass.Holder.dayClosure.DraftBills = Convert.ToInt32(ds.Tables[0].Rows[0]["DRAFTBILLS"]);
+            rootClass.Holder.dayClosure.VoidItems = Convert.ToInt32(ds.Tables[0].Rows[0]["VOIDITEMS"]);
+            rootClass.Holder.dayClosure.Address = Convert.ToString(ds.Tables[0].Rows[0]["Address"]);
+            rootClass.Holder.dayClosure.PhoneNo = Convert.ToString(ds.Tables[0].Rows[0]["PhoneNo"]);
+            rootClass.Holder.dayClosure.BranchName = Convert.ToString(ds.Tables[0].Rows[0]["BranchName"]);
+            rootClass.Holder.dayClosure.CounterName = Convert.ToString(ds.Tables[0].Rows[0]["CounterName"]);
+            rootClass.Holder.dayClosure.UserName = Convert.ToString(ds.Tables[0].Rows[0]["UserName"]);
+
+            rootClass.Holder.dayClosure.DenominationsList = new List<Denomination>();
+            foreach (DataRow row in ds.Tables[1].Rows)
+            {
+                rootClass.Holder.dayClosure.DenominationsList.Add(new Denomination()
+                {
+                    DenominationId = Convert.ToInt32(row["DENOMINATIONID"]),
+                    DisplayValue = Convert.ToString(row["DISPLAYVALUE"]),
+                    ClosureValue = Convert.ToDecimal(row["CLOSUREVALUE"]),
+                    Multiplier = Convert.ToDecimal(row["MULTIPLIER"])
+                });
+            }
+
+            rootClass.Holder.dayClosure.MopValuesList = new List<MOP>();
+
+            foreach (DataRow row in ds.Tables[2].Rows)
+            {
+                rootClass.Holder.dayClosure.MopValuesList.Add(new MOP()
+                {
+                    MOPId = Convert.ToInt32(row["MOPID"]),
+                    MOPName = Convert.ToString(row["MOPNAME"]),
+                    MOPValue = Convert.ToDecimal(row["MOPVALUE"])
+                });
+            }
+
+            rootClass.Holder.dayClosure.UserWiseMopBreakDownList = new List<UserMOPBreakDown>();
+
+            foreach (DataRow row in ds.Tables[3].Rows)
+            {
+                rootClass.Holder.dayClosure.UserWiseMopBreakDownList.Add(new UserMOPBreakDown()
+                {
+                    UserName = Convert.ToString(row["USERNAME"]),
+                    MopName = Convert.ToString(row["MOPNAME"]),
+                    MopValue = Convert.ToDecimal(row["MOPVALUE"])
+                });
+            }
+            return JsonConvert.SerializeObject(rootClass);
+
         }
     }
 }

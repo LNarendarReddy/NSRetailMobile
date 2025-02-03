@@ -494,24 +494,24 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getdayclosureforreport")]
-        public IActionResult GetDayClosureForReport([FromQuery] int dayClosureID, [FromQuery] int CounterID)
+        public IActionResult GetDayClosureForReport([FromQuery] int dayClosureID, [FromQuery] int counterID)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "DAYCLOSUREID", dayClosureID},
-                        { "BRANCHCOUNTERID", CounterID}
+                        { "BRANCHCOUNTERID", counterID}
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_RPT_DAYCLOSURE", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "DAYCLOSURE";
-                    ds.Tables[1].TableName = "DENOMINATION";
+                    ds.Tables[0].TableName = "DayClosure";
+                    ds.Tables[1].TableName = "Denomination";
                     ds.Tables[2].TableName = "MOP";
-                    ds.Tables[3].TableName = "BILL";
-                    ds.Tables[4].TableName = "USERWISEMOP";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
+                    ds.Tables[3].TableName = "UserWiseMopBreakDown";
+                    return Ok(Utility.GetJsonFromClassObject(ds));
+                    //return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "DAYCLOSUREID", "DAYCLOSUREID" } }, false));
                 }
                 else
                 {
