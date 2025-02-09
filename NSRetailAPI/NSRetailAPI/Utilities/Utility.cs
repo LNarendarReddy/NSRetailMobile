@@ -91,17 +91,17 @@ namespace NSRetailAPI.Utilities
                     {
                         if (multilevel)
                         {
-                            ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
+                            DataRelation dataRelation = ds.Relations.Add(ds.Tables[i].Columns[columnName.Key], ds.Tables[i + 1].Columns[columnName.Value]);
                             ds.Tables[i + 1].TableName = ds.Tables[i + 1].TableName + "List";
-                            ds.Relations[i].Nested = true;
+                            dataRelation.Nested = true;
                         }
                         else
                         {
                             for (int j = 0; j < ds.Tables.Count - 1; j++)
                             {
-                                ds.Relations.Add(ds.Tables[0].Columns[columnName.Key], ds.Tables[j + 1].Columns[columnName.Value]);
+                                DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns[columnName.Key], ds.Tables[j + 1].Columns[columnName.Value]);
                                 ds.Tables[j + 1].TableName = ds.Tables[j + 1].TableName + "List";
-                                ds.Relations[i].Nested = true;
+                                dataRelation.Nested = true;
                             }
                         }
                         i++;

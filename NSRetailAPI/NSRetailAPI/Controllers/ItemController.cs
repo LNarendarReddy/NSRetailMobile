@@ -28,8 +28,8 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORITEM", false, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "ID_ACCESS";
-                    ds.Tables[1].TableName = "ID_BRANCH";
+                    ds.Tables[0].TableName = "ACCESS";
+                    ds.Tables[1].TableName = "BRANCH";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
                 }
                 else
@@ -60,8 +60,8 @@ namespace NSRetailAPI.Controllers
                         throw new Exception(str);
                     else
                     {
-                        ds.Tables[0].TableName = "ID_ITEM";
-                        ds.Tables[1].TableName = "ID_ITEMCODE";
+                        ds.Tables[0].TableName = "ITEM";
+                        ds.Tables[1].TableName = "ITEMCODE";
                         return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" } }));
                     }
                 }
@@ -87,11 +87,11 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATAFORITEMDETAILS", useWHConnection, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "HOLDER";
-                    ds.Tables[1].TableName = "ID_ITEMPRICE";
-                    ds.Tables[2].TableName = "ID_OFFER";
-                    ds.Tables[3].TableName = "ID_ITEMCOSTPRICE";
-                    ds.Tables[4].TableName = "ID_BRANCHSTOCK";
+                    ds.Tables[0].TableName = "ITEMCODE";
+                    ds.Tables[1].TableName = "ITEMPRICE";
+                    ds.Tables[2].TableName = "OFFER";
+                    ds.Tables[3].TableName = "ITEMCOSTPRICE";
+                    ds.Tables[4].TableName = "BRANCHSTOCK";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                 }
                 else
