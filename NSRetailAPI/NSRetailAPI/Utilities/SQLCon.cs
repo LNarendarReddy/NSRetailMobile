@@ -6,7 +6,7 @@ namespace NSRetailAPI.Utilities
 {
     public class SQLCon
     {
-        static int noOfCloudConns, noOfWHConns;
+        //static int noOfCloudConns, noOfWHConns;
 
         public static SqlConnection SqlCloudconn(IConfiguration configuration)
         {
@@ -23,13 +23,13 @@ namespace NSRetailAPI.Utilities
 
                 ObjCloudCon.ConnectionString = njkfgrrtdd;
                 ObjCloudCon.Open();
-                ObjCloudCon.Disposed += ObjCloudCon_Disposed;
-                noOfCloudConns++;
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
+                //ObjCloudCon.Disposed += ObjCloudCon_Disposed;
+                //noOfCloudConns++;
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
             }
             catch (Exception ex) 
             {
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
                 throw ex;
             }
             return ObjCloudCon;
@@ -50,13 +50,13 @@ namespace NSRetailAPI.Utilities
 
                 ObjCloudCon.ConnectionString = njkfgrrtdd;
                 ObjCloudCon.Open();
-                ObjCloudCon.Disposed += ObjCloudCon_Disposed;
-                noOfCloudConns++;
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
+                //ObjCloudCon.Disposed += ObjCloudCon_Disposed;
+                //noOfCloudConns++;
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Success");
             }
             catch (Exception ex)
             {
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, ex.Message);
                 throw ex;
             }
             return ObjCloudCon;
@@ -76,13 +76,13 @@ namespace NSRetailAPI.Utilities
                 
                 ObjWHCon.ConnectionString = njkfgrrtdklftrsdsd;
                 ObjWHCon.Open();
-                ObjWHCon.Disposed += ObjWHCon_Disposed;
-                noOfWHConns++;
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Success");
+                //ObjWHCon.Disposed += ObjWHCon_Disposed;
+                //noOfWHConns++;
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Success");
             }
             catch (Exception ex) 
             {
-                Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, ex.Message);
+                //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, ex.Message);
                 throw ex;
             }
             return ObjWHCon;
@@ -90,14 +90,14 @@ namespace NSRetailAPI.Utilities
 
         private static void ObjWHCon_Disposed(object? sender, EventArgs e)
         {
-            noOfWHConns--;
-            Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Dispose");
+            //noOfWHConns--;
+            //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_WHConn, noOfWHConns, "Dispose");
         }
 
         private static void ObjCloudCon_Disposed(object? sender, EventArgs e)
         {
-            noOfCloudConns--;
-            Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Dispose");
+            //noOfCloudConns--;
+            //Utility.LogTelemetry(Utility.Path_SQLConn, Utility.Action_SQLConn_CloudConn, noOfCloudConns, "Dispose");
         }
     }
 }
