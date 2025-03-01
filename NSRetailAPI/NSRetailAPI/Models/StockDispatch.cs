@@ -6,6 +6,7 @@
         public int FROMBRANCHID { get; set; }
         public int TOBRANCHID { get; set; }
         public int CATEGORYID { get; set; }
+        public int SUBCATEGORYID { get; set; }
         public int USERID { get; set; }
     }
 }

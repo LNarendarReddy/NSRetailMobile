@@ -9,5 +9,6 @@
         public int DISPATCHQUANTITY { get; set; }
         public decimal WEIGHTINKGS { get; set; }
         public int USERID { get; set; }
+        public int BRANCHINDENTDETAILID { get; set; }
     }
 }
