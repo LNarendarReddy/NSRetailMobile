@@ -18,6 +18,6 @@
         public double AVGSALES { get; set; }
         public double NOOFDAYSSALES { get; set; }
         public double INDENTQUANTITY { get; set; }
-        public DateTime LASTDISPATCHEDDATE { get; set; }
+        public DateTime LASTDISPATCHDATE { get; set; }
     }
 }
