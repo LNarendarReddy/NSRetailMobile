@@ -18,38 +18,6 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getdispatchwithoutbi")]
-        public IActionResult GetDispatchWithoutBI(int UserID)
-        {
-            try
-            {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                {
-                    { "USERID",UserID }
-                };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_DISPATCHDRAFT", true, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    if (!int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
-                    {
-                        return NotFound(Convert.ToString(ds.Tables[0].Rows[0][0]));
-                    }
-                    ds.Tables[0].TableName = "Dispatch";
-                    ds.Tables[1].TableName = "DispatchDetail";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "STOCKDISPATCHID", "STOCKDISPATCHID" } }, true));
-                }
-                else
-                {
-                    return NotFound("Dispatch does not exists");
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.ToString());
-            }
-        }
-
-        [HttpGet]
         [Route("getdispatchwithbi")]
         public IActionResult GetDispatchDraftWithBI(int UserID)
         {
@@ -66,11 +34,22 @@ namespace NSRetailAPI.Controllers
                     {
                         return NotFound(Convert.ToString(ds.Tables[0].Rows[0][0]));
                     }
+
                     ds.Tables[0].TableName = "STOCKDISPATCH";
-                    ds.Tables[1].TableName = "BRANCHINDENTDETAIL";
-                    ds.Tables[2].TableName = "STOCKDISPATCHDETAILWITHBI";
-                    ds.Tables[3].TableName = "STOCKDISPATCHDETAILWITHOUTBI";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, false));
+                    ds.Tables[1].TableName = "BRANCHINDENTDETAILList";
+                    ds.Tables[2].TableName = "STOCKDISPATCHDETAILWITHBIList";
+                    ds.Tables[3].TableName = "STOCKDISPATCHDETAILWITHOUTBIList";
+
+                    DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns["BRANCHINDENTID"], ds.Tables[1].Columns["BRANCHINDENTID"]);
+                    dataRelation.Nested = true;
+
+                    DataRelation dataRelation1 = ds.Relations.Add(ds.Tables[1].Columns["BRANCHINDENTDETAILID"], ds.Tables[2].Columns["BRANCHINDENTDETAILID"]);
+                    dataRelation1.Nested = true;
+
+                    DataRelation dataRelation2 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[3].Columns["STOCKDISPATCHID"]);
+                    dataRelation1.Nested = true;
+
+                    return Ok(Utility.GetJsonString(ds));
                 }
                 else
                 {
@@ -156,7 +135,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savebranchindent")]
-        public IActionResult SaveBranchIndent([FromQuery] string jsonstring)
+        public IActionResult SaveBranchIndent([FromBody] string jsonstring)
         {
             try
             {
@@ -190,10 +169,20 @@ namespace NSRetailAPI.Controllers
                     if (int.TryParse(str, out Ivalue))
                     {
                         ds.Tables[0].TableName = "STOCKDISPATCH";
-                        ds.Tables[1].TableName = "BRANCHINDENTDETAIL";
-                        ds.Tables[2].TableName = "STOCKDISPATCHDETAILWITHBI";
-                        ds.Tables[3].TableName = "STOCKDISPATCHDETAILWITHOUTBI";
-                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, false));
+                        ds.Tables[1].TableName = "BRANCHINDENTDETAILList";
+                        ds.Tables[2].TableName = "STOCKDISPATCHDETAILWITHBIList";
+                        ds.Tables[3].TableName = "STOCKDISPATCHDETAILWITHOUTBIList";
+
+                        DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns["BRANCHINDENTID"], ds.Tables[1].Columns["BRANCHINDENTID"]);
+                        dataRelation.Nested = true;
+
+                        DataRelation dataRelation1 = ds.Relations.Add(ds.Tables[1].Columns["BRANCHINDENTDETAILID"], ds.Tables[2].Columns["BRANCHINDENTDETAILID"]);
+                        dataRelation1.Nested = true;
+
+                        DataRelation dataRelation2 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[3].Columns["STOCKDISPATCHID"]);
+                        dataRelation1.Nested = true;
+
+                        return Ok(Utility.GetJsonString(ds));
                     }
                     else
                         throw new Exception(str);
@@ -237,35 +226,6 @@ namespace NSRetailAPI.Controllers
                 }
                 else
                     throw new Exception("Itemcode does not exists");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost]
-        [Route("savedispatch")]
-        public IActionResult SaveDispatch(string jsonstring)
-        {
-            try
-            {
-                StockDispatch stockDispatch = JsonConvert.DeserializeObject<StockDispatch>(jsonstring);
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                {
-                        { "STOCKDISPATCHID", stockDispatch.STOCKDISPATCHID }
-                        ,{ "FROMBRANCHID", stockDispatch.FROMBRANCHID }
-                        ,{ "TOBRANCHID", stockDispatch.TOBRANCHID }
-                        ,{ "CATEGORYID", stockDispatch.CATEGORYID }
-                        ,{ "SUBCATEGORYID", stockDispatch.SUBCATEGORYID }
-                        ,{ "USERID", stockDispatch.USERID }
-                };
-                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKDISPATCH", true, parameters);
-                string str = Convert.ToString(obj);
-                if (!int.TryParse(str, out int ivalue))
-                    throw new Exception(str);
-                else
-                    return Ok(ivalue);
             }
             catch (Exception ex)
             {

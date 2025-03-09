@@ -128,6 +128,31 @@ namespace NSRetailAPI.Utilities
             }
         }
 
+        public static string GetJsonString(DataSet ds)
+        {
+            try
+            {
+                ds.DataSetName = "Holder";
+                StringWriter sw = new StringWriter();
+                ds.WriteXml(sw);
+                string xmlString = sw.ToString();
+
+                for (int i = 1; i < ds.Tables.Count; i++)
+                {
+                    xmlString = xmlString.Replace($"<{ds.Tables[i].TableName}>", $"<{ds.Tables[i].TableName} xmlns:json=\"http://james.newtonking.com/projects/json\" json:Array=\"true\">");
+                }
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlString);
+
+                return JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static string GetJsonFromClassObject(DataSet ds)
         {
             RootClass rootClass = new RootClass();
