@@ -9,7 +9,7 @@
         public int SUBCATEGORYID { get; set; }
         public int USERID { get; set; }
         public int NOOFDAYS { get; set; }
-        public List<BranchIndentDetail> branchIndentDetail { get; set; }
+        public List<BranchIndentDetail> branchIndentDetailList { get; set; }
     }
     public class BranchIndentDetail
     {

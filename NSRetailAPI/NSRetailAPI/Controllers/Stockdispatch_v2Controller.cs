@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using NSRetailAPI.Models;
 using NSRetailAPI.Utilities;
 using System.Data;
+using System.Text;
 
 namespace NSRetailAPI.Controllers
 {
@@ -108,18 +109,9 @@ namespace NSRetailAPI.Controllers
                         { "SubCategoryID", SubCategoryID },
                         { "ISMobileCall", ISMobileCall },
                     };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_RPT_BRANCHINDENT_AVG", true, parameters);
-                if (dt != null && dt.Rows.Count > 0)
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_RPT_BRANCHINDENT_AVG", true, parameters);
+                if (ds != null && ds.Tables.Count > 0)
                 {
-                    DataTable dtParent = new DataTable();
-                    dtParent.Columns.Add("PARENTID", typeof(int));
-                    DataRow dataRow = dtParent.NewRow();
-                    dataRow["PARENTID"] = 0;
-                    dtParent.Rows.Add(dataRow);
-
-                    DataSet ds = new DataSet();
-                    ds.Tables.Add(dtParent);
-                    ds.Tables.Add(dt);
                     ds.Tables[0].TableName = "STOCKDISPATCH";
                     ds.Tables[1].TableName = "BRANCHINDENTDETAIL";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
@@ -135,12 +127,10 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savebranchindent")]
-        public IActionResult SaveBranchIndent([FromBody] string jsonstring)
+        public async Task<IActionResult> SaveBranchIndent([FromBody] BranchIndent branchIndent)
         {
             try
             {
-                BranchIndent branchIndent = JsonConvert.DeserializeObject<BranchIndent>(jsonstring);
-
                 DataTable dt = new();
                 dt.Columns.Add("ITEMID", typeof(int));
                 dt.Columns.Add("BRANCHSTOCK", typeof(decimal));
@@ -149,7 +139,7 @@ namespace NSRetailAPI.Controllers
                 dt.Columns.Add("INDENTQUANTITY", typeof(decimal));
                 dt.Columns.Add("LASTDISPATCHEDDATE", typeof(DateTime));
 
-                branchIndent.branchIndentDetail.ForEach(x => dt.Rows.Add(x.ITEMID, x.BRANCHSTOCK, x.AVGSALES, 
+                branchIndent.branchIndentDetailList.ForEach(x => dt.Rows.Add(x.ITEMID, x.BRANCHSTOCK, x.AVGSALES, 
                     x.NOOFDAYSSALES, x.INDENTQUANTITY, x.LASTDISPATCHEDDATE));
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -160,6 +150,7 @@ namespace NSRetailAPI.Controllers
                         { "SUBCATEGORYID", branchIndent.SUBCATEGORYID},
                         { "NOOFDAYS", branchIndent.NOOFDAYS},
                         { "USERID", branchIndent.USERID },
+                        { "dtDetail", dt}
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_CU_BRANCHINDENT", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
