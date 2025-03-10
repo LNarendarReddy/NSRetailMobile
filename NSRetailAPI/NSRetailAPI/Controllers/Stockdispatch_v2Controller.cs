@@ -20,13 +20,14 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getdispatchwithbi")]
-        public IActionResult GetDispatchDraftWithBI(int UserID)
+        public IActionResult GetDispatchDraftWithBI(int UserID, bool IsManualDispatch)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                    { "USERID",UserID }
+                    { "USERID",UserID },
+                    { "IsManualDispatch", IsManualDispatch}
                 };
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_DISPATCHDRAFT_v2", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -226,21 +227,22 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("savedispatchdetail")]
-        public IActionResult SaveDispatchDetail([FromQuery] string jsonstring)
+        public IActionResult SaveDispatchDetail([FromQuery] int StockDispatchID, [FromQuery] int StockDispatchDetailID,
+            [FromQuery] int ItemPriceID, [FromQuery] int TrayNumber, [FromQuery] int DispatchQuantity, 
+            [FromQuery] decimal WeightinKGs, [FromQuery] int UserID, [FromQuery] int BranchIndentDetailID)
         {
             try
             {
-                StockDispatchDetail stockDispatchDetail = JsonConvert.DeserializeObject<StockDispatchDetail>(jsonstring);
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                        { "STOCKDISPATCHDETAILID", stockDispatchDetail.STOCKDISPATCHDETAILID }
-                    , { "STOCKDISPATCHID", stockDispatchDetail.STOCKDISPATCHID }
-                    , { "ITEMPRICEID", stockDispatchDetail.ITEMPRICEID }
-                    , { "TRAYNUMBER", stockDispatchDetail.TRAYNUMBER }
-                    , { "DISPATCHQUANTITY", stockDispatchDetail.DISPATCHQUANTITY }
-                    , { "WEIGHTINKGS", stockDispatchDetail.WEIGHTINKGS }
-                    , { "USERID", stockDispatchDetail.USERID }
-                    , { "BRANCHINDENTDETAILID", stockDispatchDetail.BRANCHINDENTDETAILID }
+                    { "STOCKDISPATCHID", StockDispatchID}
+                    , { "STOCKDISPATCHDETAILID", StockDispatchDetailID }
+                    , { "ITEMPRICEID", ItemPriceID }
+                    , { "TRAYNUMBER", TrayNumber }
+                    , { "DISPATCHQUANTITY", DispatchQuantity}
+                    , { "WEIGHTINKGS", WeightinKGs }
+                    , { "USERID", UserID }
+                    , { "BRANCHINDENTDETAILID", BranchIndentDetailID }
                 };
                 object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKDISPATCHDETAIL", true, parameters);
                 string str = Convert.ToString(obj);
@@ -304,7 +306,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("discarddispatch")]
-        public IActionResult DiscardDispatch([FromQuery] int StockDispatchID, [FromQuery] int UserID, [FromQuery] int BranchIndentID)
+        public IActionResult DiscardDispatch([FromQuery] int StockDispatchID, [FromQuery] int UserID)
         {
             try
             {
@@ -312,7 +314,6 @@ namespace NSRetailAPI.Controllers
                 {
                         { "StockDispatchID", StockDispatchID}
                     ,{ "UserID", UserID}
-                    ,{ "BRANCHINDENTID", BranchIndentID}
                 };
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISPATCH", true, parameters);
 
