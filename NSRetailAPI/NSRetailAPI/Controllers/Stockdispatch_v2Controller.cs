@@ -62,7 +62,6 @@ namespace NSRetailAPI.Controllers
                         { "BranchID", BranchID },
                         { "CategoryID", CategoryID },
                         { "NoOfDays", NoOfDays },
-                        { "SubCategoryID", SubCategoryID },
                         { "ISMobileCall", ISMobileCall },
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_RPT_BRANCHINDENT_AVG", true, parameters);
@@ -108,11 +107,12 @@ namespace NSRetailAPI.Controllers
                         { "USERID", branchIndent.USERID },
                         { "dtDetail", dt}
                     };
-                int rowsAffected = new DataRepository().ExecuteNonQuery(configuration, "USP_CU_BRANCHINDENT_v2", true, parameters);
-                if (rowsAffected > 0)
-                    return Ok("Indent saved successfully");
+                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_BRANCHINDENT_v2", true, parameters);
+                string str = Convert.ToString(obj);
+                if (int.TryParse(str, out int ivalue))
+                    return Ok(ivalue);
                 else
-                    return BadRequest("Something went wrong");
+                    return BadRequest(str);
             }
             catch (Exception ex)
             {
@@ -159,7 +159,7 @@ namespace NSRetailAPI.Controllers
                     };
                 int rowsAffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_BRANCHINDENT", true, parameters);
                 if (rowsAffected > 0)
-                    return Ok("Indent discarded successfully");
+                    return Ok(rowsAffected);
                 else
                     return BadRequest("Something went wrong");
             }
@@ -187,21 +187,7 @@ namespace NSRetailAPI.Controllers
                     {
                         return NotFound(Convert.ToString(ds.Tables[0].Rows[0][0]));
                     }
-
-                    ds.Tables[0].TableName = "STOCKDISPATCH";
-                    ds.Tables[1].TableName = "BRANCHINDENTDETAILList";
-                    ds.Tables[2].TableName = "STOCKDISPATCHDETAILINDENTList";
-                    ds.Tables[3].TableName = "STOCKDISPATCHDETAILMANUALList";
-
-                    DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns["BRANCHINDENTID"], ds.Tables[1].Columns["BRANCHINDENTID"]);
-                    dataRelation.Nested = true;
-
-                    DataRelation dataRelation1 = ds.Relations.Add(ds.Tables[1].Columns["BRANCHINDENTDETAILID"], ds.Tables[2].Columns["BRANCHINDENTDETAILID"]);
-                    dataRelation1.Nested = true;
-
-                    DataRelation dataRelation2 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[3].Columns["STOCKDISPATCHID"]);
-                    dataRelation2.Nested = true;
-
+                    GetDispatchDataset(ds);
                     return Ok(Utility.GetJsonString(ds));
                 }
                 else
@@ -213,6 +199,29 @@ namespace NSRetailAPI.Controllers
             {
                 return BadRequest(ex.ToString());
             }
+        }
+
+        private DataSet GetDispatchDataset(DataSet ds)
+        {
+            ds.Tables[0].TableName = "STOCKDISPATCH";
+            ds.Tables[1].TableName = "BRANCHINDENTDETAILList";
+            ds.Tables[2].TableName = "STOCKDISPATCHDETAILINDENTList";
+            ds.Tables[3].TableName = "STOCKDISPATCHDETAILMANUALList";
+            ds.Tables[4].TableName = "TRAYINFOLIST";
+
+            DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns["BRANCHINDENTID"], ds.Tables[1].Columns["BRANCHINDENTID"]);
+            dataRelation.Nested = true;
+
+            DataRelation dataRelation1 = ds.Relations.Add(ds.Tables[1].Columns["BRANCHINDENTDETAILID"], ds.Tables[2].Columns["BRANCHINDENTDETAILID"]);
+            dataRelation1.Nested = true;
+
+            DataRelation dataRelation2 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[3].Columns["STOCKDISPATCHID"]);
+            dataRelation2.Nested = true;
+
+            DataRelation dataRelation3 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[4].Columns["STOCKDISPATCHID"]);
+            dataRelation3.Nested = true;
+
+            return ds;
         }
 
         [HttpPost]
@@ -240,21 +249,7 @@ namespace NSRetailAPI.Controllers
                     {
                         return NotFound(Convert.ToString(ds.Tables[0].Rows[0][0]));
                     }
-
-                    ds.Tables[0].TableName = "STOCKDISPATCH";
-                    ds.Tables[1].TableName = "BRANCHINDENTDETAILList";
-                    ds.Tables[2].TableName = "STOCKDISPATCHDETAILINDENTList";
-                    ds.Tables[3].TableName = "STOCKDISPATCHDETAILMANUALList";
-
-                    DataRelation dataRelation = ds.Relations.Add(ds.Tables[0].Columns["BRANCHINDENTID"], ds.Tables[1].Columns["BRANCHINDENTID"]);
-                    dataRelation.Nested = true;
-
-                    DataRelation dataRelation1 = ds.Relations.Add(ds.Tables[1].Columns["BRANCHINDENTDETAILID"], ds.Tables[2].Columns["BRANCHINDENTDETAILID"]);
-                    dataRelation1.Nested = true;
-
-                    DataRelation dataRelation2 = ds.Relations.Add(ds.Tables[0].Columns["STOCKDISPATCHID"], ds.Tables[3].Columns["STOCKDISPATCHID"]);
-                    dataRelation2.Nested = true;
-
+                    GetDispatchDataset(ds);
                     return Ok(Utility.GetJsonString(ds));
                 }
                 else
@@ -308,7 +303,7 @@ namespace NSRetailAPI.Controllers
         [Route("savedispatchdetail")]
         public IActionResult SaveDispatchDetail([FromQuery] int StockDispatchID, [FromQuery] int StockDispatchDetailID,
             [FromQuery] int ItemPriceID, [FromQuery] int TrayNumber, [FromQuery] int DispatchQuantity, 
-            [FromQuery] decimal WeightinKGs, [FromQuery] int UserID, [FromQuery] int BranchIndentDetailID)
+            [FromQuery] decimal WeightinKGs, [FromQuery] int UserID, [FromQuery] int BranchIndentDetailID, [FromQuery] int TrayInfoID)
         {
             try
             {
@@ -322,6 +317,7 @@ namespace NSRetailAPI.Controllers
                     , { "WEIGHTINKGS", WeightinKGs }
                     , { "USERID", UserID }
                     , { "BRANCHINDENTDETAILID", BranchIndentDetailID }
+                    , { "TRAYINFOID", TrayInfoID}
                 };
                 object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKDISPATCHDETAIL", true, parameters);
                 string str = Convert.ToString(obj);
@@ -395,6 +391,90 @@ namespace NSRetailAPI.Controllers
                     ,{ "UserID", UserID}
                 };
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISPATCH", true, parameters);
+
+                if (rowsaffected == 0)
+                    throw new Exception("Error while discarding dispatch");
+                else
+                    return Ok(rowsaffected);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("savetrayinfo")]
+        public IActionResult SaveTrayInfo([FromQuery] int StockDispatchID, [FromQuery] int TrayNumber, [FromQuery] int UserID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                        { "STOCKDISPATCHID", StockDispatchID }
+                        ,{ "TRAYNUMBER", TrayNumber }
+                        ,{ "USERID", UserID}
+                };
+                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_TRAYINFO", true, parameters);
+                string str = Convert.ToString(obj);
+                if (int.TryParse(str, out int Ivalue))
+                    return Ok(Ivalue);
+                else
+                    throw new Exception(str);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("gettrayinfo")]
+        public IActionResult GetTrayInfo([FromQuery] int StockDispatchID, [FromQuery] bool IsMobileCall )
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "STOCKDISPATCHID", StockDispatchID },
+                        { "IsMobileCall", IsMobileCall }
+                    };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_TRAYINFO", true, parameters);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    int Ivalue = 0;
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out Ivalue))
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "TRAYINFO";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
+                    }
+                    else
+                        throw new Exception(str);
+                }
+                else
+                    return NotFound("No tray numbers exists");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("deletetrayinfo")]
+        public IActionResult DeleteTrayInfo([FromQuery] int TrayInfoID, [FromQuery] int UserID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                     { "TRAYINFOID", TrayInfoID}
+                    ,{ "USERID", UserID}
+                };
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_TRAYINFO", true, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while discarding dispatch");
