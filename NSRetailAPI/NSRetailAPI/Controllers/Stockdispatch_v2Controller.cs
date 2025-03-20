@@ -133,9 +133,9 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_RPT_BRANCHINDENTLIST", true, parameters);
                 if (ds != null && ds.Tables.Count > 0)
                 {
-                    ds.Tables[0].TableName = "BRANCHINDENT";
+                    ds.Tables[0].TableName = "Holder";
                     ds.Tables[1].TableName = "BRANCHINDENT";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "BRANCHID", "BRANCHID" } }, true));
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
                 }
                 else
                     return NotFound("Data not found");
