@@ -29,8 +29,8 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_STOCKDISPATCH_v2", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "CATEGORY";
-                    ds.Tables[1].TableName = "BRANCH";
+                    ds.Tables[0].TableName = "DISPATCHRECEIVECATEGORY";
+                    ds.Tables[1].TableName = "DISPATCHRECEIVEBRANCH";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "CATEGORYID", "CATEGORYID" } }, true));
                 }
                 else
@@ -57,7 +57,7 @@ namespace NSRetailAPI.Controllers
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "Holder";
-                    ds.Tables[1].TableName = "BRANCH";
+                    ds.Tables[1].TableName = "DISPATCHRECEIVEDETAIL";
                     return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
                 }
                 else
