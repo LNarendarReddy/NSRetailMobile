@@ -29,9 +29,9 @@ namespace NSRetailAPI.Controllers
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_STOCKDISPATCH_v2", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "DISPATCHRECEIVECATEGORY";
-                    ds.Tables[1].TableName = "DISPATCHRECEIVEBRANCH";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "CATEGORYID", "CATEGORYID" } }, true));
+                    ds.Tables[0].TableName = "Holder";
+                    ds.Tables[1].TableName = "DISPATCH";
+                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
                 }
                 else
                     return NotFound("Data not found");
@@ -131,7 +131,7 @@ namespace NSRetailAPI.Controllers
                         { "COUNTERID", CounterID},
                         { "UserID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "POS_USP_U_TRAYINFO", true, parameters, true);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "POS_USP_FINISH_STOCKIN_v2", true, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while finishing stock in");
