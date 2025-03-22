@@ -142,7 +142,6 @@ namespace NSRetailAPI.Controllers
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "StockDispatchID", StockDispatchID},
-                        { "COUNTERID", CounterID},
                         { "UserID", UserID}
                 };
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "POS_USP_FINISH_STOCKIN_v2", true, parameters, true);
