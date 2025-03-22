@@ -18,24 +18,30 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getdispatchlist")]
-        public IActionResult GetDispatchList([FromQuery] int BranchID, [FromQuery] bool GetAllDispatches)
+        public IActionResult GetDispatchList([FromQuery] int BranchID)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
-                        { "BranchID", BranchID },
-                        { "GetAllDispatches",GetAllDispatches }
+                        { "BranchID", BranchID }
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_STOCKDISPATCH_v2", true, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[1].Rows.Count > 0)
+
+                string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                if (int.TryParse(str, out int Ivalue))
                 {
-                    ds.Tables[0].TableName = "Holder";
-                    ds.Tables[1].TableName = "DISPATCH";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
+                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[1].Rows.Count > 0)
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "DISPATCH";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
+                    }
+                    else
+                        return NotFound("Data not found");
                 }
                 else
-                    return NotFound("Data not found");
+                    return BadRequest(str);
             }
             catch (Exception ex)
             {
@@ -68,7 +74,7 @@ namespace NSRetailAPI.Controllers
                         return NotFound("Data not found");
                 }
                 else
-                    throw new Exception(str);
+                    return BadRequest(str);
 
             }
             catch (Exception ex)
