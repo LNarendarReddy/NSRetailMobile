@@ -45,7 +45,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -113,7 +113,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 

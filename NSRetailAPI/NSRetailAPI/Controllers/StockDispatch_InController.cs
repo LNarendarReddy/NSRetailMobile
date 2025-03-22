@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using NSRetailAPI.Models;
 using NSRetailAPI.Utilities;
 using System.Data;
@@ -27,7 +28,7 @@ namespace NSRetailAPI.Controllers
                         { "GetAllDispatches",GetAllDispatches }
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_STOCKDISPATCH_v2", true, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[1].Rows.Count > 0)
                 {
                     ds.Tables[0].TableName = "Holder";
                     ds.Tables[1].TableName = "DISPATCH";
@@ -38,7 +39,7 @@ namespace NSRetailAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
@@ -54,18 +55,25 @@ namespace NSRetailAPI.Controllers
                         { "TRAYNUMBER",TrayNumber}
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "POS_USP_R_STOCKDISPATCHDETAIL_v2", true, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                if (int.TryParse(str, out int Ivalue))
                 {
-                    ds.Tables[0].TableName = "Holder";
-                    ds.Tables[1].TableName = "DISPATCHRECEIVEDETAIL";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
+                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "DISPATCHRECEIVEDETAIL";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
+                    }
+                    else
+                        return NotFound("Data not found");
                 }
                 else
-                    return NotFound("Data not found");
+                    throw new Exception(str);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                return BadRequest(ex.Message);
             }
         }
 
