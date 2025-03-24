@@ -66,7 +66,7 @@ namespace NSRetailAPI.Controllers
                 {
                     if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[0].TableName = "DISPATCHRECEIVE";
                         ds.Tables[1].TableName = "DISPATCHRECEIVEDETAIL";
                         return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
                     }
