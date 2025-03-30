@@ -366,12 +366,13 @@ namespace NSRetailAPI.Controllers
                 {
                         { "STOCKDISPATCHID", StockDispatchID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKDISPATCH", true, parameters, true);
 
-                if (rowsaffected == 0)
-                    throw new Exception("Error while submitting dispatch");
-                else
-                    return Ok(rowsaffected);
+                string returnValue = new DataRepository().ExecuteScalar(configuration, "USP_U_STOCKDISPATCH", true, parameters)?.ToString() ?? string.Empty;
+
+                if (int.TryParse(returnValue.ToString(), out int ID) && ID > 0)
+                    return Ok(ID);
+
+                throw new Exception(returnValue);
             }
             catch (Exception ex)
             {
