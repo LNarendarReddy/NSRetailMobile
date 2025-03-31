@@ -156,5 +156,29 @@ namespace NSRetailAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost]
+        [Route("verifystockdispatchdetail")]
+        public IActionResult VerifyStockDispatchDetail([FromQuery] int StockDispatchDetailID, [FromQuery] bool IsVerified)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                        { "STOCKDISPATCHDETAILID", StockDispatchDetailID},
+                        { "ISVERIFIED", IsVerified}
+                };
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "POS_USP_U_VERIFY_SDD", true, parameters, true);
+
+                if (rowsaffected == 0)
+                    throw new Exception("Error while verifying item");
+                else
+                    return Ok(rowsaffected);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
