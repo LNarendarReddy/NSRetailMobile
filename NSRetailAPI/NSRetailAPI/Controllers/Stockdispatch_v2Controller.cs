@@ -475,12 +475,12 @@ namespace NSRetailAPI.Controllers
                      { "TRAYINFOID", TrayInfoID}
                     ,{ "USERID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_TRAYINFO", true, parameters);
+                object objreturn = new DataRepository().ExecuteScalar(configuration, "USP_D_TRAYINFO", true, parameters);
 
-                if (rowsaffected == 0)
-                    throw new Exception("Error while discarding dispatch");
+                if (!int.TryParse(Convert.ToString(objreturn), out int ivalue))
+                    throw new Exception(Convert.ToString(objreturn));
                 else
-                    return Ok(rowsaffected);
+                    return Ok(objreturn);
             }
             catch (Exception ex)
             {
