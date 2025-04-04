@@ -94,9 +94,10 @@ namespace NSRetailAPI.Controllers
                 dt.Columns.Add("INDENTQUANTITY", typeof(decimal));
                 dt.Columns.Add("LASTDISPATCHDATE", typeof(DateTime));
                 dt.Columns.Add("SUBCATEGORYID", typeof(int));
+                dt.Columns.Add("WHSTOCK", typeof(decimal));
 
                 branchIndent.branchIndentDetailList.ForEach(x => dt.Rows.Add(x.ITEMID, x.BRANCHSTOCK, x.AVGSALES, 
-                    x.NOOFDAYSSALES, x.INDENTQUANTITY, x.LASTDISPATCHDATE,x.SUBCATEGORYID ));
+                    x.NOOFDAYSSALES, x.INDENTQUANTITY, x.LASTDISPATCHDATE, x.SUBCATEGORYID, x.WHSTOCK ));
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                     {

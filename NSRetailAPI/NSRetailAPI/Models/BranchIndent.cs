@@ -14,6 +14,7 @@
     {
         public int ITEMID { get; set; }
         public double BRANCHSTOCK { get; set; }
+        public double WHSTOCK { get; set; }
         public double AVGSALES { get; set; }
         public double NOOFDAYSSALES { get; set; }
         public double INDENTQUANTITY { get; set; }
