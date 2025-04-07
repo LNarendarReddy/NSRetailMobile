@@ -465,6 +465,41 @@ namespace NSRetailAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("getemptytrayinfo")]
+        public IActionResult GetEmptyTrayInfo([FromQuery] int StockDispatchID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "STOCKDISPATCHID", StockDispatchID }
+                    };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_SD_EMPTYTRAYS", true, parameters);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    int Ivalue = 0;
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out Ivalue))
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "TRAYINFO";
+                        return Ok(Utility.GetJsonString(ds, 
+                            new Dictionary<string, string>() { { "STOCKDISPATCHID", "STOCKDISPATCHID" } }, false));
+                    }
+                    else
+                        throw new Exception(str);
+                }
+                else
+                    return NotFound("No tray numbers exists");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         [Route("deletetrayinfo")]
         public IActionResult DeleteTrayInfo([FromQuery] int TrayInfoID, [FromQuery] int UserID)
