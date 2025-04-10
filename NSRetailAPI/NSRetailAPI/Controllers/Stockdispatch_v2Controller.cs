@@ -502,13 +502,14 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("deletetrayinfo")]
-        public IActionResult DeleteTrayInfo([FromQuery] int TrayInfoID, [FromQuery] int UserID)
+        public IActionResult DeleteTrayInfo([FromQuery] int StockdispatchID, [FromQuery] int TrayInfoID, [FromQuery] int UserID)
         {
             try
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                     { "TRAYINFOID", TrayInfoID}
+                     { "STOCKDISPATCHID", StockdispatchID}
+                    ,{ "TRAYINFOID", TrayInfoID}
                     ,{ "USERID", UserID}
                 };
                 object objreturn = new DataRepository().ExecuteScalar(configuration, "USP_D_TRAYINFO", true, parameters);
