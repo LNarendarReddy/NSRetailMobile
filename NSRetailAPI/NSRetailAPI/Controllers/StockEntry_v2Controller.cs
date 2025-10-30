@@ -44,6 +44,74 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
+        [Route("getitem")]
+        public IActionResult GetSupplierIndentList([FromQuery] int supplierId)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                        { "SUPPLIERID", supplierId }
+                    };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_SUPPLIERINDENTLIST", true, parameters);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out int Ivalue))
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "INDENTLIST";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }, true));
+                    }
+                    else
+                        return BadRequest(str);
+                }
+                else
+                    throw new Exception("Indent doos not exists");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getinvoice")]
+        public IActionResult GetInvoice(int CategoryID, int StockEntryID, int UserID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                     { "CATEGORYID",CategoryID }
+                    ,{ "STOCKENTRYID",StockEntryID }
+                    ,{ "USERID",UserID }
+                };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT", true, parameters);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    if (!int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
+                        return NotFound("No stock entry draft found!");
+                    else
+                    {
+                        ds.Tables[0].TableName = "StockEntry";
+                        if (ds.Tables.Count > 1)
+                            ds.Tables[1].TableName = "StockEntryDetail";
+                        return Ok(JsonConvert.SerializeObject(ds));
+                    }
+                }
+                else
+                {
+                    return NotFound("No stock entry draft found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("getgst")]
         public IActionResult GetGST()
         {
@@ -104,42 +172,6 @@ namespace NSRetailAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("getinvoice")]
-        public IActionResult GetInvoice(int CategoryID, int StockEntryID, int UserID, bool UseWHConnection)
-        {
-            try
-            {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                {
-                        { "CATEGORYID",CategoryID }
-                    ,{ "STOCKENTRYID",StockEntryID }
-                    ,{ "USERID",UserID }
-                };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT", UseWHConnection, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    if (!int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
-                        return NotFound("No stock entry draft found!");
-                    else
-                    {
-                        ds.Tables[0].TableName = "StockEntry";
-                        if (ds.Tables.Count > 1)
-                            ds.Tables[1].TableName = "StockEntryDetail";
-                        return Ok(JsonConvert.SerializeObject(ds));
-                    }
-                }
-                else
-                {
-                    return NotFound("No stock entry draft found!");
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpPost]
         [Route("saveinvoice")]
         public IActionResult SaveInvoice(string jsonstring, bool UseWHConnection)
@@ -162,6 +194,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "TRANSPORT", stockEntry.TRANSPORT}
                         ,{ "CATEGORYID", stockEntry.CATEGORYID }
                         ,{ "USERID", stockEntry.UserID }
+                        ,{ "SupplierIndentID", stockEntry.SupplierIndentId }
                 };
                 object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", UseWHConnection, parameters);
                 string str = Convert.ToString(obj);
@@ -273,6 +306,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "DISCOUNTFLAT", stockEntry.DISCOUNTFLAT }
                         ,{ "EXPENSES", stockEntry.EXPENSES }
                         ,{ "TRANSPORT", stockEntry.TRANSPORT}
+                        ,{ "SupplierIndentID", stockEntry.SupplierIndentId}
                 };
 
                 int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY", UseWHConnection, parameters, true);

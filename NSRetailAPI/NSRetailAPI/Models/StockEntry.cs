@@ -14,5 +14,6 @@
         public decimal TRANSPORT { get; set; }
         public int CATEGORYID { get; set; }
         public int UserID { get; set; }
+        public int SupplierIndentId { get; set; }
     }
 }
