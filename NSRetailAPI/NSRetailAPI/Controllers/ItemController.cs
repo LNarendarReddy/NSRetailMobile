@@ -25,12 +25,16 @@ namespace NSRetailAPI.Controllers
                     {
                         { "USERID", Userid }
                     };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORITEM", false, parameters);
-                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCHFORITEM", false, parameters);
+                if (dt != null && dt.Rows.Count > 0)
                 {
-                    ds.Tables[0].TableName = "ACCESS";
-                    ds.Tables[1].TableName = "BRANCH";
-                    return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
+                    dt.TableName = "Branch";
+                    int Ivalue = 0;
+                    string str = Convert.ToString(dt.Rows[0][0]);
+                    if (!int.TryParse(str, out Ivalue))
+                        return BadRequest(str);
+                    else
+                        return Ok(JsonConvert.SerializeObject(dt));
                 }
                 else
                     return NotFound("Data not found");
