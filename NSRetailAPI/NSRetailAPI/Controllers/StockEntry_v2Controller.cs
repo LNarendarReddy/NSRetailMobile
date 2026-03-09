@@ -139,7 +139,7 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getitem")]
+        [Route("getitembycode")]
         public IActionResult GetItem([FromQuery] string ItemCode)
         {
             try
