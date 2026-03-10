@@ -18,7 +18,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getsupplier")]
-        public IActionResult GetSupplier()
+        public IActionResult GetSupplier([FromQuery] string searchKey)
         {
             try
             {
@@ -174,12 +174,10 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("saveinvoice")]
-        public IActionResult SaveInvoice(string jsonstring)
+        public async Task<IActionResult> SaveInvoice([FromBody] StockEntry stockEntry)
         {
             try
             {
-
-                StockEntry stockEntry = JsonConvert.DeserializeObject<StockEntry>(jsonstring);
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "STOCKENTRYID", stockEntry.STOCKENTRYID }
@@ -196,7 +194,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "USERID", stockEntry.UserID }
                         ,{ "SupplierIndentID", stockEntry.SupplierIndentId }
                 };
-                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", true, parameters);
+                object obj = await Task.Run(() => new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", true, parameters));
                 string str = Convert.ToString(obj);
                 if (!int.TryParse(str, out int ivalue))
                     throw new Exception(str);
@@ -211,11 +209,10 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("saveinvoicedetail")]
-        public IActionResult saveinvoicedetail(string jsonstring)
+        public async Task<IActionResult> SaveInvoiceDetail([FromBody] StockEntryDetail stockEntryDetail)
         {
             try
             {
-                StockEntryDetail stockEntryDetail = JsonConvert.DeserializeObject<StockEntryDetail>(jsonstring);
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                         { "STOCKENTRYDETAILID", stockEntryDetail.STOCKENTRYDETAILID }
@@ -246,7 +243,7 @@ namespace NSRetailAPI.Controllers
                     , { "CESS", stockEntryDetail.CESS }
                     , { "HSNCODE", stockEntryDetail.HSNCODE }
                 };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL", true, parameters);
+                DataTable dt = await Task.Run(() => new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL", true, parameters));
 
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -340,5 +337,40 @@ namespace NSRetailAPI.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("uploadattachment")]
+        public async Task<IActionResult> UploadAttachment([FromForm] UploadAttachmentRequest request)
+        {
+            try
+            {
+                if (request.InvoiceAttachment == null || request.InvoiceAttachment.Length == 0)
+                    throw new Exception("No file uploaded!");
+
+                byte[] fileBytes;
+                using (var memoryStream = new MemoryStream())
+                {
+                    request.InvoiceAttachment.CopyTo(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    { "STOCKENTRYID", request.StockEntryID },
+                    { "INVOICEATTACHMENT", fileBytes },
+                    { "USERID", request.UserID }
+                };
+
+                object obj = await Task.Run(() => new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRYATTACHMENTS", true, parameters));
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int attachmentId))
+                    throw new Exception(str);
+                else
+                    return Ok(new { message = "Attachment uploaded successfully", attachmentId = attachmentId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
