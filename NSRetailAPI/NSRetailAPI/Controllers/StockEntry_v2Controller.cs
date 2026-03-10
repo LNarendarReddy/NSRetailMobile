@@ -174,7 +174,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("saveinvoice")]
-        public IActionResult SaveInvoice(string jsonstring, bool UseWHConnection)
+        public IActionResult SaveInvoice(string jsonstring)
         {
             try
             {
@@ -196,7 +196,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "USERID", stockEntry.UserID }
                         ,{ "SupplierIndentID", stockEntry.SupplierIndentId }
                 };
-                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", UseWHConnection, parameters);
+                object obj = new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", true, parameters);
                 string str = Convert.ToString(obj);
                 if (!int.TryParse(str, out int ivalue))
                     throw new Exception(str);
@@ -211,7 +211,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("saveinvoicedetail")]
-        public IActionResult saveinvoicedetail(string jsonstring, bool UseWHConnection)
+        public IActionResult saveinvoicedetail(string jsonstring)
         {
             try
             {
@@ -246,7 +246,7 @@ namespace NSRetailAPI.Controllers
                     , { "CESS", stockEntryDetail.CESS }
                     , { "HSNCODE", stockEntryDetail.HSNCODE }
                 };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL", UseWHConnection, parameters);
+                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL", true, parameters);
 
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -269,7 +269,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("deleteinvoicedetail")]
-        public IActionResult DeleteInvoiceDetail(int StockEntryDetailID, int UserID, bool UseWHConnection)
+        public IActionResult DeleteInvoiceDetail(int StockEntryDetailID, int UserID)
         {
             try
             {
@@ -278,7 +278,7 @@ namespace NSRetailAPI.Controllers
                         { "STOCKENTRYDETAILID", StockEntryDetailID}
                     ,{ "UserID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_STOCKENTRYDETAIL", UseWHConnection, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_STOCKENTRYDETAIL", true, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while deleting item!");
@@ -293,23 +293,16 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("updateinvoice")]
-        public IActionResult UpdateInvoice(string jsonstring, bool UseWHConnection)
+        public IActionResult UpdateInvoice(string stockEntryId)
         {
             try
             {
-                StockEntry stockEntry = JsonConvert.DeserializeObject<StockEntry>(jsonstring);
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                        { "STOCKENTRYID", stockEntry.STOCKENTRYID }
-                        ,{ "TCS", stockEntry.TCS }
-                        ,{ "DISCOUNTPER", stockEntry.DISCOUNTPER }
-                        ,{ "DISCOUNTFLAT", stockEntry.DISCOUNTFLAT }
-                        ,{ "EXPENSES", stockEntry.EXPENSES }
-                        ,{ "TRANSPORT", stockEntry.TRANSPORT}
-                        ,{ "SupplierIndentID", stockEntry.SupplierIndentId}
+                        { "STOCKENTRYID", stockEntryId }
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY", UseWHConnection, parameters, true);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY_MOBILESUBMISSION", true, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while submitting stock entry!");
@@ -324,7 +317,7 @@ namespace NSRetailAPI.Controllers
 
         [HttpPost]
         [Route("discardinvoice")]
-        public IActionResult DiscardInvoice(int StockEntryID, int UserID, bool UseWHConnection)
+        public IActionResult DiscardInvoice(int StockEntryID, int UserID)
         {
             try
             {
@@ -334,7 +327,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "UserID", UserID}
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", UseWHConnection, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", true, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while discarding invoice!");
