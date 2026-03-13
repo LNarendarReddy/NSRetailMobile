@@ -21,23 +21,24 @@ namespace NSRetailAPI.Controllers
         {
             try
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "USERID", Userid }
-                    };
-                DataTable dt = new DataRepository().GetDataTable(configuration, "USP_R_BRANCHFORITEM", false, parameters);
-                if (dt != null && dt.Rows.Count > 0)
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_BRANCHFORITEM", true
+                    , new Dictionary<string, object> { { "USERID", Userid } });
+
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    dt.TableName = "Branch";
                     int Ivalue = 0;
-                    string str = Convert.ToString(dt.Rows[0][0]);
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
                     if (!int.TryParse(str, out Ivalue))
-                        return BadRequest(str);
+                        throw new Exception(str);
                     else
-                        return Ok(JsonConvert.SerializeObject(dt));
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "BRANCH";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
+                    }
                 }
                 else
-                    return NotFound("Data not found");
+                    return NotFound("something went wrong");
             }
             catch (Exception ex)
             {
