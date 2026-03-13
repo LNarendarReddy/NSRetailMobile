@@ -48,15 +48,16 @@ namespace NSRetailAPI.Controllers
 
         [HttpGet]
         [Route("getitem")]
-        public IActionResult GetItem(string ItemCode, bool useWHConnection)
+        public IActionResult GetItem(string ItemCode, string branchID)
         {
             try
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "ITEMCODE", ItemCode }
-                    };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMFORITEMDETAILS", useWHConnection, parameters);
+                Dictionary<string, object> parameters = new Dictionary<string, object> 
+                { 
+                    { "ITEMCODE", ItemCode },
+                    { "BRANCHID", branchID }
+                };
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_ITEMDATAFORITEMDETAILS", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     int Ivalue = 0;
@@ -65,9 +66,12 @@ namespace NSRetailAPI.Controllers
                         throw new Exception(str);
                     else
                     {
-                        ds.Tables[0].TableName = "ITEM";
-                        ds.Tables[1].TableName = "ITEMCODE";
-                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" } }));
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "ITEM";
+                        ds.Tables[2].TableName = "ITEMCODEPRICE";
+                        ds.Tables[3].TableName = "ITEMCODEOFFER";
+                        
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                     }
                 }
                 else
