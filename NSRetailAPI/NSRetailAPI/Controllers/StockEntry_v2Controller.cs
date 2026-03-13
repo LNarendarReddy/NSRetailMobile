@@ -44,14 +44,43 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getitem")]
-        public IActionResult GetSupplierIndentList([FromQuery] int supplierId)
+        [Route("getcategory")]
+        public IActionResult GetCategory()
+        {
+
+            try
+            {
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_CATEGORY_v2", true, null);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    ds.Tables[0].TableName = "Holder";
+                    ds.Tables[1].TableName = "Category";
+                    int Ivalue = 0;
+                    string str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (int.TryParse(str, out Ivalue))
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
+                    else
+                        return BadRequest(str);
+                }
+                else
+                    return NotFound("Data not found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getindentlist")]
+        public IActionResult GetSupplierIndentList([FromQuery] int supplierId, [FromQuery] int categoryId)
         {
             try
             {
                 Dictionary<string, object> parameters = new()
                 {
-                        { "SUPPLIERID", supplierId }
+                        { "SUPPLIERID", supplierId },
+                        { "CATEGORYID", categoryId }
                     };
                 DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_SUPPLIERINDENTLIST", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -60,14 +89,14 @@ namespace NSRetailAPI.Controllers
                     if (int.TryParse(str, out int Ivalue))
                     {
                         ds.Tables[0].TableName = "Holder";
-                        ds.Tables[1].TableName = "INDENTLIST";
-                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "ITEMID", "ITEMID" }, { "ITEMCODEID", "ITEMCODEID" } }, true));
+                        ds.Tables[1].TableName = "SupplierIndent";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string> { { "PARENTID", "PARENTID" } }, true));
                     }
                     else
                         return BadRequest(str);
                 }
                 else
-                    throw new Exception("Indent doos not exists");
+                    throw new Exception("Indent does not exists");
             }
             catch (Exception ex)
             {
@@ -87,7 +116,7 @@ namespace NSRetailAPI.Controllers
                     ,{ "STOCKENTRYID",StockEntryID }
                     ,{ "USERID",UserID }
                 };
-                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT", true, parameters);
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_STOCKENTRYDTAFT_v2", true, parameters);
                 if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     if (!int.TryParse(Convert.ToString(ds.Tables[0].Rows[0][0]), out int ivalue))
@@ -97,7 +126,7 @@ namespace NSRetailAPI.Controllers
                         ds.Tables[0].TableName = "StockEntry";
                         if (ds.Tables.Count > 1)
                             ds.Tables[1].TableName = "StockEntryDetail";
-                        return Ok(JsonConvert.SerializeObject(ds));
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "STOCKENTRYID", "STOCKENTRYID" } }));
                     }
                 }
                 else
@@ -215,35 +244,36 @@ namespace NSRetailAPI.Controllers
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                        { "STOCKENTRYDETAILID", stockEntryDetail.STOCKENTRYDETAILID }
-                    , { "STOCKENTRYID", stockEntryDetail.STOCKENTRYID }
-                    , { "ITEMCODEID", stockEntryDetail.ITEMCODEID }
-                    , { "COSTPRICEWT", stockEntryDetail.COSTPRICEWT }
-                    , { "COSTPRICEWOT", stockEntryDetail.COSTPRICEWOT }
-                    , { "MRP", stockEntryDetail.MRP }
-                    , { "SALEPRICE", stockEntryDetail.SALEPRICE }
-                    , { "QUANTITY", stockEntryDetail.QUANTITY }
-                    , { "WEIGHTINKGS", stockEntryDetail.WEIGHTINKGS }
-                    , { "USERID", stockEntryDetail.UserID }
-                    , { "GSTID", stockEntryDetail.GSTID }
-                    , { "FREEQUANTITY", stockEntryDetail.FreeQuantity}
-                    , { "DISCOUNTFLAT", stockEntryDetail.DiscountFlat }
-                    , { "DISCOUNTPERCENTAGE", stockEntryDetail.DiscountPercentage }
-                    , { "SCHEMEPERCENTAGE", stockEntryDetail.SchemePercentage }
-                    , { "SCHEMEFLAT", stockEntryDetail.SchemeFlat }
-                    , { "TOTALPRICEWT", stockEntryDetail.TotalPriceWT }
-                    , { "TOTALPRICEWOT", stockEntryDetail.TotalPriceWOT }
-                    , { "APPLIEDDISCOUNT", stockEntryDetail.AppliedDiscount }
-                    , { "APPLIEDSCHEME", stockEntryDetail.AppliedScheme }
-                    , { "APPLIEDDGST", stockEntryDetail.AppliedGST }
-                    , { "FINALPRICE", stockEntryDetail.FinalPrice }
-                    , { "CGST", stockEntryDetail.CGST }
-                    , { "SGST", stockEntryDetail.SGST }
-                    , { "IGST", stockEntryDetail.IGST }
-                    , { "CESS", stockEntryDetail.CESS }
-                    , { "HSNCODE", stockEntryDetail.HSNCODE }
+                    { "STOCKENTRYDETAILID", stockEntryDetail.STOCKENTRYDETAILID },
+                    { "STOCKENTRYID", stockEntryDetail.STOCKENTRYID },
+                    { "ITEMCODEID", stockEntryDetail.ITEMCODEID },
+                    { "QUANTITY", stockEntryDetail.QUANTITY },
+                    { "WEIGHTINKGS", stockEntryDetail.WEIGHTINKGS },
+                    { "MRP", stockEntryDetail.MRP },
+                    { "SALEPRICE", stockEntryDetail.SALEPRICE },
+                    { "COSTPRICEWT", stockEntryDetail.COSTPRICEWT },
+                    { "COSTPRICEWOT", stockEntryDetail.COSTPRICEWOT },
+                    { "INVOICECPWITHTAX", stockEntryDetail.InvoiceCPWithTax },      
+                    { "INVOICECPWITHOUTTAX", stockEntryDetail.InvoiceCPWithoutTax },
+                    { "GSTID", stockEntryDetail.GSTID },
+                    { "DISCOUNTFLAT", stockEntryDetail.DiscountFlat },
+                    { "DISCOUNTPERCENTAGE", stockEntryDetail.DiscountPercentage },
+                    { "SCHEMEPERCENTAGE", stockEntryDetail.SchemePercentage },
+                    { "SCHEMEFLAT", stockEntryDetail.SchemeFlat },
+                    { "TOTALPRICEWT", stockEntryDetail.TotalPriceWT },
+                    { "TOTALPRICEWOT", stockEntryDetail.TotalPriceWOT },
+                    { "APPLIEDDISCOUNT", stockEntryDetail.AppliedDiscount },
+                    { "APPLIEDSCHEME", stockEntryDetail.AppliedScheme },
+                    { "APPLIEDDGST", stockEntryDetail.AppliedGST },
+                    { "FINALPRICE", stockEntryDetail.FinalPrice },
+                    { "CGST", stockEntryDetail.CGST },
+                    { "SGST", stockEntryDetail.SGST },
+                    { "IGST", stockEntryDetail.IGST },
+                    { "CESS", stockEntryDetail.CESS },
+                    { "HSNCODE", stockEntryDetail.HSNCODE },
+                    { "USERID", stockEntryDetail.UserID }
                 };
-                DataTable dt = await Task.Run(() => new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL", true, parameters));
+                DataTable dt = await Task.Run(() => new DataRepository().GetDataTable(configuration, "USP_CU_STOCKENTRYDETAIL_v2", true, parameters));
 
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -272,10 +302,10 @@ namespace NSRetailAPI.Controllers
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
-                        { "STOCKENTRYDETAILID", StockEntryDetailID}
-                    ,{ "UserID", UserID}
+                    { "STOCKENTRYDETAILID", StockEntryDetailID},
+                    { "UserID", UserID}
                 };
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_STOCKENTRYDETAIL", true, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_STOCKENTRYDETAIL_V2", true, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while deleting item!");
@@ -299,7 +329,7 @@ namespace NSRetailAPI.Controllers
                         { "STOCKENTRYID", stockEntryId }
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY_MOBILESUBMISSION", true, parameters, true);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY_MOBILESUBMISSION", true, parameters);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while submitting stock entry!");
@@ -324,7 +354,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "UserID", UserID}
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY", true, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_D_DISCARDSTOCKENTRY_v2", true, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while discarding invoice!");

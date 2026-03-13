@@ -7,6 +7,11 @@
         public int ITEMCODEID { get; set; }
         public decimal COSTPRICEWT { get; set; }
         public decimal COSTPRICEWOT { get; set; }
+
+        public decimal InvoiceCPWithTax { get; set; }
+
+        public decimal InvoiceCPWithoutTax { get; set; }
+
         public decimal MRP { get; set; }
         public decimal SALEPRICE { get; set; }
         public int QUANTITY { get; set; }
