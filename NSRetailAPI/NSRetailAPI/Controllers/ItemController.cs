@@ -68,8 +68,8 @@ namespace NSRetailAPI.Controllers
                     {
                         ds.Tables[0].TableName = "Holder";
                         ds.Tables[1].TableName = "ITEM";
-                        ds.Tables[2].TableName = "ITEMCODEPRICE";
-                        ds.Tables[3].TableName = "ITEMCODEOFFER";
+                        ds.Tables[2].TableName = "ITEMPRICE";
+                        ds.Tables[3].TableName = "ITEMOFFER";
                         
                         return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                     }
