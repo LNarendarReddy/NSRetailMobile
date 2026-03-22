@@ -66,10 +66,9 @@ namespace NSRetailAPI.Controllers
                         throw new Exception(str);
                     else
                     {
-                        ds.Tables[0].TableName = "Holder";
-                        ds.Tables[1].TableName = "ITEM";
-                        ds.Tables[2].TableName = "ITEMPRICE";
-                        ds.Tables[3].TableName = "ITEMOFFER";
+                        ds.Tables[0].TableName = "ITEM";
+                        ds.Tables[1].TableName = "ITEMPRICE";
+                        ds.Tables[2].TableName = "ITEMOFFER";
                         
                         return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }, false));
                     }
