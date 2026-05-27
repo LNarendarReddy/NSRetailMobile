@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using NSRetailAPI.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+PaymentGatewayLoader.LoadPaymentGatewaySecrets(builder.Configuration);
 
 //Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
