@@ -223,7 +223,7 @@ namespace NSRetailAPI.Controllers
                         ,{ "USERID", stockEntry.UserID }
                         ,{ "SupplierIndentID", stockEntry.SupplierIndentId }
                 };
-                object obj = await Task.Run(() => new DataRepository().ExecuteScalar(configuration, "USP_CU_STOCKENTRY", true, parameters));
+                object obj = await Task.Run(() => new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_CU_STOCKENTRY", true, parameters));
                 string str = Convert.ToString(obj);
                 if (!int.TryParse(str, out int ivalue))
                     throw new Exception(str);
