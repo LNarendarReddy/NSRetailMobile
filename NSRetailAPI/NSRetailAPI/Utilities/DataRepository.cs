@@ -96,21 +96,26 @@ namespace NSRetailAPI.Utilities
         public object ExecuteScalar(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             object? obj = null;
+            SqlTransaction? transaction = null;
             try
             {
                 using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
                 using (SqlCommand cmd = new SqlCommand())
                 {
+                    transaction = connection.BeginTransaction();
                     cmd.Connection = connection;
+                    cmd.Transaction = transaction;
                     cmd.CommandTimeout = 1800;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = procedureName;
                     ProcessParameters(cmd, parameters);
                     obj = cmd.ExecuteScalar();
+                    transaction?.Commit();
                 }
             }
             catch (Exception ex)
             {
+                transaction?.Rollback();
                 throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return obj;

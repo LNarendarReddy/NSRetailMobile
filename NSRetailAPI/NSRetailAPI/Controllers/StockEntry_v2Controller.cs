@@ -329,7 +329,7 @@ namespace NSRetailAPI.Controllers
                         { "STOCKENTRYID", stockEntryId }
                 };
 
-                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY_MOBILESUBMISSION", true, parameters);
+                int rowsaffected = new DataRepository().ExecuteNonQuery(configuration, "USP_U_STOCKENTRY_MOBILESUBMISSION", true, parameters, true);
 
                 if (rowsaffected == 0)
                     throw new Exception("Error while submitting stock entry!");
