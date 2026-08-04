@@ -349,6 +349,29 @@ namespace NSRetailAPI.Controllers
         }
 
         [HttpPost]
+        [Route("updatetray")]
+        public IActionResult UpdateTray([FromQuery] int pickListTrayID, [FromQuery] string trayNumber, [FromQuery] int userID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "pickListTrayID", pickListTrayID },
+                    { "TrayNumber", trayNumber },
+                    { "userID", userID }
+                };
+
+                new DataRepository().ExecuteNonQuery(configuration, "USP_U_PICKLISTTRAY", true, parameters, true);
+
+                return Ok(pickListTrayID);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
         [Route("dispatchbranch")]
         public IActionResult DispatchBranch([FromQuery] int branchID, [FromQuery] string pickListTrayIDs, [FromQuery] int userID)
         {
