@@ -86,6 +86,205 @@ namespace NSRetailAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("getdispatch")]
+        public IActionResult GetDispatch([FromQuery] int pickListDispatchID, [FromQuery] int userID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "pickListDispatchID", pickListDispatchID },
+                    { "userID", userID }
+                };
+
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_PICKLISTDISPATCH", true, parameters);
+
+                if (ds != null && ds.Tables.Count > 1 && ds.Tables[0].Rows.Count > 0)
+                {
+                    string? str = Convert.ToString(ds.Tables[0].Rows[0][0]);
+                    if (!int.TryParse(str, out int Ivalue))
+                        throw new Exception(str);
+                    else
+                    {
+                        ds.Tables[0].TableName = "PickListDispatch";
+                        ds.Tables[1].TableName = "PickListDispatchDetail";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PICKLISTDISPATCHID", "PICKLISTDISPATCHID" } }));
+                    }
+                }
+                else
+                    return NotFound("Picklist dispatch not found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("createdispatch")]
+        public IActionResult CreateDispatch([FromQuery] int locationDivisionID, [FromQuery] int branchID, [FromQuery] int userID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "locationDivisionID", locationDivisionID },
+                    { "branchID", branchID },
+                    { "userID", userID },
+                };
+
+                object obj = new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_C_PICKLISTDISPATCH", true, parameters);
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int ivalue))
+                    throw new Exception(str);
+                else
+                    return Ok(ivalue);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getdispatchitemdetail")]
+        public IActionResult GetDispatchItemDetail([FromQuery] string itemCode, [FromQuery] int pickListDispatchID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "itemCode", itemCode },
+                    { "pickListDispatchID", pickListDispatchID }
+                };
+
+                DataSet ds = new DataRepository().GetDataset(configuration, "USP_R_PICKLISTDISPATCHITEM", true, parameters);
+
+                if (ds != null && ds.Tables.Count > 1 && ds.Tables[1].Rows.Count > 0)
+                {
+                    string? str = Convert.ToString(ds.Tables[1].Rows[0][0]);
+                    if (!int.TryParse(str, out int Ivalue))
+                        throw new Exception(str);
+                    else
+                    {
+                        ds.Tables[0].TableName = "Holder";
+                        ds.Tables[1].TableName = "PickListDispatchItem";
+                        return Ok(Utility.GetJsonString(ds, new Dictionary<string, string>() { { "PARENTID", "PARENTID" } }));
+                    }
+                }
+                else
+                    return NotFound("item not found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("savedispatchdetail")]
+        public IActionResult SaveDispatchDetail([FromQuery] int itemCodeID, [FromQuery] int picklistDispatchID, [FromQuery] int quantity
+            , [FromQuery] double mRP, [FromQuery] string trayNumber)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "itemCodeID", itemCodeID },
+                    { "picklistDispatchID", picklistDispatchID },
+                    { "quantity", quantity },
+                    { "MRP", mRP },
+                    { "trayNumber", trayNumber },
+                };
+
+                object obj = new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_CU_PICKLISTDISPATCHDETAIL", true, parameters);
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int ivalue))
+                    throw new Exception(str);
+                else
+                    return Ok(ivalue);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("deletedispatchdetail")]
+        public IActionResult DeleteDispatchDetail([FromQuery] int pickListDispatchDetailID, [FromQuery] int picklistDispatchID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "pickListDispatchDetailID", pickListDispatchDetailID },
+                    { "picklistDispatchID", picklistDispatchID },
+                };
+
+                object obj = new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_D_PICKLISTDISPATCHDETAIL", true, parameters);
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int ivalue))
+                    throw new Exception(str);
+                else
+                    return Ok(ivalue);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("deletedispatch")]
+        public IActionResult DeleteDispatch([FromQuery] int picklistDispatchID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "picklistDispatchID", picklistDispatchID },
+                };
+
+                object obj = new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_D_PICKLISTDISPATCH", true, parameters);
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int ivalue))
+                    throw new Exception(str);
+                else
+                    return Ok(ivalue);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("updatedispatch")]
+        public IActionResult UpdateDispatch([FromQuery] int picklistDispatchID)
+        {
+            try
+            {
+                Dictionary<string, object> parameters = new()
+                {
+                    { "picklistDispatchID", picklistDispatchID },
+                };
+
+                object obj = new DataRepository().ExecuteScalarWithTransaction(configuration, "USP_U_PICKLISTDISPATCH", true, parameters);
+                string str = Convert.ToString(obj);
+                if (!int.TryParse(str, out int ivalue))
+                    throw new Exception(str);
+                else
+                    return Ok(ivalue);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         //[HttpGet]
         //[Route("getsupplierlist")]
         //public IActionResult GetSupplierList([FromQuery] int CategoryID)
