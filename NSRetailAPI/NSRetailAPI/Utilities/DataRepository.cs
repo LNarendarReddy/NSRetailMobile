@@ -64,11 +64,13 @@ namespace NSRetailAPI.Utilities
         public DataSet GetDatasetWithTransaction(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             DataSet dsReportData = new DataSet();
-            SqlTransaction? transaction = null;
             try
             {
-                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
-                using (SqlCommand cmd = new SqlCommand())
+                SqlTransaction? transaction = null;
+
+                using SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
+                using SqlCommand cmd = new();
+                try
                 {
                     transaction = connection.BeginTransaction();
                     cmd.Connection = connection;
@@ -84,10 +86,14 @@ namespace NSRetailAPI.Utilities
                     }
                     transaction?.Commit();
                 }
+                catch
+                {
+                    transaction?.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
-                transaction?.Rollback();
                 throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return dsReportData;
@@ -119,12 +125,15 @@ namespace NSRetailAPI.Utilities
         public object ExecuteScalarWithTransaction(IConfiguration configuration, string procedureName, bool useWHConn, Dictionary<string, object>? parameters = null)
         {
             object? obj = null;
-            SqlTransaction? transaction = null;
             try
             {
-                using (SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration))
-                using (SqlCommand cmd = new SqlCommand())
+                SqlTransaction? transaction = null;
+
+                using SqlConnection connection = useWHConn ? SQLCon.SqlWHconn(configuration) : SQLCon.SqlCloudconn(configuration);
+                using SqlCommand cmd = new();
+                try
                 {
+
                     transaction = connection.BeginTransaction();
                     cmd.Transaction = transaction;
                     cmd.Connection = connection;
@@ -135,10 +144,14 @@ namespace NSRetailAPI.Utilities
                     obj = cmd.ExecuteScalar();
                     transaction?.Commit();
                 }
+                catch
+                {
+                    transaction?.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
-                transaction?.Rollback();
                 throw new Exception($"Error while executing {procedureName} - {ex.Message}", ex);
             }
             return obj;
