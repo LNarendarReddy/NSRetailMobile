@@ -211,7 +211,7 @@ namespace NSRetailAPI.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("deletedispatchdetail")]
         public IActionResult DeleteDispatchDetail([FromQuery] int pickListDispatchDetailID, [FromQuery] int picklistDispatchID)
         {
@@ -236,7 +236,7 @@ namespace NSRetailAPI.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("deletedispatch")]
         public IActionResult DeleteDispatch([FromQuery] int picklistDispatchID)
         {
